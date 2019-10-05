@@ -1,0 +1,8 @@
+Removed Pin From Net: NetName=Sensor_1_ADC Pin=U2-5
+Removed Pin From Net: NetName=Sensor_2_ADC Pin=U2-6
+Removed Pin From Net: NetName=Sensor_3_pwr Pin=U2-A2
+Removed Pin From Net: NetName=Sensor_3_ADC Pin=U2-A3
+Removed Pin From Net: NetName=Sensor_4_ADC Pin=U2-A4
+Removed Pin From Net: NetName=Sensor_1_pwr Pin=U2-Z3
+Removed Pin From Net: NetName=Sensor_4_pwr Pin=U2-Z4
+Removed Pin From Net: NetName=Sensor_2_pwr Pin=U2-Z5

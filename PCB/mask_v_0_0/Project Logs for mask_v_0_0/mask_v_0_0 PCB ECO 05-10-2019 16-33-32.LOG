@@ -1,0 +1,2 @@
+Removed Pin From Net: NetName=Sensor_4_pwr Pin=U2-A4
+Added Pin To Net: NetName=Sensor_4_pwr Pin=U2-C4

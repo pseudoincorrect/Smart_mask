@@ -1,0 +1,7 @@
+Removed Pin From Net: NetName=+3V7_BAT Pin=S2-1
+Removed Pin From Net: NetName=+5Vprog Pin=S2-3
+Added Pin To Net: NetName=+5Vprog Pin=S2-1
+Added Pin To Net: NetName=+3V7_BAT Pin=S2-3
+Added Member To Class: ClassName=mask_v_0_0 Member=Component C5 Multilayer Ceramic Capacitor
+Added Member To Class: ClassName=mask_v_0_0 Member=Component C6 Multilayer Ceramic Capacitor
+Added Member To Class: ClassName=mask_v_0_0 Member=Component U5 TPS73033DBVR
