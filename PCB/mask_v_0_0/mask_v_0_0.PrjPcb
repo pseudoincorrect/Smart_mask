@@ -75,6 +75,22 @@ DocumentUniqueId=MGSPGVUX
 DocumentPath=Project Outputs for mask_v_0_0\Design Rule Check - mask_v_0_0.html
 DItemRevisionGUID=
 
+[Parameter1]
+Name=pageSize
+Value=A3
+
+[Parameter2]
+Name=VersionRevision
+Value=0.0
+
+[Parameter3]
+Name=Project
+Value=Smart Mask
+
+[Parameter4]
+Name=Company
+Value=HBKU
+
 [Configuration1]
 Name=Sources
 ParameterCount=0
@@ -194,7 +210,7 @@ OutputDefault20=0
 [OutputGroup2]
 Name=Simulator Outputs
 Description=
-TargetPrinter=Microsoft Print to PDF
+TargetPrinter=OneNote
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintJobKind=1|PrintWhat=1
 
 [OutputGroup3]
