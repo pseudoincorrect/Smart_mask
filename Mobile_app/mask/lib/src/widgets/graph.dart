@@ -28,6 +28,8 @@ import 'dart:math';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 
+import '../data_processing/sensors_data/time_series.dart';
+
 class TimeSeriesLineAnnotationChart extends StatelessWidget {
   final List<charts.Series> seriesList;
   final bool animate;
@@ -106,12 +108,4 @@ class TimeSeriesLineAnnotationChart extends StatelessWidget {
       )
     ];
   }
-}
-
-/// Sample time series data type.
-class TimeSeriesSales {
-  final DateTime time;
-  final int sales;
-
-  TimeSeriesSales(this.time, this.sales);
 }
