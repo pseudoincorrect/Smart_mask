@@ -40,15 +40,15 @@ class TimeSeriesLineAnnotationChart extends StatelessWidget {
   factory TimeSeriesLineAnnotationChart.withSampleData() {
     return new TimeSeriesLineAnnotationChart(
       _createSampleData(),
-      // Disable animations for image tests.
+// Disable animations for image tests.
       animate: false,
     );
   }
 
-  // EXCLUDE_FROM_GALLERY_DOCS_START
-  // This section is excluded from being copied to the gallery.
-  // It is used for creating random series data to demonstrate animation in
-  // the example app only.
+// EXCLUDE_FROM_GALLERY_DOCS_START
+// This section is excluded from being copied to the gallery.
+// It is used for creating random series data to demonstrate animation in
+// the example app only.
   factory TimeSeriesLineAnnotationChart.withRandomData() {
     return new TimeSeriesLineAnnotationChart(_createRandomData());
   }
@@ -74,18 +74,22 @@ class TimeSeriesLineAnnotationChart extends StatelessWidget {
     ];
   }
 
-  // EXCLUDE_FROM_GALLERY_DOCS_END
+// EXCLUDE_FROM_GALLERY_DOCS_END
 
   @override
   Widget build(BuildContext context) {
     return new charts.TimeSeriesChart(seriesList, animate: animate, behaviors: [
       new charts.RangeAnnotation([
         new charts.LineAnnotationSegment(
-            new DateTime(2017, 10, 4), charts.RangeAnnotationAxisType.domain,
-            startLabel: 'Oct 4'),
+          new DateTime(2017, 10, 4),
+          charts.RangeAnnotationAxisType.domain,
+          startLabel: 'Oct 4',
+        ),
         new charts.LineAnnotationSegment(
-            new DateTime(2017, 10, 15), charts.RangeAnnotationAxisType.domain,
-            endLabel: 'Oct 15'),
+          new DateTime(2017, 10, 15),
+          charts.RangeAnnotationAxisType.domain,
+          endLabel: 'Oct 15',
+        ),
       ]),
     ]);
   }
