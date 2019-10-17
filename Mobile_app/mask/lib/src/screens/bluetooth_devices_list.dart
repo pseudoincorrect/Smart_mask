@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 Widget bluetoothDevicesList() {
   return Scaffold(
     appBar: AppBar(
-      title: const Text("graphs"),
+      title: const Text("Bluetooth"),
     ),
     body: Column(
       children: <Widget>[

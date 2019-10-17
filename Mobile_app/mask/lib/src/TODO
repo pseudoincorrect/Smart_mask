@@ -5,8 +5,6 @@ set up bluetooth device list
 refresh with new data detection
 display on multiple graph
 display data on a graph
-recover and print data with a button
-add a timer event to store data at regular interval
-store multiple series
+[DONE] recover and print data with a button
 [DONE] set up a SQFLite database and store a time series
 

@@ -1,7 +1,13 @@
 /// Sample time series data type.
-class TimeSeriesSales {
+class TimeSeriesSensor {
   final DateTime time;
-  final int sales;
+  final int value;
 
-  TimeSeriesSales(this.time, this.sales);
+  TimeSeriesSensor(this.time, this.value);
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return 'time = ${this.time}, value = ${this.value}';
+  }
 }

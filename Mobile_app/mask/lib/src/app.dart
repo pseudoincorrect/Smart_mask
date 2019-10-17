@@ -19,12 +19,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: "Smart Mask",
         theme: getTheme(),
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text("Smart Mask title"),
-          ),
-          body: Center(child: Home()),
-        ),
+        home: Home(),
       ),
     );
   }
