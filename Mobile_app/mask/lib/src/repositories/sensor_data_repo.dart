@@ -7,7 +7,9 @@ class SensorDataRepository {
   Future insertSensorData(SensorData sensorData) =>
       sensorDataAccess.createSensorData(sensorData);
 
+  // TODO: implement get sensor per sensor per interval
   Future getAllSensorData() => sensorDataAccess.getSensorData();
 
+  // TODO: implement delete before timestamp
   Future deleteAllSensorData() => sensorDataAccess.deleteAllSensorData();
 }
