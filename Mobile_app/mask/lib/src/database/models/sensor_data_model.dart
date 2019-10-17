@@ -18,4 +18,10 @@ class SensorData {
         "timeStamp": this.timeStamp,
         "value": this.value,
       };
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return 'id = ${this.id}, sensorName = ${this.sensorName}, timeStamp = ${this.timeStamp}, value = ${this.value}';
+  }
 }

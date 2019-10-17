@@ -1,21 +1,12 @@
-set up a SQFLite database and store a time series
-
-store multiple series
-
-add a timer event to store data at regular interval
-
-recover and print data with a button
-
-display data on a graph
-
-display on multiple graph
-
-refresh with new data detection
-
-set up bluetooth device list
-
-set up pairing for a particular device
-
-receive and print bluetooth data from NRF
-
 push data to sqflite database
+receive and print bluetooth data from NRF
+set up pairing for a particular device
+set up bluetooth device list
+refresh with new data detection
+display on multiple graph
+display data on a graph
+recover and print data with a button
+add a timer event to store data at regular interval
+store multiple series
+[DONE] set up a SQFLite database and store a time series
+

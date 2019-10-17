@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mask/src/blocs/sensors_data/sensors_data_bloc.dart';
+import 'package:mask/src/blocs/sensors_data/sensors_data_provider.dart';
 import './screens/home.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -12,10 +12,20 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
 
-    return MaterialApp(
-      title: "Smart Mask",
-      theme: getTheme(),
-      home: Home(),
+    final sensorDataBloc = SensorsDataBloc();
+
+    return SensorsDataProvider(
+      bloc: sensorDataBloc,
+      child: MaterialApp(
+        title: "Smart Mask",
+        theme: getTheme(),
+        home: Scaffold(
+          appBar: AppBar(
+            title: Text("Smart Mask title"),
+          ),
+          body: Center(child: Home()),
+        ),
+      ),
     );
   }
 

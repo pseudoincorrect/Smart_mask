@@ -13,6 +13,10 @@ class SensorDataAccess {
 
   Future<List<SensorData>> getSensorData() async {
     final db = await dbProvider.database;
+
+    print("DB DUMP");
+    print(await db.rawQuery("SELECT * from $sensorDataTABLE"));
+
     List<Map<String, dynamic>> result;
     result = await db.rawQuery('SELECT * FROM $sensorDataTABLE');
 
@@ -23,7 +27,7 @@ class SensorDataAccess {
 
   Future<int> deleteAllSensorData() async {
     final db = await dbProvider.database;
-    var result = db.delete(sensorDataTABLE);
+    var result = await db.rawDelete("DELETE FROM $sensorDataTABLE");
     return result;
   }
 }
