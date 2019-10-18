@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mask/src/blocs/sensors_data/sensors_data_provider.dart';
 import 'package:mask/src/database/models/sensor_data_model.dart';
@@ -29,12 +29,12 @@ class _DbControlButtonsState extends State<DbControlButtons> {
           child: Text("Insert Data"),
         ),
         FlatButton(
-          onPressed: () => refreshDataButton(context),
-          child: Text("Display Data"),
-        ),
-        FlatButton(
           onPressed: () => deleteDataButton(context),
           child: Text("Delete Data"),
+        ),
+        FlatButton(
+          onPressed: () => customQueryButton(context),
+          child: Text("Custom Query"),
         ),
         StreamBuilder<List<SensorData>>(
           stream: sensorDataBloc.sensorData, // a Stream<int> or null
@@ -42,16 +42,11 @@ class _DbControlButtonsState extends State<DbControlButtons> {
               (BuildContext context, AsyncSnapshot<List<SensorData>> snapshot) {
             if (snapshot.hasError) return Text('Error: ${snapshot.error}');
             switch (snapshot.connectionState) {
-              case ConnectionState.none:
-                return Text('Select lot');
-              case ConnectionState.waiting:
-                return Text('Press Refresh...');
               case ConnectionState.active:
                 return Text('${snapshot.data}');
-              case ConnectionState.done:
-                return Text('${snapshot.data} (closed)');
+              default:
+                return Text('');
             }
-            return null; // unreachable
           },
         )
       ],
@@ -60,35 +55,20 @@ class _DbControlButtonsState extends State<DbControlButtons> {
 
   void insertDataButton(BuildContext context) {
     insertRandomData();
-    print("generate random data");
-  }
-
-  void refreshDataButton(BuildContext context) async {
-    print("display data");
-    List<SensorData> dataArray;
-    await sensorDataBloc.getSensorData();
   }
 
   void insertRandomData() {
     var rng = Random();
-    var id = rng.nextInt(1000);
+    var id = rng.nextInt(1000000);
     var value = rng.nextInt(100);
     var timestamp = DateTime.now().millisecondsSinceEpoch;
     Sensor sensorName;
 
-    switch (rng.nextInt(2)) {
-      case 0:
-        sensorName = Sensor.temperature;
-        break;
-      case 1:
-        sensorName = Sensor.humidity;
-        break;
-      case 2:
-        sensorName = Sensor.acetone;
-        break;
-      default:
-        return;
-    }
+    int rand = rng.nextInt(3);
+    print(rand);
+    sensorName = rand == 0
+        ? Sensor.temperature
+        : rand == 1 ? Sensor.humidity : Sensor.acetone;
 
     SensorData sensorData = SensorData(
       value: value,
@@ -96,12 +76,15 @@ class _DbControlButtonsState extends State<DbControlButtons> {
       sensorName: sensorName,
       timeStamp: timestamp,
     );
+
     sensorDataBloc.addSensorData(sensorData);
-    print(sensorData.toString());
   }
 
   void deleteDataButton(BuildContext context) {
     sensorDataBloc.deleteAllSensorData();
-    print("generate random data");
+  }
+
+  void customQueryButton(BuildContext context) async {
+    await sensorDataBloc.getSensorData(sensors: [Sensor.temperature]);
   }
 }

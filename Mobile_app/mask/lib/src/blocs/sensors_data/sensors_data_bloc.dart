@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:mask/src/widgets/graph/time_series.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:mask/src/database/models/sensor_data_model.dart';
@@ -20,7 +19,7 @@ class SensorsDataBloc {
 
   addSensorData(SensorData sensorData) async {
     await _sensorDataRepo.insertSensorData(sensorData);
-    getSensorData();
+    await getSensorData();
   }
 
   deleteAllSensorData() async {

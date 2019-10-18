@@ -8,7 +8,7 @@ import 'package:mask/src/widgets/graph/line_graph.dart';
 import 'package:mask/src/database/models/sensor_data_model.dart';
 import 'package:mask/src/widgets/navigation_buttons.dart';
 
-final num graphsHeight = 600.0;
+final num graphsHeight = 400.0;
 
 Widget graphs() {
   return Scaffold(
@@ -17,11 +17,11 @@ Widget graphs() {
     ),
     body: ListView(
       children: <Widget>[
+        NavigationButtons(),
         SizedBox(
           height: graphsHeight,
           child: RefreshingGraph(),
         ),
-        NavigationButtons(),
         DbControlButtons(),
       ],
     ),
@@ -59,9 +59,10 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
                   return Text('ConnectionWaiting');
                 case ConnectionState.active:
                   return SizedBox(
+                    // TODO: change 0.5 magic number..
                     height: graphsHeight / (Sensor.values.length + 0.5),
                     child: LineChart.withSampleData(
-                      _parseSensorData(snapshot.data),
+                      _parseSensorData(snapshot.data, Sensor.values[index]),
                     ),
                   );
                 case ConnectionState.done:
@@ -75,33 +76,14 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
     );
   }
 
-//  @override
-//  Widget build(BuildContext context) {
-//    sensorDataBloc = SensorsDataProvider.of(context);
-//    sensorDataBloc.getSensorData();
-//    return StreamBuilder(
-//      stream: sensorDataBloc.sensorData,
-//      builder:
-//          (BuildContext context, AsyncSnapshot<List<SensorData>> snapshot) {
-//        if (snapshot.hasError) return Text('Empty');
-//        switch (snapshot.connectionState) {
-//          case ConnectionState.none:
-//            return Text('ConnectionNone');
-//          case ConnectionState.waiting:
-//            return Text('ConnectionWaiting');
-//          case ConnectionState.active:
-//            return LineChart.withSampleData(_parseSensorData(snapshot.data));
-//          case ConnectionState.done:
-//            return Text('ConnectionDone');
-//        }
-//        return null; // unreachable}, ),;
-//      },
-//    );
-//  }
-
-  List<TimeSeriesSensor> _parseSensorData(List<SensorData> sensorData) {
+  List<TimeSeriesSensor> _parseSensorData(
+      List<SensorData> sensorData, Sensor sensor) {
     var timeSeries = List<TimeSeriesSensor>();
-    for (var data in sensorData) {
+
+    List<SensorData> namedSensorData =
+        sensorData.where((element) => element.sensorName == sensor).toList();
+
+    for (var data in namedSensorData) {
       var dataPoint = TimeSeriesSensor(
           DateTime.fromMillisecondsSinceEpoch(data.timeStamp), data.value);
       if (dataPoint != null) {
