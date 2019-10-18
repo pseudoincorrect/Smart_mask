@@ -16,7 +16,7 @@ Widget graphs() {
       children: <Widget>[
         SizedBox(
           height: 200.0,
-          child: TimeSeriesLineAnnotationChart.withRandomData(),
+          child: LineChart.withRandomData(),
         ),
         SizedBox(
           height: 200.0,
@@ -51,9 +51,8 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
               return Text('ConnectionWaiting');
             case ConnectionState.active:
 //              _parseSensorData(snapshot.data);
-//              return TimeSeriesLineAnnotationChart.withRandomData();
-              return TimeSeriesLineAnnotationChart.withSampleData(
-                  _parseSensorData(snapshot.data));
+//              return LineChart.withRandomData();
+              return LineChart.withSampleData(_parseSensorData(snapshot.data));
             case ConnectionState.done:
               return Text('ConnectionDone');
           }
@@ -64,13 +63,16 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
   List<TimeSeriesSensor> _parseSensorData(List<SensorData> sensorData) {
     var timeSeries = List<TimeSeriesSensor>();
     for (var data in sensorData) {
+      print("millisec : " +
+          DateTime.fromMillisecondsSinceEpoch(data.timeStamp).toString());
       var dataPoint = TimeSeriesSensor(
           DateTime.fromMillisecondsSinceEpoch(data.timeStamp), data.value);
       if (dataPoint != null) {
         timeSeries.add(dataPoint);
       }
-      print(dataPoint.toString());
+//      print(dataPoint.toString());
     }
+    timeSeries.sort((a, b) => (a.time.compareTo(b.time)));
     return timeSeries;
   }
 }
