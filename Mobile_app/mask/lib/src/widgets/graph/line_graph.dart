@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 
-import '../../data_processing/sensors_data/time_series.dart';
+import 'time_series.dart';
 
 class LineChart extends StatelessWidget {
   final List<charts.Series> seriesList;

@@ -1,10 +1,20 @@
-push data to sqflite database
+TO DO
+delete data db older than x time per sensor
+get data per time interval
+get data per time interval per sensor
+display on multiple graph
+send bluetooth data to database
 receive and print bluetooth data from NRF
 set up pairing for a particular device
 set up bluetooth device list
-refresh with new data detection
-display on multiple graph
-display data on a graph
-[DONE] recover and print data with a button
-[DONE] set up a SQFLite database and store a time series
+
+IN PROCESS
+get data db per sensor
+
+DONE
+16/10/2019; DB; refresh with new data detection
+16/10/2019; DB; push data to sqflite database
+16/10/2019; GRAPH; display data on a graph
+16/10/2019; DB; recover and print data with a button
+16/10/2019; DB; set up a SQFLite database and store a time series
 

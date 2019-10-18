@@ -3,21 +3,19 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mask/src/blocs/sensors_data/sensors_data_provider.dart';
 import 'package:mask/src/database/models/sensor_data_model.dart';
-
-import '../screens/bluetooth_devices_list.dart';
-import '../screens/graphs.dart';
+import 'package:mask/src/widgets/graph/time_series.dart';
 import '../blocs/sensors_data/sensors_data_bloc.dart';
 
-class TestButtons extends StatefulWidget {
-  TestButtons({Key key}) : super(key: key);
+class DbControlButtons extends StatefulWidget {
+  DbControlButtons({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _TestButtonsState();
+    return _DbControlButtonsState();
   }
 }
 
-class _TestButtonsState extends State<TestButtons> {
+class _DbControlButtonsState extends State<DbControlButtons> {
   SensorsDataBloc sensorDataBloc;
 
   @override
@@ -26,14 +24,6 @@ class _TestButtonsState extends State<TestButtons> {
 
     return Column(
       children: <Widget>[
-        FlatButton(
-          onPressed: () => connectButton(context),
-          child: Text("Connect"),
-        ),
-        FlatButton(
-          onPressed: () => graphButton(context),
-          child: Text("Graphs"),
-        ),
         FlatButton(
           onPressed: () => insertDataButton(context),
           child: Text("Insert Data"),
@@ -57,30 +47,14 @@ class _TestButtonsState extends State<TestButtons> {
               case ConnectionState.waiting:
                 return Text('Press Refresh...');
               case ConnectionState.active:
-                return Text('\$${snapshot.data}');
+                return Text('${snapshot.data}');
               case ConnectionState.done:
-                return Text('\$${snapshot.data} (closed)');
+                return Text('${snapshot.data} (closed)');
             }
             return null; // unreachable
           },
         )
       ],
-    );
-  }
-
-  void connectButton(BuildContext context) {
-    print("Go to Connect screen");
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => bluetoothDevicesList()),
-    );
-  }
-
-  void graphButton(BuildContext context) {
-    print("Go to Graphs screen");
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => graphs()),
     );
   }
 
@@ -92,7 +66,7 @@ class _TestButtonsState extends State<TestButtons> {
   void refreshDataButton(BuildContext context) async {
     print("display data");
     List<SensorData> dataArray;
-    await sensorDataBloc.getAllSensorData();
+    await sensorDataBloc.getSensorData();
   }
 
   void insertRandomData() {
@@ -100,7 +74,22 @@ class _TestButtonsState extends State<TestButtons> {
     var id = rng.nextInt(1000);
     var value = rng.nextInt(100);
     var timestamp = DateTime.now().millisecondsSinceEpoch;
-    String sensorName = 'Temperature';
+    Sensor sensorName;
+
+    switch (rng.nextInt(2)) {
+      case 0:
+        sensorName = Sensor.temperature;
+        break;
+      case 1:
+        sensorName = Sensor.humidity;
+        break;
+      case 2:
+        sensorName = Sensor.acetone;
+        break;
+      default:
+        return;
+    }
+
     SensorData sensorData = SensorData(
       value: value,
       id: id,

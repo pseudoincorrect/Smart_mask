@@ -1,6 +1,8 @@
+import 'package:mask/src/widgets/graph/time_series.dart';
+
 class SensorData {
   int id;
-  String sensorName;
+  Sensor sensorName;
   int timeStamp;
   int value;
 
@@ -8,20 +10,19 @@ class SensorData {
 
   factory SensorData.fromDatabaseJson(Map<String, dynamic> data) => SensorData(
       id: data['id'],
-      sensorName: data['sensorName'],
+      sensorName: sensorStringToEnum(data['sensorName']),
       timeStamp: data['timeStamp'],
       value: data['value']);
 
   Map<String, dynamic> toDatabaseJson() => {
         "id": this.id,
-        "sensorName": this.sensorName,
+        "sensorName": this.sensorName.toString(),
         "timeStamp": this.timeStamp,
         "value": this.value,
       };
 
   @override
   String toString() {
-    // TODO: implement toString
-    return 'id = ${this.id}, sensorName = ${this.sensorName}, timeStamp = ${this.timeStamp}, value = ${this.value}';
+    return 'id = ${this.id}, sensorName = ${this.sensorName.toString()}, timeStamp = ${this.timeStamp}, value = ${this.value}';
   }
 }

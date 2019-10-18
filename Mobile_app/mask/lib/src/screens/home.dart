@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mask/src/widgets/db_control_buttons.dart';
+import 'package:mask/src/widgets/navigation_buttons.dart';
 
 class Home extends StatelessWidget {
   @override
@@ -8,7 +8,12 @@ class Home extends StatelessWidget {
       appBar: AppBar(
         title: Text("TestButtons"),
       ),
-      body: Center(child: TestButtons()),
+      body: Column(
+        children: <Widget>[
+          Text("HOME"),
+          NavigationButtons(),
+        ],
+      ),
     );
   }
 }
