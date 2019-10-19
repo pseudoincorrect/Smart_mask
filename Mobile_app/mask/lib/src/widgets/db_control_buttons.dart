@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mask/src/blocs/sensors_data/sensors_data_provider.dart';
 import 'package:mask/src/database/models/sensor_data_model.dart';
@@ -36,19 +35,6 @@ class _DbControlButtonsState extends State<DbControlButtons> {
           onPressed: () => customQueryButton(context),
           child: Text("Custom Query"),
         ),
-        StreamBuilder<List<SensorData>>(
-          stream: sensorDataBloc.sensorData, // a Stream<int> or null
-          builder:
-              (BuildContext context, AsyncSnapshot<List<SensorData>> snapshot) {
-            if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-            switch (snapshot.connectionState) {
-              case ConnectionState.active:
-                return Text('${snapshot.data}');
-              default:
-                return Text('');
-            }
-          },
-        )
       ],
     );
   }
@@ -65,7 +51,6 @@ class _DbControlButtonsState extends State<DbControlButtons> {
     Sensor sensorName;
 
     int rand = rng.nextInt(3);
-    print(rand);
     sensorName = rand == 0
         ? Sensor.temperature
         : rand == 1 ? Sensor.humidity : Sensor.acetone;
@@ -85,6 +70,9 @@ class _DbControlButtonsState extends State<DbControlButtons> {
   }
 
   void customQueryButton(BuildContext context) async {
-    await sensorDataBloc.getSensorData(sensors: [Sensor.temperature]);
+    await sensorDataBloc.getSensorData(Sensor.temperature, interval: [
+      DateTime.now().subtract(Duration(seconds: 10)),
+      DateTime.now()
+    ]);
   }
 }

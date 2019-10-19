@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:mask/src/blocs/sensors_data/sensors_data_bloc.dart';
@@ -9,6 +11,7 @@ import 'package:mask/src/database/models/sensor_data_model.dart';
 import 'package:mask/src/widgets/navigation_buttons.dart';
 
 final num graphsHeight = 400.0;
+Duration timeInterval = Duration(seconds: 10);
 
 Widget graphs() {
   return Scaffold(
@@ -35,20 +38,24 @@ class RefreshingGraph extends StatefulWidget {
 
 class _RefreshingGraphState extends State<RefreshingGraph> {
   SensorsDataBloc sensorDataBloc;
+  List<Timer> graphUpdateTimers = List<Timer>();
 
   @override
   Widget build(BuildContext context) {
     sensorDataBloc = SensorsDataProvider.of(context);
-    sensorDataBloc.getSensorData();
 
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       itemCount: Sensor.values.length,
       itemBuilder: (context, index) {
+        Sensor sensor = Sensor.values[index];
+        sensorDataBloc.getSensorData(sensor);
+        graphUpdateTimers.add(startTimeout(Duration(seconds: 3), sensor));
+
         return ListTile(
-          subtitle: Text(Sensor.values[index].toString()),
+          subtitle: Text(sensor.toString()),
           title: StreamBuilder(
-            stream: sensorDataBloc.sensorData,
+            stream: sensorDataBloc.getStream(sensor),
             builder: (BuildContext context,
                 AsyncSnapshot<List<SensorData>> snapshot) {
               if (snapshot.hasError) return Text('Empty');
@@ -62,7 +69,7 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
                     // TODO: change 0.5 magic number..
                     height: graphsHeight / (Sensor.values.length + 0.5),
                     child: LineChart.withSampleData(
-                      _parseSensorData(snapshot.data, Sensor.values[index]),
+                      _parseSensorData(snapshot.data, sensor),
                     ),
                   );
                 case ConnectionState.done:
@@ -92,5 +99,22 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
     }
     timeSeries.sort((a, b) => (a.time.compareTo(b.time)));
     return timeSeries;
+  }
+
+  startTimeout(Duration duration, Sensor sensor) {
+    return new Timer.periodic(duration, (Timer t) => handleTimeout(sensor));
+  }
+
+  void handleTimeout(Sensor sensor) {
+    sensorDataBloc.getSensorData(sensor,
+        interval: [DateTime.now().subtract(timeInterval), DateTime.now()]);
+  }
+
+  @override
+  void dispose() {
+    for (var t in graphUpdateTimers) {
+      t?.cancel();
+    }
+    super.dispose();
   }
 }

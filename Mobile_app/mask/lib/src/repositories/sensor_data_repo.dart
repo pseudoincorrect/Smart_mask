@@ -10,9 +10,9 @@ class SensorDataRepository {
 
   Future deleteAllSensorData() => sensorDataAccess.deleteAllSensorData();
 
-  Future getSensorData({List<Sensor> sensors, List<DateTime> interval}) =>
+  Future getSensorData(Sensor sensor, {List<DateTime> interval}) =>
       sensorDataAccess.getSensorData(
-        sensors: sensors,
+        sensor,
         interval: interval,
       );
 }

@@ -25,21 +25,21 @@ class NavigationButtons extends StatelessWidget {
   }
 
   void connectButton(BuildContext context) {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => bluetoothDevicesList()),
     );
   }
 
   void graphButton(BuildContext context) {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => graphs()),
     );
   }
 
   void homeButton(BuildContext context) {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => Home()),
     );

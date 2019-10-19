@@ -1,17 +1,19 @@
 TO DO
 delete data db older than x time per sensor
-get data per time interval
 get data per time interval per sensor
 send bluetooth data to database
 receive and print bluetooth data from NRF
 set up pairing for a particular device
 set up bluetooth device list
+refactor sensor enum
 
 IN PROCESS
-get data db per sensor
+get data per time interval
 
 DONE
-18/10/2019display on multiple graph
+19/10/2019; GRAPH; graphs individually update
+19/10/2019; DB; get data db per sensor
+18/10/2019; GRAPH; display on multiple graph
 17/10/2019; GRAPH; display data on a graph
 17/10/2019; DB; refresh with new data detection
 16/10/2019; DB; push data to sqflite database
