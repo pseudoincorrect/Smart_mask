@@ -22,8 +22,9 @@ class SensorDataAccess {
 
     if (interval != null) {
       query += ' AND ';
-      query += ' timeStamp > ${interval[0].millisecondsSinceEpoch} '
-          'AND timeStamp < ${interval[1].millisecondsSinceEpoch}';
+      final int dateLowMs = interval[0].millisecondsSinceEpoch;
+      final int dateHighMs = interval[1].millisecondsSinceEpoch;
+      query += ' timeStamp > $dateLowMs AND timeStamp < $dateHighMs';
     }
 
     result = await db.rawQuery(query);
@@ -36,6 +37,14 @@ class SensorDataAccess {
   Future<int> deleteAllSensorData() async {
     final db = await dbProvider.database;
     var result = await db.rawDelete('DELETE FROM $sensorDataTABLE');
+    return result;
+  }
+
+  Future<int> deleteSensorDataOlderThan(DateTime date) async {
+    final db = await dbProvider.database;
+    final int dateMs = date.millisecondsSinceEpoch;
+    var result = await db
+        .rawDelete('DELETE FROM $sensorDataTABLE WHERE timeStamp < $dateMs');
     return result;
   }
 }

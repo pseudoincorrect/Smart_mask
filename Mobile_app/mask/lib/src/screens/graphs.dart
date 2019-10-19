@@ -10,8 +10,9 @@ import 'package:mask/src/widgets/graph/line_graph.dart';
 import 'package:mask/src/database/models/sensor_data_model.dart';
 import 'package:mask/src/widgets/navigation_buttons.dart';
 
-final num graphsHeight = 400.0;
-Duration timeInterval = Duration(seconds: 10);
+final num graphsHeight = 450.0;
+Duration windowInterval = Duration(seconds: 10);
+Duration refreshInterval = Duration(seconds: 1);
 
 Widget graphs() {
   return Scaffold(
@@ -49,11 +50,13 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
       itemCount: Sensor.values.length,
       itemBuilder: (context, index) {
         Sensor sensor = Sensor.values[index];
-        sensorDataBloc.getSensorData(sensor);
-        graphUpdateTimers.add(startTimeout(Duration(seconds: 3), sensor));
+        graphUpdateTimers.add(startTimeout(refreshInterval, sensor));
 
         return ListTile(
-          subtitle: Text(sensor.toString()),
+          subtitle: Row(children: [
+            Text(sensor.toString()),
+            FlatButton(onPressed: navigateSensorDetails, child: Text("Details"))
+          ]),
           title: StreamBuilder(
             stream: sensorDataBloc.getStream(sensor),
             builder: (BuildContext context,
@@ -67,7 +70,7 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
                 case ConnectionState.active:
                   return SizedBox(
                     // TODO: change 0.5 magic number..
-                    height: graphsHeight / (Sensor.values.length + 0.5),
+                    height: graphsHeight / (Sensor.values.length + 2),
                     child: LineChart.withSampleData(
                       _parseSensorData(snapshot.data, sensor),
                     ),
@@ -107,7 +110,11 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
 
   void handleTimeout(Sensor sensor) {
     sensorDataBloc.getSensorData(sensor,
-        interval: [DateTime.now().subtract(timeInterval), DateTime.now()]);
+        interval: [DateTime.now().subtract(windowInterval), DateTime.now()]);
+  }
+
+  void navigateSensorDetails() {
+    print("navigateSensorDetails");
   }
 
   @override

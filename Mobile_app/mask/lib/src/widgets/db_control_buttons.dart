@@ -31,10 +31,10 @@ class _DbControlButtonsState extends State<DbControlButtons> {
           onPressed: () => deleteDataButton(context),
           child: Text("Delete Data"),
         ),
-        FlatButton(
-          onPressed: () => customQueryButton(context),
-          child: Text("Custom Query"),
-        ),
+//        FlatButton(
+//          onPressed: () => customQueryButton(context),
+//          child: Text("Custom Query"),
+//        ),
       ],
     );
   }
@@ -69,10 +69,10 @@ class _DbControlButtonsState extends State<DbControlButtons> {
     sensorDataBloc.deleteAllSensorData();
   }
 
-  void customQueryButton(BuildContext context) async {
-    await sensorDataBloc.getSensorData(Sensor.temperature, interval: [
-      DateTime.now().subtract(Duration(seconds: 10)),
-      DateTime.now()
-    ]);
-  }
+//  void customQueryButton(BuildContext context) async {
+//    await sensorDataBloc.getSensorData(Sensor.temperature, interval: [
+//      DateTime.now().subtract(Duration(seconds: 10)),
+//      DateTime.now()
+//    ]);
+//  }
 }
