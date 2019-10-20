@@ -1,0 +1,15 @@
+Install Java
+download SDK nrf
+Restart computer on windows
+(for some reasosn I am unable to refresh the "PATH" env after modifying it or installing a software that modify it...)
+
+run in terminal:
+    java -jar {path to java sdk config tool} {path to sdk_config.h}
+
+example:
+    java -jar C:\Users\Max\Programming\SDKs\nordic\nRF5_SDK_15_3_0\external_tools\cmsisconfig\CMSIS_Configuration_Wizard.jar C:\Users\Max\Documents\Git\smart_mask\Embedded_system\ble_mask\src\config\sdk_config.h
+
+(command splited for clarity)
+    java -jar 
+    C:\Users\Max\Programming\SDKs\nordic\nRF5_SDK_15_3_0\external_tools\cmsisconfig\CMSIS_Configuration_Wizard.jar 
+    C:\Users\Max\Documents\Git\smart_mask\Embedded_system\ble_mask\src\config\sdk_config.h
