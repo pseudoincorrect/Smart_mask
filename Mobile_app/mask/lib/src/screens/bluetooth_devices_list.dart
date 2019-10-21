@@ -6,57 +6,57 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mask/src/widgets/navigation_buttons.dart';
 import '../widgets/flutter_blue_widgets.dart';
 
+//Widget bluetoothDevicesList() {
+//  return Scaffold(
+//    appBar: AppBar(
+//      title: const Text("Bluetooth"),
+//    ),
+//    body: Column(
+//      children: <Widget>[
+//        NavigationButtons(),
+//        Text("Device 1"),
+//        Text("Device 2"),
+//        Text("Device 3"),
+//      ],
+//    ),
+//  );
+//}
+
 Widget bluetoothDevicesList() {
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text("Bluetooth"),
-    ),
-    body: Column(
-      children: <Widget>[
-        NavigationButtons(),
-        Text("Device 1"),
-        Text("Device 2"),
-        Text("Device 3"),
-      ],
-    ),
-  );
+  return StreamBuilder<BluetoothState>(
+    stream: FlutterBlue.instance.state,
+    initialData: BluetoothState.unknown,
+    builder: (c, snapshot) {
+      final state = snapshot.data;
+      if (state == BluetoothState.on) {
+        return FindDevicesScreen();
+      }
+      return BluetoothOffScreen(state: state);
+    });
 }
 
-//Widget bluetoothDevicesList() {
-//  return StreamBuilder<BluetoothState>(
-//      stream: FlutterBlue.instance.state,
-//      initialData: BluetoothState.unknown,
-//      builder: (c, snapshot) {
-//        final state = snapshot.data;
-//        if (state == BluetoothState.on) {
-//          return FindDevicesScreen();
-//        }
-//        return BluetoothOffScreen(state: state);
-//      });
-//}
+void main() {
+  runApp(FlutterBlueApp());
+}
 
-//void main() {
-//  runApp(FlutterBlueApp());
-//}
-//
-//class FlutterBlueApp extends StatelessWidget {
-//  @override
-//  Widget build(BuildContext context) {
-//    return MaterialApp(
-//      color: Colors.lightBlue,
-//        home: StreamBuilder<BluetoothState>(
-//            stream: FlutterBlue.instance.state,
-//            initialData: BluetoothState.unknown,
-//            builder: (c, snapshot) {
-//              final state = snapshot.data;
-//              if (state == BluetoothState.on) {
-//                return FindDevicesScreen();
-//              }
-//              return BluetoothOffScreen(state: state);
-//            }),
-//    );
-//  }
-//}
+class FlutterBlueApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      color: Colors.lightBlue,
+      home: StreamBuilder<BluetoothState>(
+        stream: FlutterBlue.instance.state,
+        initialData: BluetoothState.unknown,
+        builder: (c, snapshot) {
+          final state = snapshot.data;
+          if (state == BluetoothState.on) {
+            return FindDevicesScreen();
+          }
+          return BluetoothOffScreen(state: state);
+        }),
+    );
+  }
+}
 
 class BluetoothOffScreen extends StatelessWidget {
   const BluetoothOffScreen({Key key, this.state}) : super(key: key);
