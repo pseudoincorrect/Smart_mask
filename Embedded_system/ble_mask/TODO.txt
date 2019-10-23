@@ -1,0 +1,12 @@
+TO DO
+Change the metadata of the service
+integrate it to main and test it
+add 3 more characteristics, one for each sensor
+
+
+IN PROCESS
+
+
+COMPLETED
+23/10/2019; BLE; Modify it for a uint16
+23/10/2019; BLE; Create a copy of lbs service
