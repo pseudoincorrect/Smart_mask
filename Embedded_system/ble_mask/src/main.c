@@ -60,6 +60,7 @@
 #include "app_timer.h"
 #include "app_button.h"
 #include "ble_lbs.h"
+#include "ble_sms.h"
 #include "nrf_ble_gatt.h"
 #include "nrf_ble_qwr.h"
 #include "nrf_pwr_mgmt.h"
@@ -79,7 +80,7 @@
 #define LEDBUTTON_BUTTON                BSP_BUTTON_0                            
 
 /**< Name of device. Will be included in the advertising data. */
-#define DEVICE_NAME                     "Nordic_Blinky2"                         
+#define DEVICE_NAME                     "Smart_Mask"                         
 
 /**< Application's BLE observer priority. You shouldn't need to modify this value. */
 #define APP_BLE_OBSERVER_PRIO           3                                       
@@ -99,7 +100,7 @@
 /**< Slave latency. */
 #define SLAVE_LATENCY                   0                                       
 /**< Connection supervisory time-out (4 seconds). */
-#define CONN_SUP_TIMEOUT                MSEC_TO_UNITS(4000, UNIT_10_MS)         
+#define CONN_SUP_TIMEOUT MSEC_TO_UNITS(4000, UNIT_10_MS)
 
 /**< Time from initiating event (connect or start of notification) to first time 
 sd_ble_gap_conn_param_update is called (15 seconds). */

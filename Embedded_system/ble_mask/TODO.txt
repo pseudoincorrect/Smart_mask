@@ -1,0 +1,11 @@
+TO DO
+Create a copy of lbs service
+Modify it for a uint16
+Change the metadata of the service
+integrate it to main and test it
+add 3 more characteristics, one for each sensor
+
+
+IN PROCESS
+
+COMPLETED
