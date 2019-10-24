@@ -223,7 +223,10 @@ static void advertising_init(void)
     ble_advdata_t advdata;
     ble_advdata_t srdata;
 
-    ble_uuid_t adv_uuids[] = {{LBS_UUID_SERVICE, m_lbs.uuid_type}};
+    ble_uuid_t adv_uuids[] = {
+//        {LBS_UUID_SERVICE, m_lbs.uuid_type},
+        {SMS_UUID_SERVICE, m_sms.uuid_type}
+    };
 
     // Build and set advertising data.
     memset(&advdata, 0, sizeof(advdata));
@@ -295,7 +298,7 @@ static void led_write_handler(uint16_t conn_handle, ble_lbs_t * p_lbs, uint8_t l
 */
 static void output_write_handler(uint16_t conn_handle, ble_sms_t * p_sms, uint8_t output_state)
 {
-    NRF_LOG_DEBUG("output State %d", output_state);
+    NRF_LOG_INFO("output State %d", output_state);
 }
 
 /**@brief Function for initializing services that will be used by the application.
@@ -584,7 +587,7 @@ int main(void)
 {
     // Initialize.
     log_init();
-    NRF_LOG_INFO("Blinky example started.");
+    NRF_LOG_INFO("Smart Mask Started.");
     leds_init();
     timers_init();
     buttons_init();

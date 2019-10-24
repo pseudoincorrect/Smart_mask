@@ -8,6 +8,7 @@
 #include "ble.h"
 #include "ble_srv_common.h"
 #include "nrf_sdh_ble.h"
+#include "app_error.h"
 
 #define BLE_SMS_DEF(_name)          \
     static ble_sms_t _name;         \

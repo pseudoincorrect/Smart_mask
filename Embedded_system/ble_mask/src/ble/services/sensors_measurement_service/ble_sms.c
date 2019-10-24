@@ -42,18 +42,18 @@ uint32_t ble_sms_on_sensor_update(uint16_t conn_handle, ble_sms_t * p_sms, uint1
     uint16_t len = sizeof(value);
 
     memset(&params, 0, sizeof(params));
-    params.type = BLE_GATT_HVX_NOTIFICATION;
+    params.type   = BLE_GATT_HVX_NOTIFICATION;
     params.handle = p_sms->sensors_char_handles.value_handle;
     params.p_data = (uint8_t*) &value;
-    params.p_len = &len;
+    params.p_len  = &len;
 
     return sd_ble_gatts_hvx(conn_handle, &params);
 }
 
 uint32_t ble_sms_init (ble_sms_t * p_sms, const ble_sms_init_t * p_sms_init)
 {
-    uint32_t err_code;
-    ble_uuid_t ble_uuid;
+    uint32_t              err_code;
+    ble_uuid_t            ble_uuid;
     ble_add_char_params_t add_char_params;
 
     // Initialize service struct
@@ -61,37 +61,39 @@ uint32_t ble_sms_init (ble_sms_t * p_sms, const ble_sms_init_t * p_sms_init)
 
     // Add service
     ble_uuid128_t base_uuid = {SMS_UUID_BASE};
+
     err_code = sd_ble_uuid_vs_add(&base_uuid, &p_sms->uuid_type);
     VERIFY_SUCCESS(err_code);
 
     ble_uuid.type = p_sms->uuid_type;
     ble_uuid.uuid = SMS_UUID_SERVICE;
+
     err_code = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid, &p_sms->service_handle);
     VERIFY_SUCCESS(err_code);
 
     // Add sensor Characteristic
     memset(&add_char_params, 0, sizeof(add_char_params));
-    add_char_params.uuid = SMS_UUID_SENSORS_CHAR;
-    add_char_params.uuid_type = p_sms->uuid_type;
-    add_char_params.max_len = sizeof(uint16_t);
-    add_char_params.init_len = sizeof(uint16_t);
-    add_char_params.char_props.read = 1;
+    add_char_params.uuid              = SMS_UUID_SENSORS_CHAR;
+    add_char_params.uuid_type         = p_sms->uuid_type;
+    add_char_params.max_len           = sizeof(uint16_t);
+    add_char_params.init_len          = sizeof(uint16_t);
+    add_char_params.char_props.read   = 1;
     add_char_params.char_props.notify = 1;
-    add_char_params.read_access = SEC_OPEN;
-    add_char_params.write_access = SEC_OPEN;
+    add_char_params.read_access       = SEC_OPEN;
+    add_char_params.cccd_write_access = SEC_OPEN;
 
     err_code = characteristic_add( p_sms->service_handle, &add_char_params, &p_sms->sensors_char_handles);
     VERIFY_SUCCESS(err_code);
 
     memset(&add_char_params, 0, sizeof(add_char_params));
-    add_char_params.uuid = SMS_UUID_OUTPUT_CHAR;
-    add_char_params.uuid_type = p_sms->uuid_type;
-    add_char_params.max_len = sizeof(uint8_t);
-    add_char_params.init_len = sizeof(uint8_t);
-    add_char_params.char_props.read = 1;
-    add_char_params.char_props.notify = 1;
-    add_char_params.read_access = SEC_OPEN;
-    add_char_params.write_access = SEC_OPEN;
+    add_char_params.uuid              = SMS_UUID_OUTPUT_CHAR;
+    add_char_params.uuid_type         = p_sms->uuid_type;
+    add_char_params.max_len           = sizeof(uint8_t);
+    add_char_params.init_len          = sizeof(uint8_t);
+    add_char_params.char_props.read   = 1;
+    add_char_params.char_props.write  = 1;
+    add_char_params.read_access       = SEC_OPEN;
+    add_char_params.write_access      = SEC_OPEN;
 
     err_code = characteristic_add( p_sms->service_handle, &add_char_params, &p_sms->output_char_handles);
     VERIFY_SUCCESS(err_code);
