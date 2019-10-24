@@ -106,6 +106,8 @@
 // Value used as error code on stack dump, can be used to identify stack location on stack unwind
 #define DEAD_BEEF                       0xDEADBEEF                              
 
+// Sensors Measurement Service instance
+BLE_SMS_DEF(m_sms);         
 // LED Button Service instance
 BLE_LBS_DEF(m_lbs);                                                             
 // GATT module instance
@@ -301,7 +303,8 @@ static void output_write_handler(uint16_t conn_handle, ble_sms_t * p_sms, uint8_
 static void services_init(void)
 {
     ret_code_t         err_code;
-    ble_lbs_init_t     init     = {0};
+    ble_lbs_init_t     lbs_init = {0};
+    ble_sms_init_t     sms_init = {0};
     nrf_ble_qwr_init_t qwr_init = {0};
 
     // Initialize Queued Write Module.
@@ -311,9 +314,15 @@ static void services_init(void)
     APP_ERROR_CHECK(err_code);
 
     // Initialize LBS.
-    init.led_write_handler = led_write_handler;
+    lbs_init.led_write_handler = led_write_handler;
 
-    err_code = ble_lbs_init(&m_lbs, &init);
+    err_code = ble_lbs_init(&m_lbs, &lbs_init);
+    APP_ERROR_CHECK(err_code);
+
+    // Initialize SMS.
+    sms_init.output_write_handler = output_write_handler;
+
+    err_code = ble_sms_init(&m_sms, &sms_init);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -536,6 +545,8 @@ static void buttons_init(void)
 }
 
 
+/**@brief Function for initializing the Log module, either RTT or UART.
+ */
 static void log_init(void)
 {
     ret_code_t err_code = NRF_LOG_INIT(NULL);
@@ -556,7 +567,6 @@ static void power_management_init(void)
 
 
 /**@brief Function for handling the idle state (main loop).
- *
  * @details If there is no pending log operation, then sleep until next the next event occurs.
  */
 static void idle_state_handle(void)

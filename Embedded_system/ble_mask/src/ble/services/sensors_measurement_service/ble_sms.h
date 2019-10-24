@@ -10,11 +10,11 @@
 #include "nrf_sdh_ble.h"
 
 #define BLE_SMS_DEF(_name)          \
-    static ble_SMS_t _name;         \
+    static ble_sms_t _name;         \
     NRF_SDH_BLE_OBSERVER(           \
         _name##_obs,                \
-        BLE_SMS_BLE_OBSERVER_PRIO,  \
-        ble_SMS_on_ble_evt,         \
+        BLE_LBS_BLE_OBSERVER_PRIO,  \
+        ble_sms_on_ble_evt,         \
         &_name)
 
 #define SMS_UUID_BASE                                   \
@@ -31,7 +31,7 @@ typedef struct ble_sms_s ble_sms_t;
 typedef void (*ble_sms_output_write_handler_t) (
     uint16_t conn_handle, 
     ble_sms_t * p_sms, 
-    uint16_t new_value );
+    uint8_t new_value );
 
 typedef struct 
 {
@@ -60,7 +60,7 @@ struct ble_sms_s
  * @param[in] p_ble_evt  Event received from the BLE stack.
  * @param[in] p_context  Sensor Measurement Service structure.
  */
-void ble_lbs_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context);
+void ble_sms_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context);
 
 /**@brief Function for sending a sensor notification.
  *

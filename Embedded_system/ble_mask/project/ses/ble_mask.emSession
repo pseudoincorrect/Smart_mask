@@ -3,6 +3,7 @@
  <Bookmarks/>
  <Breakpoints groups="Breakpoints;V7M Exceptions" active_group="Breakpoints">
   <BreakpointListItem trigger="" line="10" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="ble_app_blinky_pca10056_s140.emProject" useHWbreakpoint="false"/>
+  <BreakpointListItem trigger="" line="319" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../src/main.c" useHWbreakpoint="false"/>
   <Exceptions set="MemManage;UsageFault_Coprocessor;UsageFault_CheckingError;UsageFault_StateError;BusFault;ExceptionEntryReturnFault;HardFault"/>
  </Breakpoints>
  <ExecutionProfileWindow/>
@@ -62,23 +63,13 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditRight" x="12" y="22" useTextEdit="1" useBinaryEdit="0" left="0" path="../../src/ble/services/sensors_measurement_service/ble_sms.c" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditRight" x="0" y="41" useTextEdit="1" useBinaryEdit="0" left="0" path="../../src/ble/services/sensors_measurement_service/ble_sms.h" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditRight" x="0" y="573" useTextEdit="1" useBinaryEdit="0" left="0" path="../../src/main.c" selected="0" top="520" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="72" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/ble/ble_services/ble_lbs/ble_lbs.c" selected="0" top="24" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="31" y="117" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/ble/ble_services/ble_lbs/ble_lbs.h" selected="0" top="90" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="14" y="39" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/boards/boards.c" selected="0" top="24" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="8" y="49" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/boards/pca10056.h" selected="0" top="28" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="32" y="18" useTextEdit="1" useBinaryEdit="0" left="0" path="ble_mask.emProject" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="16" y="39" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/boards/boards.h" selected="0" top="27" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="2" useTextEdit="1" useBinaryEdit="0" left="0" path="../../TODO.txt" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="174" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/ble/common/ble_advdata.h" selected="0" top="151" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="72" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/ble/common/ble_advdata.c" selected="0" top="42" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="846" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/softdevice/s140/headers/ble_gap.h" selected="0" top="812" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="60" y="107" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/libraries/log/nrf_log.h" selected="0" top="69" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="80" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/libraries/log/nrf_log_ctrl.h" selected="0" top="46" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="12" y="57" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/libraries/log/nrf_log_default_backends.h" selected="1" top="24" codecName="Default"/>
   <SessionOpenFile windowGroup="DockLeftTop" x="0" y="61" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/libraries/log/src/nrf_log_default_backends.c" selected="0" top="12" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="79" y="295" useTextEdit="1" useBinaryEdit="0" left="0" path="../../src/main.c" selected="0" top="293" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="14" useTextEdit="1" useBinaryEdit="0" left="0" path="../../src/ble/services/sensors_measurement_service/ble_sms.c" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="51" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/ble/nrf_ble_qwr/nrf_ble_qwr.c" selected="0" top="3" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="177" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../Programming/SDKs/nordic/nRF5_SDK_15_3_0/components/boards/boards.c" selected="0" top="130" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="38" y="37" useTextEdit="1" useBinaryEdit="0" left="0" path="../../src/ble/services/sensors_measurement_service/ble_sms.h" selected="0" top="19" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="15" useTextEdit="1" useBinaryEdit="0" left="0" path="../../TODO.txt" selected="1" top="0" codecName="Default"/>
  </Files>
- <ARMCrossStudioWindow activeProject="ble_mask" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="desktop_max" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="" debugSearchPath="" autoConnectCapabilities="3711"/>
+ <ARMCrossStudioWindow activeProject="ble_mask" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="laptop_max" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="" debugSearchPath="" autoConnectCapabilities="3199"/>
 </session>

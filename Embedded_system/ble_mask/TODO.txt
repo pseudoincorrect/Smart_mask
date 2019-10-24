@@ -2,7 +2,10 @@ TO DO
 Change the metadata of the service
 integrate it to main and test it
 add 3 more characteristics, one for each sensor
-
+use a push button to generate new sensor values
+use a time to generate new sensor values 
+set up ADC
+set up RGB led in board support
 
 IN PROCESS
 
