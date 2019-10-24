@@ -587,7 +587,6 @@ int main(void)
 {
     // Initialize.
     log_init();
-    NRF_LOG_INFO("Smart Mask Started.");
     leds_init();
     timers_init();
     buttons_init();
@@ -598,6 +597,7 @@ int main(void)
     services_init();
     advertising_init();
     conn_params_init();
+    NRF_LOG_INFO("Smart Mask Started.");
 
     // Start execution.
     advertising_start();
