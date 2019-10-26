@@ -16,3 +16,9 @@ example:
     java -jar 
     C:\Users\Max\Programming\SDKs\nordic\nRF5_SDK_15_3_0\external_tools\cmsisconfig\CMSIS_Configuration_Wizard.jar 
     C:\Users\Max\Documents\Git\smart_mask\Embedded_system\ble_mask\src\config\sdk_config.h
+
+OR
+
+Add nRF5_SDK_15_3_0\external_tools\cmsisconfig\  folder to the project and link it to ble_mask.emProject 
+since the macro in the project file cannot include another macro
+ie: macros="CMSIS_CONFIG_TOOL=../../external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar"
