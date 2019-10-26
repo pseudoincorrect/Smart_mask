@@ -25,6 +25,7 @@
 // Soft Device
 #include "nrf_sdh.h"
 #include "nrf_sdh_ble.h"
+#include "nrf_sdm.h"
 // Logs
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
@@ -598,14 +599,62 @@ static void idle_state_handle(void)
 }
 
 
+/**@brief App Error handler (override the weak one)
+ */
+void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
+{
+    __disable_irq();
+    NRF_LOG_FINAL_FLUSH();
+
+    #ifdef DEBUG
+    switch (id)
+    {
+        case NRF_FAULT_ID_SD_ASSERT:
+            NRF_LOG_ERROR("SOFTDEVICE: ASSERTION FAILED");
+            break;
+        case NRF_FAULT_ID_APP_MEMACC:
+            NRF_LOG_ERROR("SOFTDEVICE: INVALID MEMORY ACCESS");
+            break;
+        case NRF_FAULT_ID_SDK_ASSERT:
+        {
+            assert_info_t * p_info = (assert_info_t *)info;
+            NRF_LOG_ERROR("ASSERTION FAILED at %s:%u",
+                          p_info->p_file_name,
+                          p_info->line_num);
+            break;
+        }
+        case NRF_FAULT_ID_SDK_ERROR:
+        {
+            error_info_t * p_info = (error_info_t *)info;
+            NRF_LOG_ERROR("ERROR %u [%s] at %s:%u\r\nPC at: 0x%08x",
+                          p_info->err_code,
+                          nrf_strerror_get(p_info->err_code),
+                          p_info->p_file_name,
+                          p_info->line_num,
+                          pc);
+             NRF_LOG_ERROR("End of error report");
+            break;
+        }
+        default:
+            NRF_LOG_ERROR("UNKNOWN FAULT at 0x%08X", pc);
+            break;
+    }
+    app_error_save_and_stop(id, pc, info);
+    NRF_BREAKPOINT_COND;
+
+    #else
+    NRF_LOG_WARNING("Fatal error, System reset");
+    NRF_BREAKPOINT_COND;
+    NVIC_SystemReset();
+    #endif // DEBUG
+}
+
 /**@brief Function for application main entry.
  */
 int main(void)
 {
     // Initialize.
     log_init();
-
-
     leds_init();
     timers_init();
     buttons_init();
@@ -617,7 +666,6 @@ int main(void)
     advertising_init();
     conn_params_init();
     NRF_LOG_INFO("Sensor init");
-
     sensors_init(&m_sensors);
     NRF_LOG_INFO("Smart Mask Started.");
 

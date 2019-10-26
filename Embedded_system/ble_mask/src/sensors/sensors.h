@@ -3,8 +3,6 @@
 
 //Standard Libraries
 #include <stdint.h>
-// Common
-#include "nrf.h"
 // Log
 #include "nrf_log.h"
 // Error
@@ -14,8 +12,6 @@
 #include "nrf_drv_ppi.h"
 #include "nrf_drv_timer.h"
 
-// SAADS 
-#define SAMPLES_IN_BUFFER 5
 // SENSORS
 #define SENSORS_COUNT 4
 
@@ -48,11 +44,11 @@ typedef  struct
 } 
 sensors_t;
 
+void saadc_callback(nrf_drv_saadc_evt_t const * p_event);
+void saadc_init(void);
+void saadc_sampling_event_enable(void);
+void saadc_sampling_event_init(void);
 ret_code_t sensors_init(sensors_t* p_sensors);
-void sensors_saadc_callback(nrf_drv_saadc_evt_t const * p_event);
-void sensors_timer_handler(nrf_timer_event_t event_type, void * p_context);
-void sensors_sampling_event_init(void);
-void sensors_sampling_event_enable(void);
-void sensors_saadc_init(void);
+void timer_handler(nrf_timer_event_t event_type, void * p_context);
 
 #endif
