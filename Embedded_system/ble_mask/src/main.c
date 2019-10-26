@@ -1,72 +1,41 @@
-/**
- * Copyright (c) 2015 - 2019, Nordic Semiconductor ASA
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- *
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- *
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- *
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- *
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
-/**
- * @brief Blinky Sample Application main file.
- *
- * This file contains the source code for a sample server application using the LED Button service.
- */
 
+// Standard Libraries ----------------
 #include <stdint.h>
 #include <string.h>
+// SDK Files -------------------------
+// SDK Commons
 #include "nordic_common.h"
 #include "nrf.h"
-#include "app_error.h"
+// BLE
 #include "ble.h"
 #include "ble_err.h"
 #include "ble_hci.h"
 #include "ble_srv_common.h"
 #include "ble_advdata.h"
 #include "ble_conn_params.h"
-#include "nrf_sdh.h"
-#include "nrf_sdh_ble.h"
-#include "boards.h"
-#include "app_timer.h"
-#include "app_button.h"
 #include "ble_lbs.h"
-#include "ble_sms.h"
 #include "nrf_ble_gatt.h"
 #include "nrf_ble_qwr.h"
+// Libraries (app_* and others)
+#include "app_timer.h"
+#include "app_button.h"
 #include "nrf_pwr_mgmt.h"
+// Boards
+#include "boards.h"
+// Soft Device
+#include "nrf_sdh.h"
+#include "nrf_sdh_ble.h"
+// Logs
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
+// Errors
+#include "app_error.h"
+// APP Files -------------------------
+// App Services
+#include "ble_sms.h"
+// Sensor Management
+#include "sensors.h"
 
 // Is on when device is advertising
 #define ADVERTISING_LED                 BSP_BOARD_LED_0                         
@@ -115,6 +84,8 @@ NRF_BLE_GATT_DEF(m_gatt);
 // Context for the Queued Write module.*/
 NRF_BLE_QWR_DEF(m_qwr);                                                         
 
+// Mock data for the sensors
+static uint16_t mock_sensor_data = 0;
 // Handle of the current connection
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        
 // Advertising handle used to identify an advertising set
@@ -123,6 +94,10 @@ static uint8_t m_adv_handle = BLE_GAP_ADV_SET_HANDLE_NOT_SET;
 static uint8_t m_enc_advdata[BLE_GAP_ADV_SET_DATA_SIZE_MAX];                    
 // Buffer for storing an encoded scan data
 static uint8_t m_enc_scan_response_data[BLE_GAP_ADV_SET_DATA_SIZE_MAX];         
+// sensors pointer
+static sensors_t m_sensors;
+// timer for the sensors
+APP_TIMER_DEF(m_timer_sensors_id); 
 
 /**@brief Struct that contains pointers to the encoded advertising data. */
 static ble_gap_adv_data_t m_adv_data =
@@ -139,6 +114,27 @@ static ble_gap_adv_data_t m_adv_data =
 
     }
 };
+
+/**
+ * @brief Handler for timer events.
+ */
+void timer_led_event_handler(nrf_timer_event_t event_type, void* p_context)
+{
+    static uint32_t i;
+    uint32_t led_to_invert = ((i++) % LEDS_NUMBER);
+
+    switch (event_type)
+    {
+        case NRF_TIMER_EVENT_COMPARE0:
+            bsp_board_led_invert(led_to_invert);
+            break;
+
+        default:
+            //Do nothing.
+            break;
+    }
+}
+
 
 /**@brief Function for assert macro callback.
  * @details This function will be called in case of an assert in the SoftDevice.
@@ -161,6 +157,13 @@ static void leds_init(void)
 {
     bsp_board_init(BSP_INIT_LEDS);
 }
+
+/**@brief Function for initializing timer for the sensors acquisition.
+ * @details Initializes the timer for sensors.
+ */
+ret_code_t init_sensor_timer(void) {
+}
+
 
 
 /**@brief Function for the Timer initialization.
@@ -521,6 +524,20 @@ static void button_event_handler(uint8_t pin_no, uint8_t button_action)
             {
                 APP_ERROR_CHECK(err_code);
             }
+            
+
+            err_code = ble_sms_on_sensors_update(m_conn_handle, &m_sms, m_sensors.values);
+            if (err_code != NRF_SUCCESS &&
+                err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
+                err_code != NRF_ERROR_INVALID_STATE &&
+                err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
+            {
+                APP_ERROR_CHECK(err_code);
+            }
+            for (int i=0; i<SENSORS_COUNT; i++) 
+            {
+                m_sensors.values[i]++;
+            }
             break;
 
         default:
@@ -587,6 +604,8 @@ int main(void)
 {
     // Initialize.
     log_init();
+
+
     leds_init();
     timers_init();
     buttons_init();
@@ -597,6 +616,9 @@ int main(void)
     services_init();
     advertising_init();
     conn_params_init();
+    NRF_LOG_INFO("Sensor init");
+
+    sensors_init(&m_sensors);
     NRF_LOG_INFO("Smart Mask Started.");
 
     // Start execution.

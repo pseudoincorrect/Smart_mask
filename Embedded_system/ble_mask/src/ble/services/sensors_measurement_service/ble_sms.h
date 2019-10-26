@@ -7,8 +7,10 @@
 #include <stdbool.h>
 #include "ble.h"
 #include "ble_srv_common.h"
+#include "sdk_common.h"
 #include "nrf_sdh_ble.h"
 #include "app_error.h"
+#include "sensors.h"
 
 #define BLE_SMS_DEF(_name)          \
     static ble_sms_t _name;         \
@@ -67,11 +69,11 @@ void ble_sms_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context);
  *
  ' @param[in] conn_handle   Handle of the peripheral connection to which the sensor state notification will be sent.
  * @param[in] p_sms         Sensor Measurement Service Button Service structure.
- * @param[in] value         New sensor value.
+ * @param[in] value         Pointer to sensor values.
  *
  * @retval NRF_SUCCESS If the notification was sent successfully. Otherwise, an error code is returned.
  */
-uint32_t ble_sms_on_sensor_update(uint16_t conn_handle, ble_sms_t * p_sms, uint16_t value);
+uint32_t ble_sms_on_sensors_update(uint16_t conn_handle, ble_sms_t * p_sms, sensors_values_t* values);
 
 /**@brief Function for initializing the Sensor Measurement Service.
  *

@@ -1,8 +1,6 @@
 // BLE SENSORS MEASUREMENT SERVICE
 
 #include "ble_sms.h"
-#include "ble_srv_common.h"
-#include "sdk_common.h"
 
 /**@brief Function for handling the Write event.
  *
@@ -36,15 +34,15 @@ void ble_sms_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context)
     }
 }
 
-uint32_t ble_sms_on_sensor_update(uint16_t conn_handle, ble_sms_t * p_sms, uint16_t value)
+uint32_t ble_sms_on_sensors_update(uint16_t conn_handle, ble_sms_t * p_sms, sensors_values_t* values)
 {
     ble_gatts_hvx_params_t params;
-    uint16_t len = sizeof(value);
+    uint16_t len = sizeof(sensors_values_t) * SENSORS_COUNT;
 
     memset(&params, 0, sizeof(params));
     params.type   = BLE_GATT_HVX_NOTIFICATION;
     params.handle = p_sms->sensors_char_handles.value_handle;
-    params.p_data = (uint8_t*) &value;
+    params.p_data = (uint8_t*) values;
     params.p_len  = &len;
 
     return sd_ble_gatts_hvx(conn_handle, &params);
@@ -71,14 +69,18 @@ uint32_t ble_sms_init (ble_sms_t * p_sms, const ble_sms_init_t * p_sms_init)
     err_code = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid, &p_sms->service_handle);
     VERIFY_SUCCESS(err_code);
 
+    sensors_values_t sensors_init_values[SENSORS_COUNT];
+     memset(sensors_init_values, 0, sizeof(sensors_init_values));
+
     // Add sensor Characteristic
     memset(&add_char_params, 0, sizeof(add_char_params));
     add_char_params.uuid              = SMS_UUID_SENSORS_CHAR;
     add_char_params.uuid_type         = p_sms->uuid_type;
-    add_char_params.max_len           = sizeof(uint16_t);
-    add_char_params.init_len          = sizeof(uint16_t);
+    add_char_params.max_len           = sizeof(sensors_values_t) * SENSORS_COUNT;
+    add_char_params.init_len          = sizeof(sensors_values_t) * SENSORS_COUNT;
     add_char_params.char_props.read   = 1;
     add_char_params.char_props.notify = 1;
+    add_char_params.p_init_value      = (uint8_t*) sensors_init_values;
     add_char_params.read_access       = SEC_OPEN;
     add_char_params.cccd_write_access = SEC_OPEN;
 
