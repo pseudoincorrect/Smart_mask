@@ -25,7 +25,7 @@
 
 #define  GENERATE_STRING(STRING) #STRING,
 
-typedef uint16_t sensors_values_t;
+typedef uint16_t sensors_value_t;
  
 enum sensors_enum 
 {
@@ -39,11 +39,12 @@ static const char * sensors_string [] =
 
 typedef  struct 
 {
-    sensors_values_t values [SENSORS_COUNT];
+    sensors_value_t values [SENSORS_COUNT];
     const char ** names;
 } 
 sensors_t;
 
+void sensors_init_buffer(sensors_t* p_sensors);
 void saadc_callback(nrf_drv_saadc_evt_t const * p_event);
 void saadc_init(void);
 void saadc_sampling_event_enable(void);

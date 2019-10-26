@@ -95,8 +95,10 @@ static uint8_t m_adv_handle = BLE_GAP_ADV_SET_HANDLE_NOT_SET;
 static uint8_t m_enc_advdata[BLE_GAP_ADV_SET_DATA_SIZE_MAX];                    
 // Buffer for storing an encoded scan data
 static uint8_t m_enc_scan_response_data[BLE_GAP_ADV_SET_DATA_SIZE_MAX];         
-// sensors pointer
+// sensors buffers
 static sensors_t m_sensors;
+static sensors_t m_sensors_previous;
+
 // timer for the sensors
 APP_TIMER_DEF(m_timer_sensors_id); 
 
@@ -158,13 +160,6 @@ static void leds_init(void)
 {
     bsp_board_init(BSP_INIT_LEDS);
 }
-
-/**@brief Function for initializing timer for the sensors acquisition.
- * @details Initializes the timer for sensors.
- */
-ret_code_t init_sensor_timer(void) {
-}
-
 
 
 /**@brief Function for the Timer initialization.
@@ -525,21 +520,21 @@ static void button_event_handler(uint8_t pin_no, uint8_t button_action)
             {
                 APP_ERROR_CHECK(err_code);
             }
-            
-
-            err_code = ble_sms_on_sensors_update(m_conn_handle, &m_sms, m_sensors.values);
-            if (err_code != NRF_SUCCESS &&
-                err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
-                err_code != NRF_ERROR_INVALID_STATE &&
-                err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
-            {
-                APP_ERROR_CHECK(err_code);
-            }
-            for (int i=0; i<SENSORS_COUNT; i++) 
-            {
-                m_sensors.values[i]++;
-            }
             break;
+
+//            err_code = ble_sms_on_sensors_update(m_conn_handle, &m_sms, m_sensors.values);
+//            if (err_code != NRF_SUCCESS &&
+//                err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
+//                err_code != NRF_ERROR_INVALID_STATE &&
+//                err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
+//            {
+//                APP_ERROR_CHECK(err_code);
+//            }
+//            for (int i=0; i<SENSORS_COUNT; i++) 
+//            {
+//                m_sensors.values[i]++;
+//            }
+//            break;
 
         default:
             APP_ERROR_HANDLER(pin_no);
@@ -595,6 +590,32 @@ static void idle_state_handle(void)
     if (NRF_LOG_PROCESS() == false)
     {
         nrf_pwr_mgmt_run();
+    }
+}
+
+
+/**@brief send sensor values over bluetooth if values updated
+ */
+void check_sensors_update(void)
+{
+    ret_code_t err_code;
+
+    for(int i=0; i<SENSORS_COUNT; i++)
+    {
+        if(m_sensors.values[i] != m_sensors_previous.values[i])
+        {
+            err_code = ble_sms_on_sensors_update(m_conn_handle, &m_sms, m_sensors.values);
+            if (err_code != NRF_SUCCESS &&
+                err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
+                err_code != NRF_ERROR_INVALID_STATE &&
+                err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
+            {
+                APP_ERROR_CHECK(err_code);
+            }
+            memcpy(m_sensors_previous.values, 
+                   m_sensors.values, 
+                   sizeof(sensors_value_t)*SENSORS_COUNT);
+        }
     }
 }
 
@@ -667,6 +688,7 @@ int main(void)
     conn_params_init();
     NRF_LOG_INFO("Sensor init");
     sensors_init(&m_sensors);
+    sensors_init_buffer(&m_sensors_previous);
     NRF_LOG_INFO("Smart Mask Started.");
 
     // Start execution.
@@ -676,6 +698,7 @@ int main(void)
     for (;;)
     {
         idle_state_handle();
+        check_sensors_update();
     }
 }
 

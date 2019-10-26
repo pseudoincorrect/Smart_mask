@@ -1,16 +1,23 @@
 #include "sensors.h"
 
-#define SAMPLES_IN_BUFFER 5
-//volatile uint8_t state = 1;
+#define SAMPLES_IN_BUFFER SENSORS_COUNT
+#define SAMPLE_RATE_MS 3000
 
 static const nrf_drv_timer_t m_timer = NRF_DRV_TIMER_INSTANCE(2);
-static nrf_saadc_value_t     m_buffer_pool[2][SAMPLES_IN_BUFFER];
+static nrf_saadc_value_t     m_buffer_pool[2][SENSORS_COUNT];
 static nrf_ppi_channel_t     m_ppi_channel;
-static uint32_t              m_adc_evt_counter;
+static sensors_t*            m_sensors;
+
+void sensors_init_buffer(sensors_t* p_sensors)
+{
+    p_sensors->names = sensors_string;
+    memset(p_sensors->values, 0, sizeof(sensors_value_t) * SENSORS_COUNT);
+}
+
 
 ret_code_t sensors_init (sensors_t* p_sensors) {
-    p_sensors->names = sensors_string;
-    memset(p_sensors->values, 0, sizeof(sensors_values_t) * SENSORS_COUNT);
+    m_sensors = p_sensors;
+    sensors_init_buffer(m_sensors);
 
     saadc_init();
     saadc_sampling_event_init();
@@ -21,11 +28,9 @@ ret_code_t sensors_init (sensors_t* p_sensors) {
 }
 
 
-
-
 void timer_handler(nrf_timer_event_t event_type, void * p_context)
 {
-
+    NRF_LOG_INFO("hey");
 }
 
 
@@ -42,7 +47,7 @@ void saadc_sampling_event_init(void)
     APP_ERROR_CHECK(err_code);
 
     /* setup m_timer for compare event every 400ms */
-    uint32_t ticks = nrf_drv_timer_ms_to_ticks(&m_timer, 400);
+    uint32_t ticks = nrf_drv_timer_ms_to_ticks(&m_timer, SAMPLE_RATE_MS);
     nrf_drv_timer_extended_compare(&m_timer,
                                    NRF_TIMER_CC_CHANNEL0,
                                    ticks,
@@ -82,14 +87,11 @@ void saadc_callback(nrf_drv_saadc_evt_t const * p_event)
         err_code = nrf_drv_saadc_buffer_convert(p_event->data.done.p_buffer, SAMPLES_IN_BUFFER);
         APP_ERROR_CHECK(err_code);
 
-        int i;
-        NRF_LOG_INFO("ADC event number: %d", (int)m_adc_evt_counter);
-
-        for (i = 0; i < SAMPLES_IN_BUFFER; i++)
+        for (int i = 0; i < SAMPLES_IN_BUFFER; i++)
         {
-            NRF_LOG_INFO("%d", p_event->data.done.p_buffer[i]);
+            m_sensors->values[i] = (sensors_value_t) p_event->data.done.p_buffer[i];
+            NRF_LOG_INFO("m_sensors->values[%d] %d", i, m_sensors->values[i] );
         }
-        m_adc_evt_counter++;
     }
 }
 
@@ -97,13 +99,28 @@ void saadc_callback(nrf_drv_saadc_evt_t const * p_event)
 void saadc_init(void)
 {
     ret_code_t err_code;
-    nrf_saadc_channel_config_t channel_config =
-        NRF_DRV_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN0);
 
     err_code = nrf_drv_saadc_init(NULL, saadc_callback);
     APP_ERROR_CHECK(err_code);
+    
+    nrf_saadc_channel_config_t channel_0_config =
+        NRF_DRV_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN0);
+    err_code = nrf_drv_saadc_channel_init(0, &channel_0_config);
+    APP_ERROR_CHECK(err_code);
 
-    err_code = nrf_drv_saadc_channel_init(0, &channel_config);
+    nrf_saadc_channel_config_t channel_1_config =
+        NRF_DRV_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN1);
+    err_code = nrf_drv_saadc_channel_init(1, &channel_1_config);
+    APP_ERROR_CHECK(err_code);
+    
+    nrf_saadc_channel_config_t channel_2_config =
+        NRF_DRV_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN2);
+    err_code = nrf_drv_saadc_channel_init(2, &channel_2_config);
+    APP_ERROR_CHECK(err_code);
+    
+    nrf_saadc_channel_config_t channel_3_config =
+        NRF_DRV_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN3);
+    err_code = nrf_drv_saadc_channel_init(3, &channel_3_config);
     APP_ERROR_CHECK(err_code);
 
     err_code = nrf_drv_saadc_buffer_convert(m_buffer_pool[0], SAMPLES_IN_BUFFER);
@@ -113,30 +130,4 @@ void saadc_init(void)
     APP_ERROR_CHECK(err_code);
 
 }
-
-//
-///**
-// * @brief Function for main application entry.
-// */
-//int main(void)
-//{
-//    uint32_t err_code = NRF_LOG_INIT(NULL);
-//    APP_ERROR_CHECK(err_code);
-//
-//    NRF_LOG_DEFAULT_BACKENDS_INIT();
-//
-//    ret_code_t ret_code = nrf_pwr_mgmt_init();
-//    APP_ERROR_CHECK(ret_code);
-//
-//    saadc_init();
-//    saadc_sampling_event_init();
-//    saadc_sampling_event_enable();
-//    NRF_LOG_INFO("SAADC HAL simple example started.");
-//
-//    while (1)
-//    {
-//        nrf_pwr_mgmt_run();
-//        NRF_LOG_FLUSH();
-//    }
-//}
 

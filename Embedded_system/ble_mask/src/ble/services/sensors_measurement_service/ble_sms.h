@@ -73,7 +73,7 @@ void ble_sms_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context);
  *
  * @retval NRF_SUCCESS If the notification was sent successfully. Otherwise, an error code is returned.
  */
-uint32_t ble_sms_on_sensors_update(uint16_t conn_handle, ble_sms_t * p_sms, sensors_values_t* values);
+uint32_t ble_sms_on_sensors_update(uint16_t conn_handle, ble_sms_t * p_sms, sensors_value_t* values);
 
 /**@brief Function for initializing the Sensor Measurement Service.
  *
