@@ -1,0 +1,9 @@
+When you try to integrate a new feature from the SDK example:
+
+DO A STUPID COPY PASTE 
+
+DO NOT TRY TO ADAPT THE CODE TO YOUR PROJECT
+
+YOU DO THAT AFTER YOU GOT THE EXAMPLE WORKING IN YOUR PROJECT
+
+:) and save yourself few hours
