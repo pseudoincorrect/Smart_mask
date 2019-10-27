@@ -1,0 +1,4 @@
+
+FlutterBluePlugin.java:43: error: package androidx.core.app does not exist
+SOLUTION use flutter_blue: 0.6.2 
+and NOT flutter_blue: 0.6.2^ or 0.6.3^

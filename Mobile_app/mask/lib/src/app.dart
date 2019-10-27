@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mask/src/blocs/bluetooth/bluetooth_bloc.dart';
+import 'package:mask/src/blocs/bluetooth/bluetooth_provider.dart';
 import 'package:mask/src/blocs/sensors_data/sensors_data_bloc.dart';
 import 'package:mask/src/blocs/sensors_data/sensors_data_provider.dart';
 import './screens/home.dart';
@@ -12,14 +14,18 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
 
+    final bluetoothBloc = BluetoothBloc();
     final sensorDataBloc = SensorsDataBloc();
 
     return SensorsDataProvider(
       bloc: sensorDataBloc,
-      child: MaterialApp(
-        title: "Smart Mask",
-        theme: getTheme(),
-        home: Home(),
+      child: BluetoothProvider(
+        bloc: bluetoothBloc,
+        child: MaterialApp(
+          title: "Smart Mask",
+          theme: getTheme(),
+          home: Home(),
+        ),
       ),
     );
   }

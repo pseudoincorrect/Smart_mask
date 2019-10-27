@@ -1,4 +1,4 @@
-package maximeclement.mask
+package com.example.mask
 
 import android.os.Bundle
 

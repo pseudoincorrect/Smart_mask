@@ -6,7 +6,10 @@ set up pairing for a particular device
 set up bluetooth device list
 refactor sensor enum
 
+
 IN PROCESS
+add navigation from connect page to home page
+
 
 DONE
 19/10/2019; DB; get data per time interval per sensor
