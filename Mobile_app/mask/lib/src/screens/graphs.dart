@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mask/src/blocs/sensor_data/old_sensors_data_bloc.dart';
 
-import 'package:mask/src/blocs/sensors_data/sensors_data_bloc.dart';
-import 'package:mask/src/blocs/sensors_data/sensors_data_provider.dart';
+import 'package:mask/src/blocs/sensor_data/old_sensors_data_provider.dart';
 import 'package:mask/src/widgets/graph/time_series.dart';
 import 'package:mask/src/widgets/db_control_buttons.dart';
 import 'package:mask/src/widgets/graph/line_graph.dart';
@@ -38,12 +38,12 @@ class RefreshingGraph extends StatefulWidget {
 }
 
 class _RefreshingGraphState extends State<RefreshingGraph> {
-  SensorsDataBloc sensorDataBloc;
+  SensorDataBloc sensorDataBloc;
   List<Timer> graphUpdateTimers = List<Timer>();
 
   @override
   Widget build(BuildContext context) {
-    sensorDataBloc = SensorsDataProvider.of(context);
+    sensorDataBloc = SensorDataProvider.of(context);
 
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
@@ -69,7 +69,6 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
                   return Text('ConnectionWaiting');
                 case ConnectionState.active:
                   return SizedBox(
-                    // TODO: change 0.5 magic number..
                     height: graphsHeight / (Sensor.values.length + 2),
                     child: LineChart.withSampleData(
                       _parseSensorData(snapshot.data, sensor),

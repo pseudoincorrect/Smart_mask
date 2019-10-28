@@ -4,30 +4,30 @@ import 'package:mask/src/database/models/sensor_data_model.dart';
 
 import '../../repositories/sensor_data_repo.dart';
 
-class SensorsDataBloc {
+class SensorDataBloc {
   final _sensorDataRepo = SensorDataRepository();
 
-  Map<Sensor, BehaviorSubject<List<SensorData>>> _sensorsDataSubjects = Map();
-  Map<Sensor, Stream<List<SensorData>>> _sensorsDataStreams = Map();
+  Map<Sensor, BehaviorSubject<List<SensorData>>> _SensorDataSubjects = Map();
+  Map<Sensor, Stream<List<SensorData>>> _SensorDataStreams = Map();
 
-  SensorsDataBloc() {
+  SensorDataBloc() {
     for (var i = 0; i < Sensor.values.length; i++) {
-      _sensorsDataSubjects[Sensor.values[i]] =
+      _SensorDataSubjects[Sensor.values[i]] =
           BehaviorSubject<List<SensorData>>();
-      _sensorsDataStreams[Sensor.values[i]] =
-          _sensorsDataSubjects[Sensor.values[i]].stream;
+      _SensorDataStreams[Sensor.values[i]] =
+          _SensorDataSubjects[Sensor.values[i]].stream;
     }
   }
 
   getSensorData(Sensor sensor, {List<DateTime> interval}) async {
-    _sensorsDataSubjects[sensor].sink.add(await _sensorDataRepo.getSensorData(
+    _SensorDataSubjects[sensor].sink.add(await _sensorDataRepo.getSensorData(
           sensor,
           interval: interval,
         ));
   }
 
-  Stream<List<SensorData>> getStream(Sensor sensor){
-    return _sensorsDataStreams[sensor];
+  Stream<List<SensorData>> getStream(Sensor sensor) {
+    return _SensorDataStreams[sensor];
   }
 
   addSensorData(SensorData sensorData) async {
@@ -40,7 +40,7 @@ class SensorsDataBloc {
 
   dispose() {
     for (var i = 0; i < Sensor.values.length; i++) {
-      _sensorsDataSubjects[Sensor.values[i]].close();
+      _SensorDataSubjects[Sensor.values[i]].close();
     }
   }
 }

@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:mask/src/blocs/sensors_data/sensors_data_provider.dart';
+import 'package:mask/src/blocs/sensor_data/old_sensors_data_bloc.dart';
+import 'package:mask/src/blocs/sensor_data/old_sensors_data_provider.dart';
 import 'package:mask/src/database/models/sensor_data_model.dart';
 import 'package:mask/src/widgets/graph/time_series.dart';
-import '../blocs/sensors_data/sensors_data_bloc.dart';
 
 class DbControlButtons extends StatefulWidget {
   DbControlButtons({Key key}) : super(key: key);
@@ -15,12 +15,11 @@ class DbControlButtons extends StatefulWidget {
 }
 
 class _DbControlButtonsState extends State<DbControlButtons> {
-  SensorsDataBloc sensorDataBloc;
+  SensorDataBloc sensorDataBloc;
 
   @override
   Widget build(BuildContext context) {
-    sensorDataBloc = SensorsDataProvider.of(context);
-
+    sensorDataBloc = SensorDataProvider.of(context);
     return Column(
       children: <Widget>[
         FlatButton(
