@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mask/src/blocs/sensor_data/old_sensors_data_bloc.dart';
+import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';
 
-import 'package:mask/src/blocs/sensor_data/old_sensors_data_provider.dart';
+import 'package:mask/src/blocs/sensor_data/sensor_data_provider.dart';
 import 'package:mask/src/widgets/graph/time_series.dart';
 import 'package:mask/src/widgets/db_control_buttons.dart';
 import 'package:mask/src/widgets/graph/line_graph.dart';

@@ -1,29 +1,46 @@
-import 'package:bloc/bloc.dart';
 import 'package:mask/src/widgets/graph/time_series.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:mask/src/database/models/sensor_data_model.dart';
-import '../../repositories/sensor_data_repo.dart';
-import './sensor_data_state.dart';
-import "./sensor_data_event.dart";
 
-class SensorDataBloc2 extends Bloc<SensorDataEvent, SensorDataState> {
+import '../../repositories/sensor_data_repo.dart';
+
+class SensorDataBloc {
   final _sensorDataRepo = SensorDataRepository();
 
-  SensorDataBloc2();
+  Map<Sensor, BehaviorSubject<List<SensorData>>> _SensorDataSubjects = Map();
+  Map<Sensor, Stream<List<SensorData>>> _SensorDataStreams = Map();
 
-  @override
-  SensorDataState get initialState => SensorDataLoading();
-
-  @override
-  Stream<SensorDataState> mapEventToState(SensorDataEvent event) async* {
-    if (event is AddSensorData) {
-      yield* _mapAddSensorDataToState();
-    } else if (event is DeleteAllSensorData) {
-      yield* _mapDeleteAllSensorDataToState();
+  SensorDataBloc() {
+    for (var i = 0; i < Sensor.values.length; i++) {
+      _SensorDataSubjects[Sensor.values[i]] =
+          BehaviorSubject<List<SensorData>>();
+      _SensorDataStreams[Sensor.values[i]] =
+          _SensorDataSubjects[Sensor.values[i]].stream;
     }
   }
 
-  Stream<SensorDataState> _mapAddSensorDataToState() async* {}
+  getSensorData(Sensor sensor, {List<DateTime> interval}) async {
+    _SensorDataSubjects[sensor].sink.add(await _sensorDataRepo.getSensorData(
+          sensor,
+          interval: interval,
+        ));
+  }
 
-  Stream<SensorDataState> _mapDeleteAllSensorDataToState() async* {}
+  Stream<List<SensorData>> getStream(Sensor sensor) {
+    return _SensorDataStreams[sensor];
+  }
+
+  addSensorData(SensorData sensorData) async {
+    await _sensorDataRepo.insertSensorData(sensorData);
+  }
+
+  deleteAllSensorData() async {
+    await _sensorDataRepo.deleteAllSensorData();
+  }
+
+  dispose() {
+    for (var i = 0; i < Sensor.values.length; i++) {
+      _SensorDataSubjects[Sensor.values[i]].close();
+    }
+  }
 }

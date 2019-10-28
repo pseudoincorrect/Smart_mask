@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './old_sensors_data_bloc.dart';
+import './sensor_data_bloc.dart';
 
 class SensorDataProvider extends InheritedWidget {
   final SensorDataBloc bloc;

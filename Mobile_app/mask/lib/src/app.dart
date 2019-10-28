@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask/src/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:mask/src/blocs/bluetooth/bluetooth_provider.dart';
-import 'package:mask/src/blocs/sensor_data/old_sensors_data_bloc.dart';
-import 'package:mask/src/blocs/sensor_data/old_sensors_data_provider.dart';
+import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';
+import 'package:mask/src/blocs/sensor_data/sensor_data_provider.dart';
 import './screens/home.dart';
 
 class MyApp extends StatelessWidget {
