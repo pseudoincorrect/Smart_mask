@@ -7,7 +7,7 @@ import 'package:mask/src/blocs/sensor_data/sensor_data_provider.dart';
 import 'package:mask/src/widgets/graph/time_series.dart';
 import 'package:mask/src/widgets/db_control_buttons.dart';
 import 'package:mask/src/widgets/graph/line_graph.dart';
-import 'package:mask/src/database/models/sensor_data_model.dart';
+import 'package:mask/src/database/models/sensor_model.dart';
 import 'package:mask/src/widgets/navigation_buttons.dart';
 
 final num graphsHeight = 450.0;

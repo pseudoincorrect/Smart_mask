@@ -1,25 +1,26 @@
 TO DO
-delete data db older than x time per sensor
-send bluetooth data to database
-receive and print bluetooth data from NRF
 set up pairing for a particular device
-set up bluetooth device list
 refactor sensor enum
-
-
-IN PROCESS
 add navigation from connect page to home page
 
 
+IN PROCESS
+send bluetooth data to database
+
+
 DONE
-19/10/2019; DB; get data per time interval per sensor
-19/10/2019; DB; get data per time interval
-19/10/2019; GRAPH; graphs individually update
-19/10/2019; DB; get data db per sensor
-18/10/2019; GRAPH; display on multiple graph
-17/10/2019; GRAPH; display data on a graph
-17/10/2019; DB; refresh with new data detection
-16/10/2019; DB; push data to sqflite database
-16/10/2019; DB; recover and print data with a button
-16/10/2019; DB; set up a SQFLite database and store a time series
+30/10/2019  BLE     receive and print bluetooth data from NRF
+30/10/2019  BLE     set up bluetooth device list
+28/10/2019  BLOC    try flutter_bloc didn't like it, came back to custom bloc
+19/10/2019  DB      delete data db older than x time per sensor
+19/10/2019  DB      get data per time interval per sensor
+19/10/2019  DB      get data per time interval
+19/10/2019  GRAPH   graphs individually update
+19/10/2019  DB      get data db per sensor
+18/10/2019  GRAPH   display on multiple graph
+17/10/2019  GRAPH   display data on a graph
+17/10/2019  DB      refresh with new data detection
+16/10/2019  DB      push data to sqflite database
+16/10/2019  DB      recover and print data with a button
+16/10/2019  DB      set up a SQFLite database and store a time series
 

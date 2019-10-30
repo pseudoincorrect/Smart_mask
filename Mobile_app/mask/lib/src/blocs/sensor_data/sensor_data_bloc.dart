@@ -1,8 +1,7 @@
-import 'package:mask/src/widgets/graph/time_series.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:mask/src/database/models/sensor_data_model.dart';
+import 'package:mask/src/database/models/sensor_model.dart';
 
-import '../../repositories/sensor_data_repo.dart';
+import 'package:mask/src/repositories/sensor_data_repo.dart';
 
 class SensorDataBloc {
   final _sensorDataRepo = SensorDataRepository();
@@ -14,6 +13,7 @@ class SensorDataBloc {
     for (var i = 0; i < Sensor.values.length; i++) {
       _SensorDataSubjects[Sensor.values[i]] =
           BehaviorSubject<List<SensorData>>();
+
       _SensorDataStreams[Sensor.values[i]] =
           _SensorDataSubjects[Sensor.values[i]].stream;
     }

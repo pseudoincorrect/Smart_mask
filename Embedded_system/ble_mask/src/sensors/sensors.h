@@ -11,6 +11,8 @@
 #include "nrf_drv_saadc.h"
 #include "nrf_drv_ppi.h"
 #include "nrf_drv_timer.h"
+// app config
+#include "app_config.h"
 
 // SENSORS
 #define SENSORS_COUNT 4
@@ -51,5 +53,5 @@ void saadc_sampling_event_enable(void);
 void saadc_sampling_event_init(void);
 ret_code_t sensors_init(sensors_t* p_sensors);
 void timer_handler(nrf_timer_event_t event_type, void * p_context);
-
+void update_sensor_values(sensors_t* sensors);
 #endif

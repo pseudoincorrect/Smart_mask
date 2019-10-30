@@ -1,9 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:mask/src/blocs/bluetooth/bluetooth_bloc.dart';
+import 'package:mask/src/blocs/bluetooth/bluetooth_provider.dart';
 import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';
 import 'package:mask/src/blocs/sensor_data/sensor_data_provider.dart';
-import 'package:mask/src/database/models/sensor_data_model.dart';
-import 'package:mask/src/widgets/graph/time_series.dart';
+import 'package:mask/src/database/models/sensor_model.dart';
 
 class DbControlButtons extends StatefulWidget {
   DbControlButtons({Key key}) : super(key: key);
@@ -16,9 +17,11 @@ class DbControlButtons extends StatefulWidget {
 
 class _DbControlButtonsState extends State<DbControlButtons> {
   SensorDataBloc sensorDataBloc;
+  BluetoothBloc bluetoothBloc;
 
   @override
   Widget build(BuildContext context) {
+    bluetoothBloc = BluetoothProvider.of(context);
     sensorDataBloc = SensorDataProvider.of(context);
     return Column(
       children: <Widget>[
@@ -30,10 +33,14 @@ class _DbControlButtonsState extends State<DbControlButtons> {
           onPressed: () => deleteDataButton(context),
           child: Text("Delete Data"),
         ),
-//        FlatButton(
-//          onPressed: () => customQueryButton(context),
-//          child: Text("Custom Query"),
-//        ),
+        // FlatButton(
+        //   onPressed: () => customQueryButton(context),
+        //   child: Text("Custom Query"),
+        // ),
+        FlatButton(
+          onPressed: () => bluetoothBlocPrint(),
+          child: Text("BluetoothBloc Print"),
+        ),
       ],
     );
   }
@@ -68,10 +75,14 @@ class _DbControlButtonsState extends State<DbControlButtons> {
     sensorDataBloc.deleteAllSensorData();
   }
 
-//  void customQueryButton(BuildContext context) async {
-//    await sensorDataBloc.getSensorData(Sensor.temperature, interval: [
-//      DateTime.now().subtract(Duration(seconds: 10)),
-//      DateTime.now()
-//    ]);
-//  }
+  // void customQueryButton(BuildContext context) async {
+  //   await sensorDataBloc.getSensorData(Sensor.temperature, interval: [
+  //     DateTime.now().subtract(Duration(seconds: 10)),
+  //     DateTime.now()
+  //   ]);
+  // }
+
+  void bluetoothBlocPrint() {
+    bluetoothBloc.printDevice();
+  }
 }

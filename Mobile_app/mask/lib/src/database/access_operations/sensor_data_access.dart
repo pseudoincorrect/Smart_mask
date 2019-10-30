@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:mask/src/database/database.dart';
-import 'package:mask/src/database/models/sensor_data_model.dart';
-import 'package:mask/src/widgets/graph/time_series.dart';
+import 'package:mask/src/database/models/sensor_model.dart';
 
 class SensorDataAccess {
   final dbProvider = DatabaseProvider.dbProvider;
