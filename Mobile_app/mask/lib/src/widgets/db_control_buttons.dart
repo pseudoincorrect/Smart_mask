@@ -23,7 +23,7 @@ class _DbControlButtonsState extends State<DbControlButtons> {
   Widget build(BuildContext context) {
     bluetoothBloc = BluetoothProvider.of(context);
     sensorDataBloc = SensorDataProvider.of(context);
-    return Column(
+    return Row(
       children: <Widget>[
         FlatButton(
           onPressed: () => insertDataButton(context),
@@ -56,10 +56,8 @@ class _DbControlButtonsState extends State<DbControlButtons> {
     var timestamp = DateTime.now().millisecondsSinceEpoch;
     Sensor sensorName;
 
-    int rand = rng.nextInt(3);
-    sensorName = rand == 0
-        ? Sensor.temperature
-        : rand == 1 ? Sensor.humidity : Sensor.acetone;
+    int rand = rng.nextInt(Sensor.values.length);
+    sensorName = Sensor.values[rand];
 
     SensorData sensorData = SensorData(
       value: value,

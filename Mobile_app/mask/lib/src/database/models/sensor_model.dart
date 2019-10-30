@@ -1,4 +1,4 @@
-enum Sensor { temperature, humidity, acetone }
+enum Sensor { temperature, humidity, acetone, respiration }
 
 Sensor sensorStringToEnum(String sensor) {
   switch (sensor) {
@@ -10,6 +10,9 @@ Sensor sensorStringToEnum(String sensor) {
       break;
     case 'Sensor.acetone':
       return Sensor.acetone;
+      break;
+    case 'Sensor.respiration':
+      return Sensor.respiration;
       break;
     default:
       {

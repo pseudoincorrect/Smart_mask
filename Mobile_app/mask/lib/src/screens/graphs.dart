@@ -10,7 +10,7 @@ import 'package:mask/src/widgets/graph/line_graph.dart';
 import 'package:mask/src/database/models/sensor_model.dart';
 import 'package:mask/src/widgets/navigation_buttons.dart';
 
-final num graphsHeight = 450.0;
+final num graphsHeight = 600.0;
 Duration windowInterval = Duration(seconds: 10);
 Duration refreshInterval = Duration(seconds: 1);
 
@@ -19,14 +19,15 @@ Widget graphs() {
     appBar: AppBar(
       title: const Text("graphs"),
     ),
-    body: ListView(
+    body: Column(
       children: <Widget>[
         NavigationButtons(),
+        DbControlButtons(),
+//        RefreshingGraph(),
         SizedBox(
-          height: graphsHeight,
+          height: 600.0,
           child: RefreshingGraph(),
         ),
-        DbControlButtons(),
       ],
     ),
   );
@@ -46,7 +47,7 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
     sensorDataBloc = SensorDataProvider.of(context);
 
     return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(),
+//      physics: const NeverScrollableScrollPhysics(),
       itemCount: Sensor.values.length,
       itemBuilder: (context, index) {
         Sensor sensor = Sensor.values[index];
@@ -69,7 +70,7 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
                   return Text('ConnectionWaiting');
                 case ConnectionState.active:
                   return SizedBox(
-                    height: graphsHeight / (Sensor.values.length + 2),
+                    height: 90.0,
                     child: LineChart.withSampleData(
                       _parseSensorData(snapshot.data, sensor),
                     ),
@@ -77,7 +78,7 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
                 case ConnectionState.done:
                   return Text('ConnectionDone');
               }
-              return null; // unreachable}, ),;
+              return Text('Problem');
             },
           ),
         );
