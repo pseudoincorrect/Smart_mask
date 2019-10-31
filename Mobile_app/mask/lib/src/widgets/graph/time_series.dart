@@ -11,22 +11,3 @@ class TimeSeriesSensor {
   }
 }
 
-enum Sensor { temperature, humidity, acetone }
-
-Sensor sensorStringToEnum(String sensor) {
-  switch (sensor) {
-    case 'Sensor.temperature':
-      return Sensor.temperature;
-      break;
-    case 'Sensor.humidity':
-      return Sensor.humidity;
-      break;
-    case 'Sensor.acetone':
-      return Sensor.acetone;
-      break;
-    default:
-      {
-        return null;
-      }
-  }
-}

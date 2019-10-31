@@ -3,6 +3,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:mask/src/blocs/bluetooth/bluetooth_bloc.dart';
+import 'package:mask/src/blocs/bluetooth/bluetooth_provider.dart';
 import 'package:mask/src/widgets/navigation_buttons.dart';
 import '../widgets/flutter_blue_widgets.dart';
 
@@ -71,27 +73,31 @@ class FindDevicesScreen extends StatelessWidget {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
-                      .map((d) => ListTile(
-                            title: Text(d.name),
-                            subtitle: Text(d.id.toString()),
-                            trailing: StreamBuilder<BluetoothDeviceState>(
-                              stream: d.state,
-                              initialData: BluetoothDeviceState.disconnected,
-                              builder: (c, snapshot) {
-                                if (snapshot.data ==
-                                    BluetoothDeviceState.connected) {
-                                  return RaisedButton(
-                                    child: Text('OPEN'),
-                                    onPressed: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                DeviceScreen(device: d))),
-                                  );
-                                }
-                                return Text(snapshot.data.toString());
-                              },
-                            ),
-                          ))
+                      .map(
+                        (d) => ListTile(
+                          title: Text(d.name),
+                          subtitle: Text(d.id.toString()),
+                          trailing: StreamBuilder<BluetoothDeviceState>(
+                            stream: d.state,
+                            initialData: BluetoothDeviceState.disconnected,
+                            builder: (c, snapshot) {
+                              if (snapshot.data ==
+                                  BluetoothDeviceState.connected) {
+                                return RaisedButton(
+                                  child: Text('OPEN'),
+                                  onPressed: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DeviceScreen(device: d),
+                                    ),
+                                  ),
+                                );
+                              }
+                              return Text(snapshot.data.toString());
+                            },
+                          ),
+                        ),
+                      )
                       .toList(),
                 ),
               ),
@@ -103,11 +109,14 @@ class FindDevicesScreen extends StatelessWidget {
                       .map(
                         (r) => ScanResultTile(
                           result: r,
-                          onTap: () => Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (context) {
-                            r.device.connect();
-                            return DeviceScreen(device: r.device);
-                          })),
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) {
+                                r.device.connect();
+                                return DeviceScreen(device: r.device);
+                              },
+                            ),
+                          ),
                         ),
                       )
                       .toList(),
@@ -144,48 +153,11 @@ class DeviceScreen extends StatelessWidget {
 
   final BluetoothDevice device;
 
-  List<int> _getRandomBytes() {
-    final math = Random();
-    return [
-      math.nextInt(255),
-      math.nextInt(255),
-      math.nextInt(255),
-      math.nextInt(255)
-    ];
-  }
-
-  List<Widget> _buildServiceTiles(List<BluetoothService> services) {
-    return services
-        .map(
-          (s) => ServiceTile(
-            service: s,
-            characteristicTiles: s.characteristics
-                .map(
-                  (c) => CharacteristicTile(
-                    characteristic: c,
-                    onReadPressed: () => c.read(),
-                    onWritePressed: () => c.write(_getRandomBytes()),
-                    onNotificationPressed: () =>
-                        c.setNotifyValue(!c.isNotifying),
-                    descriptorTiles: c.descriptors
-                        .map(
-                          (d) => DescriptorTile(
-                            descriptor: d,
-                            onReadPressed: () => d.read(),
-                            onWritePressed: () => d.write(_getRandomBytes()),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                )
-                .toList(),
-          ),
-        )
-        .toList();
-  }
-
   @override
   Widget build(BuildContext context) {
+    BluetoothBloc bluetoothBloc;
+    bluetoothBloc = BluetoothProvider.of(context);
+    bluetoothBloc.connectDevice(this.device);
     return Scaffold(
       appBar: AppBar(
         title: Text(device.name),
@@ -198,7 +170,10 @@ class DeviceScreen extends StatelessWidget {
               String text;
               switch (snapshot.data) {
                 case BluetoothDeviceState.connected:
-                  onPressed = () => device.disconnect();
+                  onPressed = () {
+                    bluetoothBloc.disconnectDevice();
+                    device.disconnect();
+                  };
                   text = 'DISCONNECT';
                   break;
                 case BluetoothDeviceState.disconnected:
@@ -286,5 +261,45 @@ class DeviceScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  List<int> _getRandomBytes() {
+    final math = Random();
+    return [
+      math.nextInt(255),
+      math.nextInt(255),
+      math.nextInt(255),
+      math.nextInt(255)
+    ];
+  }
+
+  List<Widget> _buildServiceTiles(List<BluetoothService> services) {
+    return services
+        .map(
+          (s) => ServiceTile(
+            service: s,
+            characteristicTiles: s.characteristics
+                .map(
+                  (c) => CharacteristicTile(
+                    characteristic: c,
+                    onReadPressed: () => c.read(),
+                    onWritePressed: () => c.write(_getRandomBytes()),
+                    onNotificationPressed: () =>
+                        c.setNotifyValue(!c.isNotifying),
+                    descriptorTiles: c.descriptors
+                        .map(
+                          (d) => DescriptorTile(
+                            descriptor: d,
+                            onReadPressed: () => d.read(),
+                            onWritePressed: () => d.write(_getRandomBytes()),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                )
+                .toList(),
+          ),
+        )
+        .toList();
   }
 }

@@ -30,7 +30,6 @@ ret_code_t sensors_init (sensors_t* p_sensors) {
 
 void timer_handler(nrf_timer_event_t event_type, void * p_context)
 {
-    NRF_LOG_INFO("hey");
 }
 
 
@@ -86,12 +85,20 @@ void saadc_callback(nrf_drv_saadc_evt_t const * p_event)
 
         err_code = nrf_drv_saadc_buffer_convert(p_event->data.done.p_buffer, SAMPLES_IN_BUFFER);
         APP_ERROR_CHECK(err_code);
-
+        
+        #if (!MOCK_ADC)
         for (int i = 0; i < SAMPLES_IN_BUFFER; i++)
         {
             m_sensors->values[i] = (sensors_value_t) p_event->data.done.p_buffer[i];
             NRF_LOG_INFO("m_sensors->values[%d] %d", i, m_sensors->values[i] );
         }
+        #else
+        update_sensor_values(m_sensors);
+        for (int i = 0; i < SAMPLES_IN_BUFFER; i++)
+        {
+            NRF_LOG_INFO("m_sensors->values[%d] %d", i, m_sensors->values[i] );
+        }
+        #endif
     }
 }
 
@@ -131,3 +138,8 @@ void saadc_init(void)
 
 }
 
+void update_sensor_values(sensors_t* sensors) {
+    for (int i=0; i<SENSORS_COUNT; i++){
+        sensors->values[i] = sensors->values[i] + i + 1;
+    }
+}
