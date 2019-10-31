@@ -69,7 +69,6 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
                   return Text('ConnectionWaiting');
                 case ConnectionState.active:
                   return SizedBox(
-                    // TODO: change 0.5 magic number..
                     height: graphsHeight / (Sensor.values.length + 2),
                     child: LineChart.withSampleData(
                       _parseSensorData(snapshot.data, sensor),
