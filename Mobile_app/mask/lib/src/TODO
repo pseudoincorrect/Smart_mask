@@ -2,13 +2,16 @@ TO DO
 set up pairing for a particular device
 refactor sensor enum
 add navigation from connect page to home page
-
+appFloatingButton change depending on bluetooth status
+app title change depending on bluetooth status
+add a screen for graph details
 
 IN PROCESS
 send bluetooth data to database
 
 
 DONE
+02/11/2019  UI      added tab navigation for home and graph
 30/10/2019  BLE     receive and print bluetooth data from NRF
 30/10/2019  BLE     set up bluetooth device list
 28/10/2019  BLOC    try flutter_bloc didn't like it, came back to custom bloc

@@ -1,6 +1,5 @@
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mask/src/repositories/sensor_data_repo.dart';
-import 'package:rxdart/rxdart.dart';
 import './smart_mask_services_const.dart' as servicesConst;
 
 final String sensorService = servicesConst.s["smartMaskService"]["UUID"];
@@ -43,7 +42,7 @@ class BluetoothBloc {
 
   onUpdateServices(List<BluetoothService> services) {
     for (var service in services) {
-//      print("service: ${service.uuid.toString()}");
+      print("service: ${service.uuid.toString()}");
       updateCharacteristics(service.characteristics);
     }
   }
@@ -51,9 +50,9 @@ class BluetoothBloc {
   updateCharacteristics(List<BluetoothCharacteristic> characteristics) {
     for (var characteristic in characteristics) {
 //      print("characteristic: ${characteristic.uuid.toString()}");
-      if (characteristic.uuid.toString() == sensorCharactUUID) {
-        setSensorReceive(characteristic);
-      }
+//      if (characteristic.uuid.toString() == sensorCharactUUID) {
+//        setSensorReceive(characteristic);
+//      }
     }
   }
 

@@ -1,0 +1,3 @@
+On android:
+
+Delete bond with device (either with android settings or with nrfConnect)

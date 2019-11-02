@@ -6,7 +6,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Text("Home"),
+        Center(child: Text("Home")),
 //        NavigationButtons(),
       ],
     );

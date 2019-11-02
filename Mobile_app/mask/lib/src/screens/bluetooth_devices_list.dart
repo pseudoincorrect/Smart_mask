@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mask/src/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:mask/src/blocs/bluetooth/bluetooth_provider.dart';
-import 'package:mask/src/widgets/navigation_buttons.dart';
 import '../widgets/flutter_blue_widgets.dart';
 
 Widget bluetoothDevicesList() {
@@ -66,7 +65,6 @@ class FindDevicesScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-//              NavigationButtons(),
               StreamBuilder<List<BluetoothDevice>>(
                 stream: Stream.periodic(Duration(seconds: 2))
                     .asyncMap((_) => FlutterBlue.instance.connectedDevices),
@@ -186,14 +184,15 @@ class DeviceScreen extends StatelessWidget {
                   break;
               }
               return FlatButton(
-                  onPressed: onPressed,
-                  child: Text(
-                    text,
-                    style: Theme.of(context)
-                        .primaryTextTheme
-                        .button
-                        .copyWith(color: Colors.white),
-                  ));
+                onPressed: onPressed,
+                child: Text(
+                  text,
+                  style: Theme.of(context)
+                      .primaryTextTheme
+                      .button
+                      .copyWith(color: Colors.white),
+                ),
+              );
             },
           )
         ],
