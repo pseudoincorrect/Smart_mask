@@ -16,7 +16,6 @@ class Graph extends StatelessWidget {
     return Column(
       children: <Widget>[
 //        NavigationButtons(),
-        DbControlButtons(),
         SizedBox(
           height: 600.0,
           child: RefreshingGraph(),

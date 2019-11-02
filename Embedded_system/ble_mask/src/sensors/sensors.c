@@ -1,7 +1,7 @@
 #include "sensors.h"
 
 #define SAMPLES_IN_BUFFER SENSORS_COUNT
-#define SAMPLE_RATE_MS 3000
+#define SAMPLE_RATE_MS 1000
 
 static const nrf_drv_timer_t m_timer = NRF_DRV_TIMER_INSTANCE(2);
 static nrf_saadc_value_t     m_buffer_pool[2][SENSORS_COUNT];
@@ -137,6 +137,7 @@ void saadc_init(void)
     APP_ERROR_CHECK(err_code);
 
 }
+
 
 void update_sensor_values(sensors_t* sensors) {
     for (int i=0; i<SENSORS_COUNT; i++){

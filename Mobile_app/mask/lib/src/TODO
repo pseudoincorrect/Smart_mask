@@ -1,29 +1,30 @@
 TO DO
-set up pairing for a particular device
-refactor sensor enum
-add navigation from connect page to home page
+refactor sensor timer (get from Db) out of bluetooth bloc
 appFloatingButton change depending on bluetooth status
-app title change depending on bluetooth status
 add a screen for graph details
+fix the databe sensor ID method
+
 
 IN PROCESS
-send bluetooth data to database
 
 
 DONE
-02/11/2019  UI      added tab navigation for home and graph
-30/10/2019  BLE     receive and print bluetooth data from NRF
-30/10/2019  BLE     set up bluetooth device list
-28/10/2019  BLOC    try flutter_bloc didn't like it, came back to custom bloc
-19/10/2019  DB      delete data db older than x time per sensor
-19/10/2019  DB      get data per time interval per sensor
-19/10/2019  DB      get data per time interval
-19/10/2019  GRAPH   graphs individually update
-19/10/2019  DB      get data db per sensor
-18/10/2019  GRAPH   display on multiple graph
-17/10/2019  GRAPH   display data on a graph
-17/10/2019  DB      refresh with new data detection
-16/10/2019  DB      push data to sqflite database
-16/10/2019  DB      recover and print data with a button
-16/10/2019  DB      set up a SQFLite database and store a time series
+02/11/2019  BLE     Fix problem connect an already connect device
+02/11/2019  UI      App title change depending on bluetooth status
+02/11/2019  DB      Send bluetooth data to database
+02/11/2019  UI      Added tab navigation for home and graph
+30/10/2019  BLE     Receive and print bluetooth data from NRF
+30/10/2019  BLE     Set up bluetooth device list
+28/10/2019  BLOC    Try flutter_bloc didn't like it, came back to custom bloc
+19/10/2019  DB      Delete data db older than x time per sensor
+19/10/2019  DB      Get data per time interval per sensor
+19/10/2019  DB      Get data per time interval
+19/10/2019  GRAPH   Graphs individually update
+19/10/2019  DB      Get data db per sensor
+18/10/2019  GRAPH   Display on multiple graph
+17/10/2019  GRAPH   Display data on a graph
+17/10/2019  DB      Refresh with new data detection
+16/10/2019  DB      Push data to sqflite database
+16/10/2019  DB      Recover and print data with a button
+16/10/2019  DB      Set up a SQFLite database and store a time series
 

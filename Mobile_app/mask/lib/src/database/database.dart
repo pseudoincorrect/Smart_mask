@@ -28,10 +28,10 @@ class DatabaseProvider {
 
   void initDb(Database database, int version) async {
     await database.execute("CREATE TABLE $sensorDataTABLE ("
-      "id INTEGER PRIMARY KEY, "
-      "sensorName TEXT, "
-      "timeStamp INT,"
-      "value INT"
-      ")");
+        "id INTEGER PRIMARY KEY, "
+        "sensorName TEXT, "
+        "timeStamp INT,"
+        "value INT"
+        ")");
   }
 }

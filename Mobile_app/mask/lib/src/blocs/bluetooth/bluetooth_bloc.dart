@@ -1,4 +1,5 @@
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:mask/src/database/models/sensor_model.dart';
 import 'package:mask/src/repositories/sensor_data_repo.dart';
 import './smart_mask_services_const.dart' as servicesConst;
 
@@ -8,36 +9,36 @@ final String sensorCharactUUID =
 
 class BluetoothBloc {
   Stream<BluetoothState> _bluetoothState;
-  BluetoothDevice _device;
   SensorDataRepository _sensorDataRepository;
+  Stream<bool> _isConnected;
 
   BluetoothBloc() {
-    init();
     _sensorDataRepository = SensorDataRepository();
     _bluetoothState = FlutterBlue.instance.state;
+    _isConnected =
+        Stream.periodic(Duration(seconds: 2)).asyncMap((_) => checkConnected());
+  }
+
+  Future<bool> checkConnected() async {
+    List<BluetoothDevice> devices = await FlutterBlue.instance.connectedDevices;
+    if (devices.length > 0) {
+      return Future.value(true);
+    }
+    return Future.value(false);
   }
 
   Stream<BluetoothState> get bluetoothStateStream {
     return _bluetoothState;
   }
 
-  void init() {
-    print("init bluetooth bloc");
+  listenDevice(BluetoothDevice device) async {
+    if (!await checkConnected()) {
+      device.services.listen(onUpdateServices);
+    }
   }
 
-  void printDevice() {
-    print("${this._device?.name.toString()}");
-  }
-
-  connectDevice(BluetoothDevice device) async {
-    this._device = device;
-    this._device.services.listen(onUpdateServices);
-//    this._device.discoverServices();
-  }
-
-  disconnectDevice() {
-    print("disconnectDevice");
-    this._device = null;
+  Stream<bool> get isConnected {
+    return _isConnected;
   }
 
   onUpdateServices(List<BluetoothService> services) {
@@ -49,28 +50,34 @@ class BluetoothBloc {
 
   updateCharacteristics(List<BluetoothCharacteristic> characteristics) {
     for (var characteristic in characteristics) {
-//      print("characteristic: ${characteristic.uuid.toString()}");
-//      if (characteristic.uuid.toString() == sensorCharactUUID) {
-//        setSensorReceive(characteristic);
-//      }
+      print("characteristic: ${characteristic.uuid.toString()}");
+      if (characteristic.uuid.toString() == sensorCharactUUID) {
+        setSensorReceive(characteristic);
+      }
     }
   }
 
   setSensorReceive(BluetoothCharacteristic characteristic) {
     print("sensor chararcteristic ${characteristic.uuid.toString()}");
     characteristic.value.listen(onReceiveValue);
-    characteristic.setNotifyValue(true);
+    if (!characteristic.isNotifying) characteristic.setNotifyValue(true);
   }
 
-  onReceiveValue(List<int> values) {
-    parseSensorValues(values);
+  onReceiveValue(List<int> values) async {
+    var sensorDatas = List<SensorData>();
+    parseSensorValues(values, sensorDatas);
+    for (var sensorData in sensorDatas) {
+      await _sensorDataRepository.insertSensorData(sensorData);
+    }
   }
 
-  List<int> parseSensorValues(List<int> values) {
-    var newValues = List<int>();
-    print("values: " + values.toString());
-
-    return values;
+  List<SensorData> parseSensorValues(
+      List<int> values, List<SensorData> sensorDatas) {
+    for (var i = 0, j = 0; i < values.length; i += 2, j++) {
+      int value = values[i] + (values[i + 1] << 8);
+      sensorDatas.add(SensorData.fromSensorAndValue(Sensor.values[j], value));
+    }
+    return sensorDatas;
   }
 
   dispose() {}

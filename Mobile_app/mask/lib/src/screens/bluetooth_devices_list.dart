@@ -107,14 +107,17 @@ class FindDevicesScreen extends StatelessWidget {
                       .map(
                         (r) => ScanResultTile(
                           result: r,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) {
-                                r.device.connect();
-                                return DeviceScreen(device: r.device);
-                              },
-                            ),
-                          ),
+                          onTap: () async {
+                            bool isConnected = await alreadyConnected(r.device);
+                            if (!isConnected) r.device.connect();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return DeviceScreen(device: r.device);
+                                },
+                              ),
+                            );
+                          },
                         ),
                       )
                       .toList(),
@@ -144,6 +147,15 @@ class FindDevicesScreen extends StatelessWidget {
       ),
     );
   }
+
+  Future<bool> alreadyConnected(BluetoothDevice device) async {
+    var connectedDevices = List<BluetoothDevice>();
+    connectedDevices = await FlutterBlue.instance.connectedDevices;
+    for (var dev in connectedDevices) {
+      if (dev.id == device.id) return Future.value(true);
+    }
+    return Future.value(false);
+  }
 }
 
 class DeviceScreen extends StatelessWidget {
@@ -155,7 +167,7 @@ class DeviceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     BluetoothBloc bluetoothBloc;
     bluetoothBloc = BluetoothProvider.of(context);
-    bluetoothBloc.connectDevice(this.device);
+    bluetoothBloc.listenDevice(this.device);
     return Scaffold(
       appBar: AppBar(
         title: Text(device.name),
@@ -169,7 +181,6 @@ class DeviceScreen extends StatelessWidget {
               switch (snapshot.data) {
                 case BluetoothDeviceState.connected:
                   onPressed = () {
-                    bluetoothBloc.disconnectDevice();
                     device.disconnect();
                   };
                   text = 'DISCONNECT';

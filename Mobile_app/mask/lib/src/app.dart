@@ -48,11 +48,18 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class TabControl extends StatelessWidget {
-  const TabControl({Key key}) : super(key: key);
+class TabControl extends StatefulWidget {
+  TabControl({Key key}) : super(key: key);
 
   @override
+  _TabControlState createState() => _TabControlState();
+}
+
+class _TabControlState extends State<TabControl> {
+  BluetoothBloc bluetoothBloc;
+
   Widget build(BuildContext context) {
+    bluetoothBloc = BluetoothProvider.of(context);
     return DefaultTabController(
       length: choices.length,
       child: Scaffold(
@@ -61,7 +68,16 @@ class TabControl extends StatelessWidget {
             children: <Widget>[
               const Text('Q-Blue'),
               Expanded(child: Container()),
-              Text('device con'),
+              StreamBuilder<bool>(
+                stream: bluetoothBloc.isConnected,
+                initialData: false,
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.data == true) {
+                    return Text("device connected");
+                  }
+                  return Text("device disconnected");
+                },
+              ),
             ],
           ),
           bottom: TabBar(

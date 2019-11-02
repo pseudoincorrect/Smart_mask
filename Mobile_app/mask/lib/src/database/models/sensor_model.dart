@@ -1,3 +1,5 @@
+import 'dart:math';
+
 enum Sensor { temperature, humidity, acetone, respiration }
 
 Sensor sensorStringToEnum(String sensor) {
@@ -28,6 +30,18 @@ class SensorData {
   int value;
 
   SensorData({this.id, this.sensorName, this.timeStamp, this.value});
+
+  factory SensorData.fromSensorAndValue(Sensor sensorName, int value) {
+    int timeStamp = DateTime.now().millisecondsSinceEpoch;
+    var rng = Random();
+    int id = rng.nextInt(1000000);
+    return SensorData(
+      id: id,
+      sensorName: sensorName,
+      timeStamp: timeStamp,
+      value: value,
+    );
+  }
 
   factory SensorData.fromDatabaseJson(Map<String, dynamic> data) => SensorData(
       id: data['id'],
