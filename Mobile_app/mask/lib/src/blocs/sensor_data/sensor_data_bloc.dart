@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:rxdart/rxdart.dart';
 import 'package:mask/src/database/models/sensor_model.dart';
 
@@ -5,6 +7,8 @@ import 'package:mask/src/repositories/sensor_data_repo.dart';
 
 class SensorDataBloc {
   final _sensorDataRepo = SensorDataRepository();
+  Duration windowInterval = Duration(seconds: 10);
+  Duration refreshInterval = Duration(seconds: 1);
 
   Map<Sensor, BehaviorSubject<List<SensorData>>> _sensorDataSubjects = Map();
   Map<Sensor, Stream<List<SensorData>>> _sensorDataStreams = Map();
@@ -17,6 +21,8 @@ class SensorDataBloc {
       _sensorDataStreams[Sensor.values[i]] =
           _sensorDataSubjects[Sensor.values[i]].stream;
     }
+
+    setupTimers(refreshInterval);
   }
 
   getSensorData(Sensor sensor, {List<DateTime> interval}) async {
@@ -36,6 +42,23 @@ class SensorDataBloc {
 
   deleteAllSensorData() async {
     await _sensorDataRepo.deleteAllSensorData();
+  }
+
+  setupTimers(Duration refreshInterval) {
+    for (var index = 0; index < Sensor.values.length; index++) {
+      Sensor sensor = Sensor.values[index];
+      startTimeout(refreshInterval, sensor);
+    }
+  }
+
+  startTimeout(Duration refreshInterval, Sensor sensor) {
+    return new Timer.periodic(
+        refreshInterval, (Timer t) => sensorRefreshTimeout(sensor));
+  }
+
+  void sensorRefreshTimeout(Sensor sensor) {
+    this.getSensorData(sensor,
+        interval: [DateTime.now().subtract(windowInterval), DateTime.now()]);
   }
 
   dispose() {

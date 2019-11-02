@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';
-
 import 'package:mask/src/blocs/sensor_data/sensor_data_provider.dart';
 import 'package:mask/src/widgets/graph/time_series.dart';
 import 'package:mask/src/widgets/db_control_buttons.dart';
@@ -11,26 +9,21 @@ import 'package:mask/src/database/models/sensor_model.dart';
 import 'package:mask/src/widgets/navigation_buttons.dart';
 
 final num graphsHeight = 600.0;
-Duration windowInterval = Duration(seconds: 10);
-Duration refreshInterval = Duration(seconds: 1);
 
-Widget graphs() {
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text("graphs"),
-    ),
-    body: Column(
+class Graph extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
       children: <Widget>[
-        NavigationButtons(),
+//        NavigationButtons(),
         DbControlButtons(),
-//        RefreshingGraph(),
         SizedBox(
           height: 600.0,
           child: RefreshingGraph(),
         ),
       ],
-    ),
-  );
+    );
+  }
 }
 
 class RefreshingGraph extends StatefulWidget {
@@ -51,14 +44,15 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
       itemCount: Sensor.values.length,
       itemBuilder: (context, index) {
         Sensor sensor = Sensor.values[index];
-        graphUpdateTimers.add(startTimeout(refreshInterval, sensor));
 
         return ListTile(
-          subtitle: Row(children: [
-            Text(sensor.toString()),
-            FlatButton(onPressed: navigateSensorDetails, child: Text("Details"))
+          title: Row(children: [
+            Text(sensor.toString().replaceFirst('Sensor.', '').toUpperCase()),
+            Expanded(child: Container()),
+            RaisedButton(
+                onPressed: navigateSensorDetails, child: Text("Details"))
           ]),
-          title: StreamBuilder(
+          subtitle: StreamBuilder(
             stream: sensorDataBloc.getStream(sensor),
             builder: (BuildContext context,
                 AsyncSnapshot<List<SensorData>> snapshot) {
@@ -71,6 +65,7 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
                 case ConnectionState.active:
                   return SizedBox(
                     height: 90.0,
+//                      child: LineChart.withRandomData());
                     child: LineChart.withSampleData(
                       _parseSensorData(snapshot.data, sensor),
                     ),
@@ -102,15 +97,6 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
     }
     timeSeries.sort((a, b) => (a.time.compareTo(b.time)));
     return timeSeries;
-  }
-
-  startTimeout(Duration duration, Sensor sensor) {
-    return new Timer.periodic(duration, (Timer t) => handleTimeout(sensor));
-  }
-
-  void handleTimeout(Sensor sensor) {
-    sensorDataBloc.getSensorData(sensor,
-        interval: [DateTime.now().subtract(windowInterval), DateTime.now()]);
   }
 
   void navigateSensorDetails() {

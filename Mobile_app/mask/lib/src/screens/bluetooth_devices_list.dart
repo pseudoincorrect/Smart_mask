@@ -66,7 +66,7 @@ class FindDevicesScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              NavigationButtons(),
+//              NavigationButtons(),
               StreamBuilder<List<BluetoothDevice>>(
                 stream: Stream.periodic(Duration(seconds: 2))
                     .asyncMap((_) => FlutterBlue.instance.connectedDevices),

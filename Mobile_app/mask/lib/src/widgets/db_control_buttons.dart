@@ -25,19 +25,19 @@ class _DbControlButtonsState extends State<DbControlButtons> {
     sensorDataBloc = SensorDataProvider.of(context);
     return Row(
       children: <Widget>[
-        FlatButton(
+        RaisedButton(
           onPressed: () => insertDataButton(context),
           child: Text("Insert Data"),
         ),
-        FlatButton(
+        RaisedButton(
           onPressed: () => deleteDataButton(context),
           child: Text("Delete Data"),
         ),
-        // FlatButton(
+        // RaisedButton(
         //   onPressed: () => customQueryButton(context),
         //   child: Text("Custom Query"),
         // ),
-        FlatButton(
+        RaisedButton(
           onPressed: () => bluetoothBlocPrint(),
           child: Text("BluetoothBloc Print"),
         ),
