@@ -104,10 +104,13 @@ class FindDevicesScreen extends StatelessWidget {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
+                      .where((r) => r.device.name == "Smart_Mask")
+                      .toList()
                       .map(
                         (r) => ScanResultTile(
                           result: r,
                           onTap: () async {
+                            print("r.device.id.id = " + r.device.id.id);
                             bool isConnected = await alreadyConnected(r.device);
                             if (!isConnected) r.device.connect();
                             Navigator.of(context).push(

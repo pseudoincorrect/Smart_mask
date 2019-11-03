@@ -1,14 +1,16 @@
 TO DO
 refactor sensor timer (get from Db) out of bluetooth bloc
 appFloatingButton change depending on bluetooth status
+fix disconnect/connect setNotifyValue
 add a screen for graph details
-fix the databe sensor ID method
 
 
 IN PROCESS
+fix the database sensor ID method
 
 
 DONE
+03/11/2019  BLE     Filter scan results
 02/11/2019  BLE     Fix problem connect an already connect device
 02/11/2019  UI      App title change depending on bluetooth status
 02/11/2019  DB      Send bluetooth data to database

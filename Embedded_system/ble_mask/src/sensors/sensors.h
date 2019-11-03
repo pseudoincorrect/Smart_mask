@@ -1,8 +1,12 @@
 #ifndef __SENSORS_H__
 #define __SENSORS_H__
 
+// app config
+#include "app_config.h"
 //Standard Libraries
 #include <stdint.h>
+#include <stdlib.h>
+#include <time.h>
 // Log
 #include "nrf_log.h"
 // Error
@@ -11,8 +15,9 @@
 #include "nrf_drv_saadc.h"
 #include "nrf_drv_ppi.h"
 #include "nrf_drv_timer.h"
-// app config
-#include "app_config.h"
+#if (MOCK_ADC)
+#include "nrf_drv_rng.h"
+#endif
 
 // SENSORS
 #define SENSORS_COUNT 4
@@ -54,4 +59,10 @@ void saadc_sampling_event_init(void);
 ret_code_t sensors_init(sensors_t* p_sensors);
 void timer_handler(nrf_timer_event_t event_type, void * p_context);
 void update_sensor_values(sensors_t* sensors);
+#if (MOCK_ADC)
+static uint8_t random_vector_generate(uint8_t * p_buff, uint8_t size);
+void random_vector_generate_init(void); 
+void mock_sensor_values(sensors_t* sensors); 
+#endif
+
 #endif

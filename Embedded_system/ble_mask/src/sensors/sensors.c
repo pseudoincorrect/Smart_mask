@@ -1,7 +1,7 @@
 #include "sensors.h"
 
 #define SAMPLES_IN_BUFFER SENSORS_COUNT
-#define SAMPLE_RATE_MS 1000
+#define SAMPLE_RATE_MS 500
 
 static const nrf_drv_timer_t m_timer = NRF_DRV_TIMER_INSTANCE(2);
 static nrf_saadc_value_t     m_buffer_pool[2][SENSORS_COUNT];
@@ -23,6 +23,10 @@ ret_code_t sensors_init (sensors_t* p_sensors) {
     saadc_sampling_event_init();
     saadc_sampling_event_enable();
     NRF_LOG_INFO("SAADC HAL simple example started.");
+
+    #if (MOCK_ADC)
+    random_vector_generate_init();
+    #endif
 
     return  NRF_SUCCESS;
 }
@@ -93,7 +97,7 @@ void saadc_callback(nrf_drv_saadc_evt_t const * p_event)
             NRF_LOG_INFO("m_sensors->values[%d] %d", i, m_sensors->values[i] );
         }
         #else
-        update_sensor_values(m_sensors);
+        mock_sensor_values(m_sensors);
         for (int i = 0; i < SAMPLES_IN_BUFFER; i++)
         {
             NRF_LOG_INFO("m_sensors->values[%d] %d", i, m_sensors->values[i] );
@@ -138,9 +142,36 @@ void saadc_init(void)
 
 }
 
+#if (MOCK_ADC)
+static uint8_t random_vector_generate(uint8_t * p_buff, uint8_t size)
+{
+    uint32_t err_code;
+    uint8_t  available;
 
-void update_sensor_values(sensors_t* sensors) {
+    nrf_drv_rng_bytes_available(&available);
+    uint8_t length = MIN(size, available);
+
+    err_code = nrf_drv_rng_rand(p_buff, length);
+    APP_ERROR_CHECK(err_code);
+
+    return length;
+}
+
+
+void random_vector_generate_init(void) {
+    uint32_t err_code;
+    err_code = nrf_drv_rng_init(NULL);
+    APP_ERROR_CHECK(err_code);
+}
+
+void mock_sensor_values(sensors_t* sensors) {
+    
+    uint8_t randoms[SENSORS_COUNT];
+    random_vector_generate(randoms, SENSORS_COUNT);
+
     for (int i=0; i<SENSORS_COUNT; i++){
-        sensors->values[i] = sensors->values[i] + i + 1;
+     
+        sensors->values[i] = randoms[i];
     }
 }
+#endif

@@ -8,7 +8,7 @@ run in terminal:
 
 example:
     for deskop_max config
-    java -jar C:\Users\Max\Programming\SDKs\nordic\nRF5_SDK_15_3_0\external_tools\cmsisconfig\CMSIS_Configuration_Wizard.jar C:\Users\Max\Documents\Git\smart_mask\Embedded_system\ble_mask\src\config\sdk_config.h
+    java -jar C:\Users\Max\Programming\SDKs\nordic\nRF5_SDK_15_3_0\external_tools\cmsisconfig\CMSIS_Configuration_Wizard.jar C:\Users\Max\Documents\Git\smart_mask\Embedded_system\ble_mask\src\sdk_config\sdk_config.h
     for laptop_max confit
     java -jar C:\Users\maxim\Programming\SDKs\nordic\nRF5_SDK_15_3_0\external_tools\cmsisconfig\CMSIS_Configuration_Wizard.jar C:\Users\maxim\Documents\git\smart_mask\Embedded_system\ble_mask\src\sdk_config\sdk_config.h
 
