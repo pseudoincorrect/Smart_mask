@@ -6,7 +6,8 @@ import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';
 import 'package:mask/src/blocs/sensor_data/sensor_data_provider.dart';
 import 'package:mask/src/screens/bluetooth_devices_list.dart';
 import 'package:mask/src/screens/graphs.dart';
-import './screens/home.dart';
+import 'package:mask/src/screens/sensor_details.dart';
+import 'package:mask/src/screens/home.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -26,7 +27,6 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: "Smart Mask",
           theme: getTheme(),
-//          home: Home(),
           home: TabControl(),
         ),
       ),
@@ -73,9 +73,9 @@ class _TabControlState extends State<TabControl> {
                 initialData: false,
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.data == true) {
-                    return Text("device connected");
+                    return Text("Device Connected");
                   }
-                  return Text("device disconnected");
+                  return Text("Device Disconnected");
                 },
               ),
             ],
@@ -131,9 +131,14 @@ List<Choice> choices = <Choice>[
     widget: (BuildContext context) => Home(),
   ),
   Choice(
-    title: 'Insights',
-    icon: Icons.details,
+    title: 'Graphs',
+    icon: Icons.show_chart,
     widget: (BuildContext context) => Graph(),
+  ),
+  Choice(
+    title: 'Details',
+    icon: Icons.details,
+    widget: (BuildContext context) => GraphDetails(),
   ),
 ];
 

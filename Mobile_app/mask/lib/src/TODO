@@ -1,14 +1,26 @@
+-----------------------------------------------------------
 TO DO
+-----------------------------------------------------------
 refactor sensor timer (get from Db) out of bluetooth bloc
 appFloatingButton change depending on bluetooth status
 fix disconnect/connect setNotifyValue
+automatise the bluetooth connection
+refactor GraphDetails and Graphs out of screen
+Detect device Deconnection
 
 
+-----------------------------------------------------------
 IN PROCESS
-add a screen for graph details
+-----------------------------------------------------------
+Select graph with drop button on GraphDetails
 
 
+-----------------------------------------------------------
 DONE
+
+Date        Tag     Description
+-----------------------------------------------------------
+04/11/2019  UI      Add a screen for graph details
 04/11/2019  DB      Fix the database sensor ID method
 04/11/2019  BLE     Show connected devices without delay
 03/11/2019  BLE     Filter scan results
