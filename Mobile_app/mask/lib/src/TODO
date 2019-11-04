@@ -2,14 +2,15 @@ TO DO
 refactor sensor timer (get from Db) out of bluetooth bloc
 appFloatingButton change depending on bluetooth status
 fix disconnect/connect setNotifyValue
-add a screen for graph details
 
 
 IN PROCESS
-fix the database sensor ID method
+add a screen for graph details
 
 
 DONE
+04/11/2019  DB      Fix the database sensor ID method
+04/11/2019  BLE     Show connected devices without delay
 03/11/2019  BLE     Filter scan results
 02/11/2019  BLE     Fix problem connect an already connect device
 02/11/2019  UI      App title change depending on bluetooth status
@@ -17,7 +18,7 @@ DONE
 02/11/2019  UI      Added tab navigation for home and graph
 30/10/2019  BLE     Receive and print bluetooth data from NRF
 30/10/2019  BLE     Set up bluetooth device list
-28/10/2019  BLOC    Try flutter_bloc didn't like it, came back to custom bloc
+28/10/2019  BLOC    Tried flutter_bloc, didn't like it, came back to custom bloc
 19/10/2019  DB      Delete data db older than x time per sensor
 19/10/2019  DB      Get data per time interval per sensor
 19/10/2019  DB      Get data per time interval
@@ -26,7 +27,7 @@ DONE
 18/10/2019  GRAPH   Display on multiple graph
 17/10/2019  GRAPH   Display data on a graph
 17/10/2019  DB      Refresh with new data detection
-16/10/2019  DB      Push data to sqflite database
+16/10/2019  DB      Push data to SQFLite database
 16/10/2019  DB      Recover and print data with a button
 16/10/2019  DB      Set up a SQFLite database and store a time series
 

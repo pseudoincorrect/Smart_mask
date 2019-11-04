@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mask/src/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:mask/src/blocs/bluetooth/bluetooth_provider.dart';
+import 'package:rxdart/rxdart.dart';
 import '../widgets/flutter_blue_widgets.dart';
 
 Widget bluetoothDevicesList() {
@@ -66,8 +67,11 @@ class FindDevicesScreen extends StatelessWidget {
           child: Column(
             children: <Widget>[
               StreamBuilder<List<BluetoothDevice>>(
-                stream: Stream.periodic(Duration(seconds: 2))
-                    .asyncMap((_) => FlutterBlue.instance.connectedDevices),
+                stream: MergeStream([
+                  Stream.fromFuture(FlutterBlue.instance.connectedDevices),
+                  Stream.periodic(Duration(seconds: 2))
+                      .asyncMap((_) => FlutterBlue.instance.connectedDevices),
+                ]),
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data

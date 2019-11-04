@@ -22,16 +22,23 @@ class DatabaseProvider {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, 'SensorData.db');
 
+    await deleteDatabase(path);
+    print("database deleted");
+
     var database = await openDatabase(path, version: 1, onCreate: initDb);
+    print("database created");
+
     return database;
   }
 
   void initDb(Database database, int version) async {
-    await database.execute("CREATE TABLE $sensorDataTABLE ("
-        "id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT, "
-        "sensorName TEXT NOT NULL, "
-        "timeStamp INT NOT NULL,"
-        "value INT NOT NULL"
-        ")");
+    await database.execute(''' 
+    CREATE TABLE $sensorDataTABLE (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+        sensor TEXT NOT NULL, 
+        timeStamp INT NOT NULL,
+        value INT NOT NULL
+    ) 
+    ''');
   }
 }

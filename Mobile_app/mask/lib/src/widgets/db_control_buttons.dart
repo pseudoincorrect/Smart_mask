@@ -50,15 +50,15 @@ class _DbControlButtonsState extends State<DbControlButtons> {
     var id = rng.nextInt(1000000);
     var value = rng.nextInt(100);
     var timestamp = DateTime.now().millisecondsSinceEpoch;
-    Sensor sensorName;
+    Sensor sensor;
 
     int rand = rng.nextInt(Sensor.values.length);
-    sensorName = Sensor.values[rand];
+    sensor = Sensor.values[rand];
 
     SensorData sensorData = SensorData(
       value: value,
       id: id,
-      sensorName: sensorName,
+      sensor: sensor,
       timeStamp: timestamp,
     );
 

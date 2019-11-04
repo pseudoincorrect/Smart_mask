@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';
 import 'package:mask/src/blocs/sensor_data/sensor_data_provider.dart';
 import 'package:mask/src/widgets/graph/time_series.dart';
-import 'package:mask/src/widgets/db_control_buttons.dart';
 import 'package:mask/src/widgets/graph/line_graph.dart';
 import 'package:mask/src/database/models/sensor_model.dart';
-import 'package:mask/src/widgets/navigation_buttons.dart';
 
 final num graphsHeight = 600.0;
 
@@ -15,7 +13,6 @@ class Graph extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-//        NavigationButtons(),
         SizedBox(
           height: 600.0,
           child: RefreshingGraph(),
@@ -85,7 +82,7 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
     var timeSeries = List<TimeSeriesSensor>();
 
     List<SensorData> namedSensorData =
-        sensorData.where((element) => element.sensorName == sensor).toList();
+        sensorData.where((element) => element.sensor == sensor).toList();
 
     for (var data in namedSensorData) {
       var dataPoint = TimeSeriesSensor(

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 enum Sensor { temperature, humidity, acetone, respiration }
 
 Sensor sensorStringToEnum(String sensor) {
@@ -25,19 +23,18 @@ Sensor sensorStringToEnum(String sensor) {
 
 class SensorData {
   int id;
-  Sensor sensorName;
+  Sensor sensor;
   int timeStamp;
   int value;
 
-  SensorData({this.id, this.sensorName, this.timeStamp, this.value});
+  SensorData({this.id, this.sensor, this.timeStamp, this.value});
 
-  factory SensorData.fromSensorAndValue(Sensor sensorName, int value) {
+  factory SensorData.fromSensorAndValue(Sensor sensor, int value) {
     int timeStamp = DateTime.now().millisecondsSinceEpoch;
-    var rng = Random();
-    int id = rng.nextInt(1000000);
+    int id = 0;
     return SensorData(
       id: id,
-      sensorName: sensorName,
+      sensor: sensor,
       timeStamp: timeStamp,
       value: value,
     );
@@ -45,19 +42,18 @@ class SensorData {
 
   factory SensorData.fromDatabaseJson(Map<String, dynamic> data) => SensorData(
       id: data['id'],
-      sensorName: sensorStringToEnum(data['sensorName']),
+      sensor: sensorStringToEnum(data['sensor']),
       timeStamp: data['timeStamp'],
       value: data['value']);
 
   Map<String, dynamic> toDatabaseJson() => {
-        "id": this.id,
-        "sensorName": this.sensorName.toString(),
+        "sensor": this.sensor.toString(),
         "timeStamp": this.timeStamp,
         "value": this.value,
       };
 
   @override
   String toString() {
-    return 'id = ${this.id}, sensorName = ${this.sensorName.toString()}, timeStamp = ${this.timeStamp}, value = ${this.value}';
+    return 'id = ${this.id}, sensor = ${this.sensor.toString()}, timeStamp = ${this.timeStamp}, value = ${this.value}';
   }
 }
