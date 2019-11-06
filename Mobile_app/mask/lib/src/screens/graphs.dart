@@ -4,14 +4,11 @@
 //      Management of the screen page to display all sensors data
 //      on graphs.
 
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';
 import 'package:mask/src/blocs/sensor_data/sensor_data_provider.dart';
 import 'package:mask/src/screens/sensor_details.dart';
 import 'package:mask/src/widgets/graph/sensor_graph.dart';
-import 'package:mask/src/widgets/graph/time_series.dart';
-import 'package:mask/src/widgets/graph/line_graph.dart';
 import 'package:mask/src/database/models/sensor_model.dart';
 
 const num graphsHeight = 600.0;

@@ -1,38 +1,54 @@
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
-                    CODING RULE FOR THIS PROJECT 
+                    CODING RULES FOR THIS PROJECT 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
-// Of course they are subjectives.
+// Of course these rules are subjectives.
 // However Let's keep things consistent by following them.
 
 
-Add a description at the top of each files
+ADD A DESCRIPTION AT THE TOP OF EACH FILES
 
-Work along the TODO file (located in this folder)
 
-Keep name explicit "sensorEnumToString()" is MUCH better than "sEnToStr()
+WORK ALONG THE TODO FILE (LOCATED IN THIS FOLDER)
 
-Do not write code you don't need 
-(If you do not modify data base tables, do not write a update() function
 
-Especially for Business Logic (Bloc), add a description for each function
+KEEP NAME EXPLICIT "SENSORENUMTOSTRING()" IS MUCH BETTER THAN "SENTOSTR()
+        https://medium.com/coding-skills/clean-code-101-meaningful-names-and-functions-bf450456d90c
 
-Refactor to keep the code clean 
-(No long function)
 
-Be consistent with code formating 
-(Letter case, indentations)
+DO NOT WRITE CODE YOU DON'T NEED 
+        https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it
+        (If you do not modify data base tables, do not write a update() function
 
-Use comments wisely 
-(Better to add a description atop a function than comments in it)
 
-Remove print statement as soon as you can
+ESPECIALLY FOR BUSINESS LOGIC (BLOC), ADD A DESCRIPTION FOR EACH FUNCTION
+        https://dart.dev/guides/language/effective-dart/documentation
+        with docstring ///
 
-Organise code files into relevant folders 
-(Rather than one folder with many loosely related files in it)
 
-Use Typing (num, String, List<>) rather than dynamic typing
+REFACTOR TO KEEP THE CODE CLEAN 
+    (No long function)
+
+
+BE CONSISTENT WITH CODE FORMATING 
+        https://dart.dev/guides/language/effective-dart/style
+        (Letter case, indentations)
+
+
+USE COMMENTS WISELY 
+        https://www.todaysoftmag.com/article/1120/clean-code-comments-and-formatting
+        (Better to add a description atop a function than comments in it)
+
+
+REMOVE PRINT STATEMENT AS SOON AS YOU CAN
+
+
+ORGANISE CODE FILES INTO RELEVANT FOLDERS 
+        (Rather than one folder with many loosely related files in it)
+
+
+USE TYPING (NUM, STRING, LIST<>) RATHER THAN DYNAMIC TYPING
 
 

@@ -6,6 +6,7 @@ AppFloatingButton change depending on bluetooth status
 Fix disconnect/connect setNotifyValue
 Automatise the bluetooth connection
 Detect device Deconnection
+Add documentation atop all Bloc related functions
 
 
 -----------------------------------------------------------
@@ -18,6 +19,7 @@ DONE
 
 Date        Tag     Description
 -----------------------------------------------------------
+06/11/2019  DOC     Add documentation atop all files
 06/11/2019  GRAPH   Select graph with drop button on GraphDetails
 05/11/2019  GRAPH   Refactor GraphDetails and Graphs out of screen
 04/11/2019  UI      Add a screen for graph details
