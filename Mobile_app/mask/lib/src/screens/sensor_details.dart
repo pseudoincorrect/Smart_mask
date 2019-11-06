@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';
 import 'package:mask/src/blocs/sensor_data/sensor_data_provider.dart';
+import 'package:mask/src/widgets/drop_button.dart';
 import 'package:mask/src/widgets/graph/sensor_graph.dart';
 import 'package:mask/src/database/models/sensor_model.dart';
 
-const num graphsHeight = 200.0;
+const num graphsHeight = 300.0;
+final List<String> sensors = Sensor.values
+    .map((f) => f.toString().replaceFirst("Sensor.", "").toUpperCase())
+    .toList();
 
 class GraphDetails extends StatelessWidget {
   @override
@@ -20,17 +24,19 @@ class RefreshingGraph extends StatefulWidget {
 
 class _RefreshingGraphState extends State<RefreshingGraph> {
   SensorDataBloc sensorDataBloc;
-  Sensor sensor;
+  Sensor sensor = Sensor.temperature;
+  String dropdownValue = sensors[0];
 
   @override
   Widget build(BuildContext context) {
     sensorDataBloc = SensorDataProvider.of(context);
-    Sensor sensor = Sensor.temperature;
 
     return Column(
       children: <Widget>[
-        Text('selected Sensor'),
-        dropbut(),
+        DropButton(
+            value: dropdownValue,
+            onChanged: dropButtonOnChanged,
+            items: sensors),
         SizedBox(
           height: graphsHeight,
           child: SensorGraph(
@@ -51,32 +57,14 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
     print("navigateSensorDetails");
   }
 
-  String dropdownValue = 'One';
-  Widget dropbut() {
-    return DropdownButton<String>(
-      value: dropdownValue,
-      icon: Icon(Icons.arrow_downward),
-      iconSize: 24,
-      elevation: 16,
-      style: TextStyle(color: Colors.deepPurple),
-      underline: Container(
-        height: 2,
-        color: Colors.deepPurpleAccent,
-      ),
-      onChanged: dropbutOnChanged,
-      items: <String>['One', 'Two', 'Free', 'Four']
-          .map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-    );
-  }
-
-  dropbutOnChanged(String newValue) {
+  dropButtonOnChanged(String newValue) {
     setState(() {
       dropdownValue = newValue;
+      this.sensor = Sensor.values
+          .where((s) =>
+              s.toString().toLowerCase().contains(newValue.toLowerCase()))
+          .toList()[0];
     });
+    print(this.sensor.toString());
   }
 }
