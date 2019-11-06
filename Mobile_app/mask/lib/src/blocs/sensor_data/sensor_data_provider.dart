@@ -1,5 +1,11 @@
+//  Sensor Data Business Logic (BLoc) provider
+//
+//  Description:
+//      Enable the Sensor Data bloc to be accessible (provided)
+//      throughout the app with contex.inherit..
+
 import 'package:flutter/material.dart';
-import './sensor_data_bloc.dart';
+import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';
 
 class SensorDataProvider extends InheritedWidget {
   final SensorDataBloc bloc;

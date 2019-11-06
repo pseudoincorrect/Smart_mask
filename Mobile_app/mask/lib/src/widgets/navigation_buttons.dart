@@ -1,7 +1,13 @@
+//  Database Control Buttons
+//
+//  Description:
+//      Mainly used to debug page Navigation
+//      push button to insert to change pages
+
 import 'package:flutter/material.dart';
-import 'package:mask/src/screens/home.dart';
-import '../screens/bluetooth_devices_list.dart';
-import '../screens/graphs.dart';
+// import 'package:mask/src/screens/home.dart';
+// import 'package:mask/src/screens/bluetooth_devices_list.dart';
+// import 'package:mask/src/screens/graphs.dart';
 
 class NavigationButtons extends StatelessWidget {
   @override

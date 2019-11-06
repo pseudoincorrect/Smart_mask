@@ -1,3 +1,9 @@
+//  Bluetooth Business logic (BLoc)
+//
+//  Description:
+//      contain the bluetooth state management for the app
+//      manage data stream (sensors, and notification)
+
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mask/src/database/models/sensor_model.dart';
 import 'package:mask/src/repositories/sensor_data_repo.dart';

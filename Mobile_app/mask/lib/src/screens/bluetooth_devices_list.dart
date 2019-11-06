@@ -1,12 +1,17 @@
+//  Bluetooth Devices List page
+//
+//  Description:
+//      Display open (connected) device and enable device discovery to later
+//      connect to a relevant bluetooth device
+
 import 'dart:async';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:mask/src/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:mask/src/blocs/bluetooth/bluetooth_provider.dart';
-import 'package:rxdart/rxdart.dart';
-import '../widgets/flutter_blue_widgets.dart';
+import 'package:mask/src/widgets/flutter_blue_widgets.dart';
 
 Widget bluetoothDevicesList() {
   return StreamBuilder<BluetoothState>(

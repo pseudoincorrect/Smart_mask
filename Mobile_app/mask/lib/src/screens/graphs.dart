@@ -1,3 +1,9 @@
+//  All Sensors Graph Screen
+//
+//  Description:
+//      Management of the screen page to display all sensors data
+//      on graphs.
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';

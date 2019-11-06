@@ -1,3 +1,9 @@
+//  Drop Button
+//
+//  Description:
+//      Wrapper aroung DropdownButton widget used for instance to
+//      Select a sensor
+
 import 'package:flutter/material.dart';
 
 class DropButton extends StatelessWidget {
@@ -19,7 +25,7 @@ class DropButton extends StatelessWidget {
       items: items.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
-          child: Text(value),
+          child: Text(value.toUpperCase()),
         );
       }).toList(),
     );

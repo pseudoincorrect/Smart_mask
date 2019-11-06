@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+                    CODING RULE FOR THIS PROJECT 
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+
+// Of course they are subjectives.
+// However Let's keep things consistent by following them.
+
+
+Add a description at the top of each files
+
+Work along the TODO file (located in this folder)
+
+Keep name explicit "sensorEnumToString()" is MUCH better than "sEnToStr()
+
+Do not write code you don't need 
+(If you do not modify data base tables, do not write a update() function
+
+Especially for Business Logic (Bloc), add a description for each function
+
+Refactor to keep the code clean 
+(No long function)
+
+Be consistent with code formating 
+(Letter case, indentations)
+
+Use comments wisely 
+(Better to add a description atop a function than comments in it)
+
+Remove print statement as soon as you can
+
+Organise code files into relevant folders 
+(Rather than one folder with many loosely related files in it)
+
+Use Typing (num, String, List<>) rather than dynamic typing
+
+

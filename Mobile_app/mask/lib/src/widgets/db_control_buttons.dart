@@ -1,3 +1,10 @@
+//  Database Control Buttons
+//
+//  Description:
+//      Mainly used to debug database
+//      push button to insert random data in db,
+//      Delete it, etc...
+
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mask/src/blocs/bluetooth/bluetooth_bloc.dart';

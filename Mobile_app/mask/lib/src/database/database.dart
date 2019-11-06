@@ -1,6 +1,12 @@
+//  Local database for this app
+//
+//  Description:
+//      Database initialisation and Table init
+//      Current Tables:
+//          SensorData (containt sensor data timeseries)
+
 import 'dart:async';
 import 'dart:io';
-
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';

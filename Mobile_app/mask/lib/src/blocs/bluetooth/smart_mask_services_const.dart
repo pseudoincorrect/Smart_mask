@@ -1,3 +1,10 @@
+//  Bluetooth Low Energy Services constants
+//
+//  Description:
+//      Used to store constants related to bluetooth LE service
+//      services: sms (sensor management service)
+//      data is stored in a hierarchical way
+
 const dynamic s = {
   "genericAccessService": {
     "UUID": "00001800-0000-1000-8000-00805f9b34fb",

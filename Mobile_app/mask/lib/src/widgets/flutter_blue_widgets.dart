@@ -2,6 +2,11 @@
 // All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+//  Widget for the Flutter blue package
+//
+//  Description:
+//      Widgets to display bluetooth devices and their info
+
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -24,23 +29,23 @@ class ScanResultTile extends StatelessWidget {
       ),
       children: <Widget>[
         _buildAdvRow(
-          context, 'Complete Local Name', result.advertisementData.localName),
+            context, 'Complete Local Name', result.advertisementData.localName),
         _buildAdvRow(context, 'Tx Power Level',
-          '${result.advertisementData.txPowerLevel ?? 'N/A'}'),
+            '${result.advertisementData.txPowerLevel ?? 'N/A'}'),
         _buildAdvRow(
-          context,
-          'Manufacturer Data',
-          getNiceManufacturerData(
-            result.advertisementData.manufacturerData) ??
-            'N/A'),
+            context,
+            'Manufacturer Data',
+            getNiceManufacturerData(
+                    result.advertisementData.manufacturerData) ??
+                'N/A'),
         _buildAdvRow(
-          context,
-          'Service UUIDs',
-          (result.advertisementData.serviceUuids.isNotEmpty)
-            ? result.advertisementData.serviceUuids.join(', ').toUpperCase()
-            : 'N/A'),
+            context,
+            'Service UUIDs',
+            (result.advertisementData.serviceUuids.isNotEmpty)
+                ? result.advertisementData.serviceUuids.join(', ').toUpperCase()
+                : 'N/A'),
         _buildAdvRow(context, 'Service Data',
-          getNiceServiceData(result.advertisementData.serviceData) ?? 'N/A'),
+            getNiceServiceData(result.advertisementData.serviceData) ?? 'N/A'),
       ],
     );
   }

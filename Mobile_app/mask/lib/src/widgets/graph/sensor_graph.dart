@@ -1,3 +1,8 @@
+//  Sensor chart
+//
+//  Description:
+//      widget used to create a line graph with provided sensor data
+
 import 'package:flutter/material.dart';
 import 'package:mask/src/database/models/sensor_model.dart';
 import 'package:mask/src/widgets/graph/time_series.dart';

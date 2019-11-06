@@ -1,3 +1,9 @@
+//  Sensor Data Database Access
+//
+//  Description:
+//      Enable the access to sensor data database for
+//      the usual Insert, delete, etc..
+
 import 'dart:async';
 import 'package:mask/src/database/database.dart';
 import 'package:mask/src/database/models/sensor_model.dart';
@@ -7,7 +13,6 @@ class SensorDataAccess {
 
   Future<int> createSensorData(SensorData sensorData) async {
     final db = await dbProvider.database;
-//    print(sensorData.toDatabaseJson().toString());
     var result = db.insert(sensorDataTABLE, sensorData.toDatabaseJson());
     return result;
   }

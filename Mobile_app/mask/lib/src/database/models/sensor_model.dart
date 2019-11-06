@@ -1,17 +1,24 @@
+//  Sensor Data Model
+//
+//  Description:
+//      Main structure for dealing with sensor data in an
+//      Organised way. We will find function to deal with
+//      Sensor enum and SensorData class here
+
 enum Sensor { temperature, humidity, acetone, respiration }
 
 Sensor sensorStringToEnum(String sensor) {
   switch (sensor) {
-    case 'Sensor.temperature':
+    case 'temperature':
       return Sensor.temperature;
       break;
-    case 'Sensor.humidity':
+    case 'humidity':
       return Sensor.humidity;
       break;
-    case 'Sensor.acetone':
+    case 'acetone':
       return Sensor.acetone;
       break;
-    case 'Sensor.respiration':
+    case 'respiration':
       return Sensor.respiration;
       break;
     default:
@@ -19,6 +26,10 @@ Sensor sensorStringToEnum(String sensor) {
         return null;
       }
   }
+}
+
+String sensorEnumToString(Sensor sensor) {
+  return sensor.toString().replaceFirst("Sensor.", "");
 }
 
 class SensorData {

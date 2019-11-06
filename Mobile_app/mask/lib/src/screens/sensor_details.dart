@@ -1,3 +1,9 @@
+//  Sensor Details Screen
+//
+//  Description:
+//      Management of the screen page to display sensors data
+//      related to only one sensor (selectable)
+
 import 'package:flutter/material.dart';
 import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';
 import 'package:mask/src/blocs/sensor_data/sensor_data_provider.dart';
@@ -6,9 +12,8 @@ import 'package:mask/src/widgets/graph/sensor_graph.dart';
 import 'package:mask/src/database/models/sensor_model.dart';
 
 const num graphsHeight = 300.0;
-final List<String> sensors = Sensor.values
-    .map((f) => f.toString().replaceFirst("Sensor.", "").toUpperCase())
-    .toList();
+final List<String> sensors =
+    Sensor.values.map((Sensor s) => sensorEnumToString(s)).toList();
 
 class GraphDetails extends StatelessWidget {
   @override
@@ -57,13 +62,10 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
     print("navigateSensorDetails");
   }
 
-  dropButtonOnChanged(String newValue) {
+  dropButtonOnChanged(String newSensor) {
     setState(() {
-      dropdownValue = newValue;
-      this.sensor = Sensor.values
-          .where((s) =>
-              s.toString().toLowerCase().contains(newValue.toLowerCase()))
-          .toList()[0];
+      dropdownValue = newSensor;
+      this.sensor = sensorStringToEnum(newSensor);
     });
     print(this.sensor.toString());
   }

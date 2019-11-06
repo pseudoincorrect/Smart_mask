@@ -1,8 +1,14 @@
-import 'dart:async';
+//  Sensor Data Business Logic (BLoc) provider
+//
+//  Description:
+//      Enable the access to sensor data (streams) through the app
+//      Used by the widget to get automatically refreshed with
+//      arriving sensor data (with update timers) and to do basic
+//      opperation (insert, delete) on these data.
 
+import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:mask/src/database/models/sensor_model.dart';
-
 import 'package:mask/src/repositories/sensor_data_repo.dart';
 
 class SensorDataBloc {
