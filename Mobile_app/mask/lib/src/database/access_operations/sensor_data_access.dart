@@ -22,7 +22,7 @@ class SensorDataAccess {
     final db = await dbProvider.database;
     List<Map<String, dynamic>> result;
     String query =
-        'SELECT * FROM $sensorDataTABLE WHERE sensor = \'${sensor.toString()}\'';
+        'SELECT * FROM $sensorDataTABLE WHERE sensor = \'${sensorEnumToString(sensor)}\'';
 
     if (interval != null) {
       query += ' AND ';

@@ -67,6 +67,5 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
       dropdownValue = newSensor;
       this.sensor = sensorStringToEnum(newSensor);
     });
-    print(this.sensor.toString());
   }
 }

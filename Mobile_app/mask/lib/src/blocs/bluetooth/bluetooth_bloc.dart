@@ -83,6 +83,7 @@ class BluetoothBloc {
       int value = values[i] + (values[i + 1] << 8);
       sensorDatas.add(SensorData.fromSensorAndValue(Sensor.values[j], value));
     }
+    print("sensor data added");
     return sensorDatas;
   }
 

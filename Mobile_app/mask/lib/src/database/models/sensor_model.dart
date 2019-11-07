@@ -58,13 +58,13 @@ class SensorData {
       value: data['value']);
 
   Map<String, dynamic> toDatabaseJson() => {
-        "sensor": this.sensor.toString(),
+        "sensor": sensorEnumToString(this.sensor),
         "timeStamp": this.timeStamp,
         "value": this.value,
       };
 
   @override
   String toString() {
-    return 'id = ${this.id}, sensor = ${this.sensor.toString()}, timeStamp = ${this.timeStamp}, value = ${this.value}';
+    return 'id = ${this.id}, sensor = ${sensorEnumToString(this.sensor)}, timeStamp = ${this.timeStamp}, value = ${this.value}';
   }
 }

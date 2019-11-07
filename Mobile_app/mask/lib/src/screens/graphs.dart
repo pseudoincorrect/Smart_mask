@@ -46,7 +46,7 @@ class _RefreshingGraphsState extends State<RefreshingGraphs> {
 
         return ListTile(
           title: Row(children: [
-            Text(sensor.toString().replaceFirst('Sensor.', '').toUpperCase()),
+            Text(sensorEnumToString(sensor).toUpperCase()),
             Expanded(child: Container()),
             RaisedButton(
                 onPressed: navigateSensorDetails, child: Text("Details"))
