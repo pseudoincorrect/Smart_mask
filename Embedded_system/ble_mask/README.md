@@ -11,8 +11,9 @@ Instructions:
 - Clone the project
 - Navigate to : smart_mask/Embedded_system/ble_mask/project/ses/ 
 - Open " on any text editor
-- At the bottom of the file, add a configuration (before "</solution>") such as this one bellow:
-`
+- At the bottom of the file, add a configuration (before "</solution>") such as this one bellow
+
++ `
     <configuration
         Name="theNameYouWant"
         c_preprocessor_definitions="DEBUG; DEBUG_NRF"
