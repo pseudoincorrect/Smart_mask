@@ -1,7 +1,6 @@
------------------------------------------------------------
+-------------------------------------------------------------
 TO DO
------------------------------------------------------------
-Refactor sensor timer (get from Db) out of bluetooth bloc
+-------------------------------------------------------------
 AppFloatingButton change depending on bluetooth status
 Fix disconnect/connect setNotifyValue
 Automatise the bluetooth connection
@@ -9,16 +8,17 @@ Detect device Deconnection
 Add documentation atop all Bloc related functions
 
 
------------------------------------------------------------
+-------------------------------------------------------------
 IN PROCESS
------------------------------------------------------------
+-------------------------------------------------------------
 
 
------------------------------------------------------------
+-------------------------------------------------------------
 DONE
-
+        
 Date        Tag     Description
------------------------------------------------------------
+-------------------------------------------------------------
+07/11/2019  BLOC    refactored sensor to use sensorEnumToString
 06/11/2019  DOC     Add documentation atop all files
 06/11/2019  GRAPH   Select graph with drop button on GraphDetails
 05/11/2019  GRAPH   Refactor GraphDetails and Graphs out of screen
@@ -44,4 +44,5 @@ Date        Tag     Description
 16/10/2019  DB      Push data to SQFLite database
 16/10/2019  DB      Recover and print data with a button
 16/10/2019  DB      Set up a SQFLite database and store a time series
+-----------------------------------------------------------
 
