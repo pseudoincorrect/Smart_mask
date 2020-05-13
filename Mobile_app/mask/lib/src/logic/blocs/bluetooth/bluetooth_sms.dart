@@ -6,8 +6,8 @@
 //      database (or other repositories)
 
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:mask/src/database/models/sensor_model.dart';
-import 'package:mask/src/repositories/sensor_data_repo.dart';
+import 'package:mask/src/logic/database/models/sensor_model.dart';
+import 'package:mask/src/logic/repositories/sensor_data_repo.dart';
 import './smart_mask_services_const.dart' as servicesConst;
 
 class SensorManagementService {

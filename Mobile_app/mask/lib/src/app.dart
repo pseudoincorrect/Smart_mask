@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mask/src/blocs/bluetooth/bluetooth_bloc.dart';
-import 'package:mask/src/blocs/bluetooth/bluetooth_provider.dart';
-import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';
-import 'package:mask/src/blocs/sensor_data/sensor_data_provider.dart';
-import 'package:mask/src/screens/bluetooth_devices_list.dart';
-import 'package:mask/src/screens/graphs.dart';
-import 'package:mask/src/screens/sensor_details.dart';
-import 'package:mask/src/screens/home.dart';
+import 'package:mask/src/logic/blocs/bluetooth/bluetooth_bloc.dart';
+import 'package:mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
+import 'package:mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
+import 'package:mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
+import 'package:mask/src/ui/screens/bluetooth_devices_list.dart';
+import 'package:mask/src/ui/screens/graphs.dart';
+import 'package:mask/src/ui/screens/sensor_details.dart';
+import 'package:mask/src/ui/screens/home.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -149,7 +149,7 @@ class ChoiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle textStyle = Theme.of(context).textTheme.display1;
+    final TextStyle textStyle = Theme.of(context).textTheme.bodyText2;
     return Card(
       color: Colors.white,
       child: Center(

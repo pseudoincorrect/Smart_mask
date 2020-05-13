@@ -5,7 +5,7 @@
 //      throughout the app with contex.inherit..
 
 import 'package:flutter/material.dart';
-import 'package:mask/src/blocs/bluetooth/bluetooth_bloc.dart';
+import 'package:mask/src/logic/blocs/bluetooth/bluetooth_bloc.dart';
 
 class BluetoothProvider extends InheritedWidget {
   final BluetoothBloc bloc;
@@ -16,8 +16,6 @@ class BluetoothProvider extends InheritedWidget {
   bool updateShouldNotify(_) => true;
 
   static BluetoothBloc of(BuildContext context) {
-    return (context.inheritFromWidgetOfExactType(BluetoothProvider)
-            as BluetoothProvider)
-        .bloc;
+    return context.dependOnInheritedWidgetOfExactType<BluetoothProvider>().bloc;
   }
 }

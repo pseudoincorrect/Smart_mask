@@ -5,7 +5,7 @@
 //      throughout the app with contex.inherit..
 
 import 'package:flutter/material.dart';
-import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';
+import 'package:mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
 
 class SensorDataProvider extends InheritedWidget {
   final SensorDataBloc bloc;
@@ -16,8 +16,8 @@ class SensorDataProvider extends InheritedWidget {
   bool updateShouldNotify(_) => true;
 
   static SensorDataBloc of(BuildContext context) {
-    return (context.inheritFromWidgetOfExactType(SensorDataProvider)
-            as SensorDataProvider)
+    return context
+        .dependOnInheritedWidgetOfExactType<SensorDataProvider>()
         .bloc;
   }
 }

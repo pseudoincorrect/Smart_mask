@@ -7,11 +7,11 @@
 
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:mask/src/blocs/bluetooth/bluetooth_bloc.dart';
-import 'package:mask/src/blocs/bluetooth/bluetooth_provider.dart';
-import 'package:mask/src/blocs/sensor_data/sensor_data_bloc.dart';
-import 'package:mask/src/blocs/sensor_data/sensor_data_provider.dart';
-import 'package:mask/src/database/models/sensor_model.dart';
+import 'package:mask/src/logic/blocs/bluetooth/bluetooth_bloc.dart';
+import 'package:mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
+import 'package:mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
+import 'package:mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
+import 'package:mask/src/logic/database/models/sensor_model.dart';
 
 class DbControlButtons extends StatefulWidget {
   DbControlButtons({Key key}) : super(key: key);

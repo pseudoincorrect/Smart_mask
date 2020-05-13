@@ -9,9 +9,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:mask/src/blocs/bluetooth/bluetooth_bloc.dart';
-import 'package:mask/src/blocs/bluetooth/bluetooth_provider.dart';
-import 'package:mask/src/widgets/flutter_blue_widgets.dart';
+import 'package:mask/src/logic/blocs/bluetooth/bluetooth_bloc.dart';
+import 'package:mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
+import 'package:mask/src/ui/widgets/flutter_blue_widgets.dart';
 
 Widget bluetoothDevicesList() {
   return StreamBuilder<BluetoothState>(
@@ -48,7 +48,7 @@ class BluetoothOffScreen extends StatelessWidget {
               'Bluetooth Adapter is ${state.toString().substring(15)}.',
               style: Theme.of(context)
                   .primaryTextTheme
-                  .subhead
+                  .headline2
                   .copyWith(color: Colors.white),
             ),
           ],
