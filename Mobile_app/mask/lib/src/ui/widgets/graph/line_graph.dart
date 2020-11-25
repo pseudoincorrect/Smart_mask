@@ -28,7 +28,7 @@ class LineChart extends StatelessWidget {
   factory LineChart.withSampleData(List<TimeSeriesSensor> timeSeries) {
     return new LineChart(
       _createSampleData(timeSeries),
-      animate: true,
+      animate: false,
     );
   }
 
