@@ -676,7 +676,7 @@ int main(void)
 {
     // Initialize.
     log_init();
-    leds_init();
+    //leds_init();
     timers_init();
     buttons_init();
     power_management_init();
