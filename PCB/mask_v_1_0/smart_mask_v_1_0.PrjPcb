@@ -89,107 +89,7 @@ GenerateClassCluster=0
 DocumentUniqueId=
 
 [GeneratedDocument1]
-DocumentPath=Project Outputs for smart_mask_v_1_0\NC Drill\smart_mask_v_1_0-RoundHoles.TXT
-DItemRevisionGUID=
-
-[GeneratedDocument2]
-DocumentPath=Project Outputs for smart_mask_v_1_0\NC Drill\smart_mask_v_1_0-SlotHoles.TXT
-DItemRevisionGUID=
-
-[GeneratedDocument3]
-DocumentPath=Project Outputs for smart_mask_v_1_0\NC Drill\smart_mask_v_1_0.DRR
-DItemRevisionGUID=
-
-[GeneratedDocument4]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.EXTREP
-DItemRevisionGUID=
-
-[GeneratedDocument5]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.G1
-DItemRevisionGUID=
-
-[GeneratedDocument6]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.G2
-DItemRevisionGUID=
-
-[GeneratedDocument7]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GBL
-DItemRevisionGUID=
-
-[GeneratedDocument8]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GBO
-DItemRevisionGUID=
-
-[GeneratedDocument9]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GBP
-DItemRevisionGUID=
-
-[GeneratedDocument10]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GBS
-DItemRevisionGUID=
-
-[GeneratedDocument11]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GKO
-DItemRevisionGUID=
-
-[GeneratedDocument12]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GM1
-DItemRevisionGUID=
-
-[GeneratedDocument13]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GM2
-DItemRevisionGUID=
-
-[GeneratedDocument14]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GM13
-DItemRevisionGUID=
-
-[GeneratedDocument15]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GM14
-DItemRevisionGUID=
-
-[GeneratedDocument16]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GM15
-DItemRevisionGUID=
-
-[GeneratedDocument17]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GM16
-DItemRevisionGUID=
-
-[GeneratedDocument18]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GPB
-DItemRevisionGUID=
-
-[GeneratedDocument19]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GPT
-DItemRevisionGUID=
-
-[GeneratedDocument20]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GTL
-DItemRevisionGUID=
-
-[GeneratedDocument21]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GTO
-DItemRevisionGUID=
-
-[GeneratedDocument22]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GTP
-DItemRevisionGUID=
-
-[GeneratedDocument23]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.GTS
-DItemRevisionGUID=
-
-[GeneratedDocument24]
-DocumentPath=Project Outputs for smart_mask_v_1_0\NC Drill\smart_mask_v_1_0.LDP
-DItemRevisionGUID=
-
-[GeneratedDocument25]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.REP
-DItemRevisionGUID=
-
-[GeneratedDocument26]
-DocumentPath=Project Outputs for smart_mask_v_1_0\Gerber\smart_mask_v_1_0.RUL
+DocumentPath=Output\Design Rule Check - smart_mask_v_1_0.html
 DItemRevisionGUID=
 
 [Configuration1]
@@ -314,7 +214,7 @@ OutputDefault20=0
 [OutputGroup2]
 Name=Simulator Outputs
 Description=
-TargetPrinter=\\vpssf02.hbku.edu.qa\HBKUPrint
+TargetPrinter=Microsoft Print to PDF
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintJobKind=1|PrintWhat=1
 
 [OutputGroup3]
