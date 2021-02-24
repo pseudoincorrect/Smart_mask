@@ -1,0 +1,12 @@
+Essential follow this tutorial
+http://westsideelectronics.com/getting-logging-to-work-in-segger-embedded-studio/
+
+in short:
+in "sdk_config.h"
+
+// when getting only a new line and nothing else when running the program
+NRF_FPRINTF_FLAG_AUTOMATIC_CR_ON_LF_ENABLED 0
+// enable RTT
+NRF_LOG_BACKEND_RTT_ENABLED 1
+// disable UART
+NRF_LOG_BACKEND_UART_ENABLED 0

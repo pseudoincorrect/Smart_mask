@@ -1,9 +1,0 @@
-open "board.h" (in the SDK) file
-
-add the following lines after the last "#elif" 
-    #elif defined (CUSTOM_BOARD_INC)
-        #include STRINGIFY(CUSTOM_BOARD_INC.h)
-
-replace CUSTOM_BOARD_INC with your board name for which you have a .h file in ${PROJ_ROOT)/src/boards/
-
-in the project file "ble_mask.emProject" modify the c_preprocessor_definitions in order to select the board you want to use in "boards.h"
