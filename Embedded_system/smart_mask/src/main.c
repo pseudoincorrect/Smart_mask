@@ -45,7 +45,7 @@
 // LED to be toggled with the help of the LED Button Service
 #define LEDBUTTON_LED BSP_BOARD_LED_2
 // Button that will trigger the notification event with the LED Button Service */
-#define LEDBUTTON_BUTTON BSP_BUTTON_0
+#define CONNECT_BUTTON BSP_BUTTON_0
 // Name of device. Will be included in the advertising data
 #define DEVICE_NAME "Smart_Mask"
 // Application's BLE observer priority. You shouldn't need to modify this value
@@ -124,7 +124,6 @@ void timer_led_event_handler(nrf_timer_event_t event_type, void * p_context)
             break;
 
         default:
-            // Do nothing.
             break;
     }
 }
@@ -488,7 +487,7 @@ static void button_event_handler(uint8_t pin_no, uint8_t button_action)
 
     switch (pin_no)
     {
-        case LEDBUTTON_BUTTON:
+        case CONNECT_BUTTON:
             NRF_LOG_INFO("Send button state change.");
             err_code = ble_lbs_on_button_change(m_conn_handle, &m_lbs, button_action);
             if (err_code != NRF_SUCCESS && err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
@@ -497,21 +496,6 @@ static void button_event_handler(uint8_t pin_no, uint8_t button_action)
                 APP_ERROR_CHECK(err_code);
             }
             break;
-
-            //            err_code = ble_sms_on_sensors_update(m_conn_handle, &m_sms,
-            //            m_sensors.values); if (err_code != NRF_SUCCESS &&
-            //                err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
-            //                err_code != NRF_ERROR_INVALID_STATE &&
-            //                err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
-            //            {
-            //                APP_ERROR_CHECK(err_code);
-            //            }
-            //            for (int i=0; i<SENSORS_COUNT; i++)
-            //            {
-            //                m_sensors.values[i]++;
-            //            }
-            //            break;
-
         default:
             APP_ERROR_HANDLER(pin_no);
             break;
@@ -527,7 +511,7 @@ static void buttons_init(void)
 
     // The array must be static because a pointer to it will be saved in the button handler module.
     static app_button_cfg_t buttons[] = {
-        {LEDBUTTON_BUTTON, false, BUTTON_PULL, button_event_handler}};
+        {CONNECT_BUTTON, false, BUTTON_PULL, button_event_handler}};
 
     err_code = app_button_init(buttons, ARRAY_SIZE(buttons), BUTTON_DETECTION_DELAY);
     APP_ERROR_CHECK(err_code);
@@ -637,9 +621,9 @@ void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
  */
 int main(void)
 {
-    // Initialize.
-    log_init();
-    // leds_init();
+    log_init();   
+    NRF_LOG_INFO("Initialization");
+    leds_init();
     timers_init();
     buttons_init();
     power_management_init();
@@ -649,13 +633,11 @@ int main(void)
     services_init();
     advertising_init();
     conn_params_init();
-    NRF_LOG_INFO("Sensor init");
     sensors_init(&m_sensors);
     sensors_init_buffer(&m_sensors_previous);
-    NRF_LOG_INFO("Smart Mask Started.");
-    // Start execution.
     advertising_start();
-    // Enter main loop.
+    NRF_LOG_INFO("Starting main process");
+
     for (;;)
     {
         idle_state_handle();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mask/src/logic/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
 import 'package:mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
@@ -16,6 +17,8 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
+    FlutterBlue.instance.setLogLevel(LogLevel.error);
 
     final bluetoothBloc = BluetoothBloc();
     final sensorDataBloc = SensorDataBloc();

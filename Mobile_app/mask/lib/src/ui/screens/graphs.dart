@@ -4,6 +4,8 @@
 //      Management of the screen page to display all sensors data
 //      on graphs.
 
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
 import 'package:mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
@@ -49,7 +51,8 @@ class _RefreshingGraphsState extends State<RefreshingGraphs> {
             Text(sensorEnumToString(sensor).toUpperCase()),
             Expanded(child: Container()),
             RaisedButton(
-                onPressed: navigateSensorDetails, child: Text("Details"))
+                onPressed: () => navigateSensorDetails(sensor),
+                child: Text("Details"))
           ]),
           subtitle: SensorGraph(
             sensorDataStream: sensorDataBloc.getStream(sensor),
@@ -61,11 +64,13 @@ class _RefreshingGraphsState extends State<RefreshingGraphs> {
     );
   }
 
-  void navigateSensorDetails() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => GraphDetails()),
-    );
-    print("navigateSensorDetails");
+  void navigateSensorDetails(Sensor sensor) {
+    sensorDataBloc.setSelectedSensor(sensor);
+    DefaultTabController.of(context).animateTo(2);
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => GraphDetails()),
+    // );
+    // print("navigateSensorDetails");
   }
 }

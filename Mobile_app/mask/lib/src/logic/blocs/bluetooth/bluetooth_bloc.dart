@@ -49,14 +49,14 @@ class BluetoothBloc {
 
   onUpdateServices(List<BluetoothService> services) {
     for (var service in services) {
-      print("service: ${service.uuid.toString()}");
+      // print("service: ${service.uuid.toString()}");
       updateCharacteristics(service.characteristics);
     }
   }
 
   updateCharacteristics(List<BluetoothCharacteristic> characteristics) {
     for (var characteristic in characteristics) {
-      print("characteristic: ${characteristic.uuid.toString()}");
+      // print("characteristic: ${characteristic.uuid.toString()}");
       if (characteristic.uuid.toString() == sensorCharactUUID) {
         setSensorReceive(characteristic);
       }
@@ -64,7 +64,7 @@ class BluetoothBloc {
   }
 
   setSensorReceive(BluetoothCharacteristic characteristic) {
-    print("sensor chararcteristic ${characteristic.uuid.toString()}");
+    // print("sensor chararcteristic ${characteristic.uuid.toString()}");
     characteristic.value.listen(onReceiveValue);
     if (!characteristic.isNotifying) characteristic.setNotifyValue(true);
   }
@@ -83,7 +83,7 @@ class BluetoothBloc {
       int value = values[i] + (values[i + 1] << 8);
       sensorDatas.add(SensorData.fromSensorAndValue(Sensor.values[j], value));
     }
-    print("sensor data added");
+    // print("sensor data added");
     return sensorDatas;
   }
 

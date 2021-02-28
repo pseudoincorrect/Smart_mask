@@ -4,7 +4,6 @@ TO DO
 set board support for different boards
 set up RGB led in board support
 send ADC data over BLE
-investigate RTOS for the project
 refactor code in multiple files
 modify sampling rate with BLE
 

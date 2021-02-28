@@ -1,0 +1,35 @@
+{
+	"folders": [
+		{
+			"path": "..\\..\\..\\.."
+		},
+		{
+			"path": "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\components\\libraries"
+		},
+		{
+			"path": "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\modules\\nrfx"
+		},
+		{
+			"path": "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\integration"
+		},
+		{
+			"path": "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\components\\ble"
+		},
+		{
+			"path": "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\components\\softdevice"
+		},
+		{
+			"path": "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\components\\boards"
+		},
+		{
+			"path": "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\external\\fprintf"
+		},
+		{
+			"path": "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\external\\segger_rtt"
+		},
+		{
+			"path": "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\external\\utf_converter"
+		},
+	],
+	"settings": {}
+}

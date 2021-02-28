@@ -13,9 +13,11 @@ import 'package:mask/src/logic/repositories/sensor_data_repo.dart';
 
 class SensorDataBloc {
   final _sensorDataRepo = SensorDataRepository();
+  Sensor _selectedSensor = Sensor.temperature;
   Duration windowInterval = Duration(seconds: 10);
   Duration refreshInterval = Duration(seconds: 1);
 
+  BehaviorSubject<Sensor> _selectedSensorSubject;
   Map<Sensor, BehaviorSubject<List<SensorData>>> _sensorDataSubjects = Map();
   Map<Sensor, Stream<List<SensorData>>> _sensorDataStreams = Map();
 
@@ -27,6 +29,8 @@ class SensorDataBloc {
       _sensorDataStreams[Sensor.values[i]] =
           _sensorDataSubjects[Sensor.values[i]].stream;
     }
+
+    _selectedSensorSubject = BehaviorSubject<Sensor>();
 
     setupTimers(refreshInterval);
   }
@@ -65,6 +69,14 @@ class SensorDataBloc {
   void sensorRefreshTimeout(Sensor sensor) {
     this.getSensorData(sensor,
         interval: [DateTime.now().subtract(windowInterval), DateTime.now()]);
+  }
+
+  void setSelectedSensor(Sensor sensor) {
+    _selectedSensorSubject.add(sensor);
+  }
+
+  Stream<Sensor> getSelectedSensorStream() {
+    return _selectedSensorSubject.stream;
   }
 
   dispose() {

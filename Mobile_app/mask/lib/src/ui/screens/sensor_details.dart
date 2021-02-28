@@ -29,43 +29,48 @@ class RefreshingGraph extends StatefulWidget {
 
 class _RefreshingGraphState extends State<RefreshingGraph> {
   SensorDataBloc sensorDataBloc;
-  Sensor sensor = Sensor.temperature;
-  String dropdownValue = sensors[0];
 
   @override
   Widget build(BuildContext context) {
     sensorDataBloc = SensorDataProvider.of(context);
 
-    return Column(
-      children: <Widget>[
-        DropButton(
-            value: dropdownValue,
-            onChanged: dropButtonOnChanged,
-            items: sensors),
-        SizedBox(
-          height: graphsHeight,
-          child: SensorGraph(
-            sensorDataStream: sensorDataBloc.getStream(sensor),
-            sensor: sensor,
-            height: graphsHeight / (Sensor.values.length * 2),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void navigateSensorDetails() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => GraphDetails()),
-    );
-    print("navigateSensorDetails");
+    return StreamBuilder(
+        stream: sensorDataBloc.getSelectedSensorStream(),
+        builder: (BuildContext context, AsyncSnapshot<Sensor> snapshot) {
+          if (snapshot.hasError) return Text('Empty');
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              return Text('ConnectionNone');
+            case ConnectionState.waiting:
+              return Text('ConnectionWaiting');
+            case ConnectionState.done:
+              return Text('ConnectionState.done');
+            case ConnectionState.active:
+              return Column(
+                children: <Widget>[
+                  DropButton(
+                    value: sensorEnumToString(snapshot.data),
+                    onChanged: dropButtonOnChanged,
+                    items: sensors,
+                  ),
+                  SizedBox(
+                    height: graphsHeight,
+                    child: SensorGraph(
+                      sensorDataStream: sensorDataBloc.getStream(snapshot.data),
+                      sensor: snapshot.data,
+                      height: graphsHeight / (Sensor.values.length * 2),
+                    ),
+                  ),
+                ],
+              );
+          }
+          return Text('Problem');
+        });
   }
 
   dropButtonOnChanged(String newSensor) {
-    setState(() {
-      dropdownValue = newSensor;
-      this.sensor = sensorStringToEnum(newSensor);
-    });
+    Sensor sensor = sensorStringToEnum(newSensor);
+    sensorDataBloc.setSelectedSensor(sensor);
+    print("newSensor = $newSensor");
   }
 }

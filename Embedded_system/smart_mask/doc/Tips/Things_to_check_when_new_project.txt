@@ -1,0 +1,11 @@
+Do an "Erase all"  
+
+
+SDKconfig.h
+RC Source (Low Frequency Clock 32kHz)
+RC precision
+disable legacy drivers
+
+.emProject
+copy paste flash placement from another project of the SDK
+carefull with the stack size and FPU
