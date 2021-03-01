@@ -19,7 +19,7 @@
       c_preprocessor_definitions="APP_TIMER_V2;APP_TIMER_V2_RTC1_ENABLED;CUSTOM_BOARD_INC=smart_mask_v_2_0;CONFIG_GPIO_AS_PINRESET;FLOAT_ABI_SOFT;INITIALIZE_USER_SECTIONS;NO_VTOR_CONFIG;NRF52811_XXAA;NRF52_PAN_74;NRFX_COREDEP_DELAY_US_LOOP_CYCLES=3;NRF_SD_BLE_API_VERSION=7;S112;SOFTDEVICE_PRESENT;SWI_DISABLE0;"
       debug_target_connection="J-Link"
       gcc_entry_point="Reset_Handler"
-      macros="CMSIS_CONFIG_TOOL=$(NRF_SDK)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar"
+      macros="CMSIS_CONFIG_TOOL=C:/Users/maxim/Programming/SDKs/nordic/nrf5_sdk_17_0_2/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar"
       debug_register_definition_file="$(NRF_SDK)/modules/nrfx/mdk/nrf52811.svd"
       debug_additional_load_file="$(NRF_SDK)/components/softdevice/s112/hex/s112_nrf52_7.2.0_softdevice.hex"
       debug_start_from_entry_point_symbol="No"

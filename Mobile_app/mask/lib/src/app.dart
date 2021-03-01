@@ -129,7 +129,7 @@ class Choice {
 
 List<Choice> choices = <Choice>[
   Choice(
-    title: 'Summary',
+    title: 'Home',
     icon: Icons.home,
     widget: (BuildContext context) => Home(),
   ),
