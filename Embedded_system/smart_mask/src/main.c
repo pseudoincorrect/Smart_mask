@@ -633,8 +633,10 @@ int main(void)
     services_init();
     advertising_init();
     conn_params_init();
+    
     sensors_init(&m_sensors);
-    sensors_init_buffer(&m_sensors_previous);
+    //sensors_init_buffer(&m_sensors_previous);
+
     advertising_start();
     NRF_LOG_INFO("Starting main process");
 
