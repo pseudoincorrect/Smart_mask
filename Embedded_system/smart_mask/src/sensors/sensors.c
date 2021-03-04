@@ -66,8 +66,6 @@ ret_code_t saadc_init(void)
 
     nrf_gpio_cfg_output(SENSOR_1_PWR_PIN);
 
-    // nrf_gpio_pin_set(SENSOR_1_PWR_PIN);
-
     return err_code;
 }
 
@@ -112,7 +110,6 @@ void saadc_timer_handler(nrf_timer_event_t event_type, void * p_context)
             break;
 
         default:
-            // Do nothing.
             break;
     }
 }
