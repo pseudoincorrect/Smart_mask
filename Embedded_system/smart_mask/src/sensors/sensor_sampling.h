@@ -6,10 +6,9 @@
 //Standard Libraries
 #include "nrfx_saadc.h"
 #include "nrfx_timer.h"
+#include "sensor_def.h"
 
 // SENSORS
-#define SENSORS_COUNT 4
-#define SENSOR_BUFF_SIZE 10
 
 //#define FOREACH_SENSOR(SENSOR) \
 //    SENSOR(temperature) \
@@ -39,28 +38,6 @@
 //    const char ** names;
 //} 
 //sensors_t;
-
-typedef enum {
-    SENSOR_1, SENSOR_2, SENSOR_3, SENSOR_4, 
-} sensor_t;
-
-typedef struct 
-{
-    sensor_t sensor;
-    sensor_val_t buffer[SENSOR_BUFF_SIZE];
-    sensor_ctrl_t control;
-} 
-sensor_handle_t;
-
-typedef int16_t sensor_val_t; 
-
-typedef struct 
-{
-    uint32_t frequency;
-    uint8_t gain;
-    uint8_t enable;
-} 
-sensor_ctrl_t;
 
 void sensors_init_buffer(sensors_t* p_sensors);
 void saadc_callback(nrfx_saadc_evt_t const * p_event);

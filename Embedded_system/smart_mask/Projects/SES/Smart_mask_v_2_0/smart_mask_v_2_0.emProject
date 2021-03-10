@@ -48,8 +48,11 @@
       </folder>
 
       <folder Name="Sensors">
-        <file file_name="$(PROJ_ROOT)/Src/Sensors/sensors.c" />
-        <file file_name="$(PROJ_ROOT)/Src/Sensors/sensors.h" />
+        <file file_name="$(PROJ_ROOT)/Src/Sensors/sensor_sampling.c" />
+        <file file_name="$(PROJ_ROOT)/Src/Sensors/sensor_sampling.h" />
+        <file file_name="$(PROJ_ROOT)/Src/Sensors/sensor_buffer.c" />
+        <file file_name="$(PROJ_ROOT)/Src/Sensors/sensor_buffer.h" />
+        <file file_name="$(PROJ_ROOT)/Src/Sensors/sensor_def.c" />
       </folder>
 
       <folder Name="BLE">

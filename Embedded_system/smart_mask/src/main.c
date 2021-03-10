@@ -15,7 +15,8 @@
 #include "app_timer.h"
 #include "boards.h"
 // Project
-#include "sensors.h"
+#include "sensor_sampling.h"
+#include "sensor_def"
 #include "app_ble.h"
 
 /*************************

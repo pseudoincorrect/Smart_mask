@@ -1,4 +1,4 @@
-#include "sensors.h"
+#include "sensor_sampling.h"
 
 #include "boards.h"
 #include "nrf_delay.h"
