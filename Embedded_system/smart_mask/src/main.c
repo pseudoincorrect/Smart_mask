@@ -15,9 +15,10 @@
 #include "app_timer.h"
 #include "boards.h"
 // Project
-#include "sensor_sampling.h"
-#include "sensor_def"
 #include "app_ble.h"
+#include "sensor_sampling.h"
+#include "sensor_handle.h"
+//#include "sensors.h"
 
 /*************************
  * Defines
@@ -42,11 +43,6 @@
 
 // Handler for the app bluetooth
 static app_ble_conf_t m_app_ble_conf;
-// Mock data for the sensors
-static uint16_t mock_sensor_data = 0;
-// sensors buffers
-static sensors_t m_sensors;
-static sensors_t m_sensors_previous;
 
 // timer for the sensors
 APP_TIMER_DEF(m_timer_sensors_id);
@@ -95,14 +91,26 @@ static void led_write_handler(uint16_t conn_handle, ble_lbs_t * p_lbs,
 }
 
 
-/** @brief Function for handling write event to the output characteristic
-    @param[in] p_sms Instance of Sensor Measurement Service to which the write applies
-    @param[in] output_state, Written/desired state of the outputs
-*/
-static void output_write_handler(uint16_t conn_handle, ble_sms_t * p_sms,
-                                 uint8_t output_state)
+///** @brief Function for handling write event to the output characteristic
+//    @param[in] p_sms Instance of Sensor Measurement Service to which the write applies
+//    @param[in] output_state, Written/desired state of the outputs
+//*/
+//static void output_write_handler(uint16_t conn_handle, ble_sms_t * p_sms,
+//                                 uint8_t output_state)
+//{
+//    NRF_LOG_INFO("output State %d", output_state);
+//}
+
+
+
+static void sensor_ctrl_update(sensor_t sensor, sensor_ctrl_t* sensor_ctrl)
 {
-    NRF_LOG_INFO("output State %d", output_state);
+    sensor_ctrl_t* ctrl;
+    set_sensor_ctrl(sensor, sensor_ctrl);
+    NRF_LOG_INFO("sensor %d", sensor + 1);
+    get_sensor_ctrl(sensor, ctrl);
+    NRF_LOG_INFO("freq %d, gain %d, enable %d",
+        ctrl->frequency, ctrl->gain, ctrl->enable);
 }
 
 
@@ -228,24 +236,23 @@ static void idle_state_handle(void)
  */
 void check_sensors_update(void)
 {
-    ret_code_t err_code;
-
-    for (int i = 0; i < SENSORS_COUNT; i++)
-    {
-        if (m_sensors.values[i] != m_sensors_previous.values[i])
-        {
-            err_code = ble_sms_on_sensors_update(*m_app_ble_conf.ble_conn_handle,
-                                                 m_app_ble_conf.ble_sms, m_sensors.values);
-            if (err_code != NRF_SUCCESS && err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
-                    err_code != NRF_ERROR_INVALID_STATE
-                    && err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
-            {
-                APP_ERROR_CHECK(err_code);
-            }
-            memcpy(m_sensors_previous.values, m_sensors.values,
-                   sizeof(sensors_value_t) * SENSORS_COUNT);
-        }
-    }
+    //ret_code_t err_code;
+    //for (int i = 0; i < SENSORS_COUNT; i++)
+    //{
+    //    if (m_sensors.values[i] != m_sensors_previous.values[i])
+    //    {
+    //        err_code = ble_sms_on_sensors_update(*m_app_ble_conf.ble_conn_handle,
+    //                                             m_app_ble_conf.ble_sms, m_sensors.values);
+    //        if (err_code != NRF_SUCCESS && err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
+    //                err_code != NRF_ERROR_INVALID_STATE
+    //                && err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
+    //        {
+    //            APP_ERROR_CHECK(err_code);
+    //        }
+    //        memcpy(m_sensors_previous.values, m_sensors.values,
+    //               sizeof(sensors_value_t) * SENSORS_COUNT);
+    //    }
+    //}
 }
 
 /**@brief App Error handler (override the weak one)
@@ -297,8 +304,7 @@ void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
  */
 int main(void)
 {
-    m_app_ble_conf.led_write_handler = led_write_handler;
-    m_app_ble_conf.output_write_handler = output_write_handler;
+    m_app_ble_conf.sensor_ctrl_write = sensor_ctrl_update;
 
     log_init();
     NRF_LOG_INFO("Initialization");
@@ -306,7 +312,7 @@ int main(void)
     timers_init();
     buttons_init();
     power_management_init();
-    sensors_init(&m_sensors);
+    sensor_sampling_init();
     app_ble_init(&m_app_ble_conf);
     // sensors_init_buffer(&m_sensors_previous);
 

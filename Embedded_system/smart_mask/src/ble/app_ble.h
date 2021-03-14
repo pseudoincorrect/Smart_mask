@@ -7,8 +7,8 @@
 
 typedef struct
 {
-    ble_lbs_led_write_handler_t led_write_handler;
-    ble_sms_output_write_handler_t output_write_handler;
+    //ble_lbs_led_write_handler_t led_write_handler;
+    ble_sms_sensor_ctrl_write_cb sensor_ctrl_write;
     uint16_t* ble_conn_handle;
     ble_sms_t* ble_sms;
     ble_lbs_t* ble_lbs;

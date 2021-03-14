@@ -248,13 +248,12 @@ static void services_init(void)
     APP_ERROR_CHECK(err_code);
 
     // Initialize LBS.
-    lbs_init.led_write_handler = m_app_ble_conf->led_write_handler;
-
-    err_code = ble_lbs_init(&m_lbs, &lbs_init);
-    APP_ERROR_CHECK(err_code);
+    //lbs_init.led_write_handler = m_app_ble_conf->led_write_handler;
+    //err_code = ble_lbs_init(&m_lbs, &lbs_init);
+    //APP_ERROR_CHECK(err_code);
 
     // Initialize SMS.
-    sms_init.output_write_handler = m_app_ble_conf->output_write_handler;
+    sms_init.sensor_ctrl_write_cb = m_app_ble_conf->sensor_ctrl_write;
 
     err_code = ble_sms_init(&m_sms, &sms_init);
     APP_ERROR_CHECK(err_code);

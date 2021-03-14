@@ -1,7 +1,7 @@
 // BLE SENSORS MEASUREMENT SERVICE
 
-#ifndef BLE_SENSOR_MEAS_H__
-#define BLE_SENSOR_MEAS_H__
+#ifndef __ble_sms_h__
+#define __ble_sms_h__
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -10,7 +10,7 @@
 #include "sdk_common.h"
 #include "nrf_sdh_ble.h"
 #include "app_error.h"
-#include "sensor_def.h"
+#include "sensors.h"
 
 #define BLE_SMS_DEF(_name)          \
     static ble_sms_t _name;         \
@@ -26,22 +26,22 @@
         0xDE, 0xEF, 0x12, 0x12, 0x00, 0x00, 0x00, 0x00  \
     }
 
-#define SMS_UUID_SERVICE      0x1600
+#define SMS_UUID_SERVICE      (uint8_t) 0x1600
 
 //#define SMS_UUID_SENSORS_CHAR 0x1601
 //#define SMS_UUID_OUTPUT_CHAR  0x1602
 
-#define SMS_UUID_SENSOR_1_VALS_CHAR 0x1601
-#define SMS_UUID_SENSOR_1_CTRL_CHAR 0x1602
+#define SMS_UUID_SENSOR_1_VALS_CHAR (uint8_t) 0x1601
+#define SMS_UUID_SENSOR_1_CTRL_CHAR (uint8_t) 0x1602
 
-#define SMS_UUID_SENSOR_2_VALS_CHAR 0x1603
-#define SMS_UUID_SENSOR_2_CTRL_CHAR 0x1604
+#define SMS_UUID_SENSOR_2_VALS_CHAR (uint8_t) 0x1603
+#define SMS_UUID_SENSOR_2_CTRL_CHAR (uint8_t) 0x1604
 
-#define SMS_UUID_SENSOR_3_VALS_CHAR 0x1605
-#define SMS_UUID_SENSOR_3_CTRL_CHAR 0x1606
+#define SMS_UUID_SENSOR_3_VALS_CHAR (uint8_t) 0x1605
+#define SMS_UUID_SENSOR_3_CTRL_CHAR (uint8_t) 0x1606
 
-#define SMS_UUID_SENSOR_4_VALS_CHAR 0x1607
-#define SMS_UUID_SENSOR_4_CTRL_CHAR 0x1608
+#define SMS_UUID_SENSOR_4_VALS_CHAR (uint8_t) 0x1607
+#define SMS_UUID_SENSOR_4_CTRL_CHAR (uint8_t) 0x1608
 
 
 typedef struct ble_sms_s ble_sms_t;
@@ -51,11 +51,7 @@ typedef struct ble_sms_s ble_sms_t;
 //    ble_sms_t * p_sms, 
 //    uint8_t new_value );
 
-
-typedef void (*ble_sms_sensor_ctrl_write_cb) (
-    sensor_t sensor, 
-    sensor_ctrl_t sensor_ctrl );
-
+typedef void (*ble_sms_sensor_ctrl_write_cb) (sensor_t sensor, sensor_ctrl_t* sensor_ctrl);
 
 typedef struct 
 {
@@ -114,7 +110,7 @@ void ble_sms_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context);
  *
  * @retval NRF_SUCCESS If the notification was sent successfully. Otherwise, an error code is returned.
  */
-uint32_t ble_sms_on_sensors_update(uint16_t conn_handle, ble_sms_t * p_sms, sensors_value_t* values);
+uint32_t ble_sms_on_sensors_update(uint16_t conn_handle, ble_sms_t * p_sms, sensor_t sensor);
 
 /**@brief Function for initializing the Sensor Measurement Service.
  *
