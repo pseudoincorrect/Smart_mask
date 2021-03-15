@@ -3,7 +3,7 @@
  ************************/
 
 #include "app_ble.h"
-// NRF 
+// NRF
 #include "nrf_log.h"
 // BLE
 #include "ble.h"
@@ -34,9 +34,11 @@
 #define APP_BLE_OBSERVER_PRIO 3
 // A tag identifying the SoftDevice BLE configuration
 #define APP_BLE_CONN_CFG_TAG 1
-// The advertising interval (in units of 0.625 ms; this value corresponds to 40 ms)
+// The advertising interval (in units of 0.625 ms; this value corresponds to 40
+// ms)
 #define APP_ADV_INTERVAL 64
-// The advertising time-out (in units of seconds). When set to 0, we will never time out
+// The advertising time-out (in units of seconds). When set to 0, we will never
+// time out
 #define APP_ADV_DURATION BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED
 // Minimum acceptable connection interval (0.5 seconds)
 #define MIN_CONN_INTERVAL MSEC_TO_UNITS(100, UNIT_1_25_MS)
@@ -49,7 +51,8 @@
 // Time from initiating event (connect or start of notification) to first time
 // sd_ble_gap_conn_param_update is called (15 seconds)
 #define FIRST_CONN_PARAMS_UPDATE_DELAY APP_TIMER_TICKS(20000)
-// Time between each call to sd_ble_gap_conn_param_update after the first call (5 seconds)
+// Time between each call to sd_ble_gap_conn_param_update after the first call
+// (5 seconds)
 #define NEXT_CONN_PARAMS_UPDATE_DELAY APP_TIMER_TICKS(5000)
 // Number of attempts before giving up the connection parameter negotiation
 #define MAX_CONN_PARAMS_UPDATE_COUNT 3
@@ -67,7 +70,7 @@ NRF_BLE_QWR_DEF(m_qwr);
  ************************/
 
 // Handle for the app_ble
-static app_ble_conf_t* m_app_ble_conf;
+static app_ble_conf_t * m_app_ble_conf;
 // Handle of the current connection
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;
 // Advertising handle used to identify an advertising set
@@ -77,19 +80,10 @@ static uint8_t m_enc_advdata[BLE_GAP_ADV_SET_DATA_SIZE_MAX];
 // Buffer for storing an encoded scan data
 static uint8_t m_enc_scan_response_data[BLE_GAP_ADV_SET_DATA_SIZE_MAX];
 /**@brief Struct that contains pointers to the encoded advertising data. */
-static ble_gap_adv_data_t m_adv_data =
-{
-    .adv_data =
-    {
-        .p_data = m_enc_advdata,
-        .len = BLE_GAP_ADV_SET_DATA_SIZE_MAX
-    },
-    .scan_rsp_data =
-    {
-        .p_data = m_enc_scan_response_data,
-        .len = BLE_GAP_ADV_SET_DATA_SIZE_MAX
-    }
-}; 
+static ble_gap_adv_data_t m_adv_data = {
+    .adv_data = {.p_data = m_enc_advdata, .len = BLE_GAP_ADV_SET_DATA_SIZE_MAX},
+    .scan_rsp_data = {.p_data = m_enc_scan_response_data,
+        .len = BLE_GAP_ADV_SET_DATA_SIZE_MAX}};
 
 /*************************
  * Function Prototypes
@@ -99,7 +93,8 @@ static void gap_params_init(void);
 static void gatt_init(void);
 static void advertising_init(void);
 static void nrf_qwr_error_handler(uint32_t nrf_error);
-static void output_write_handler(uint16_t conn_handle, ble_sms_t * p_sms,uint8_t output_state);
+static void output_write_handler(
+    uint16_t conn_handle, ble_sms_t * p_sms, uint8_t output_state);
 static void services_init(void);
 static void on_conn_params_evt(ble_conn_params_evt_t * p_evt);
 static void conn_params_error_handler(uint32_t nrf_error);
@@ -112,7 +107,7 @@ static void ble_stack_init(void);
  * Function Definitions
  ************************/
 
-ret_code_t app_ble_init(app_ble_conf_t* app_ble_conf)
+ret_code_t app_ble_init(app_ble_conf_t * app_ble_conf)
 {
     m_app_ble_conf = app_ble_conf;
     app_ble_conf->ble_conn_handle = &m_conn_handle;
@@ -142,9 +137,7 @@ static void gap_params_init(void)
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
 
     err_code = sd_ble_gap_device_name_set(
-            &sec_mode, 
-            (const uint8_t *)DEVICE_NAME,
-            strlen(DEVICE_NAME) );
+        &sec_mode, (const uint8_t *)DEVICE_NAME, strlen(DEVICE_NAME));
     APP_ERROR_CHECK(err_code);
 
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
@@ -165,12 +158,25 @@ static void gatt_init(void)
 {
     ret_code_t err_code = nrf_ble_gatt_init(&m_gatt, NULL);
     APP_ERROR_CHECK(err_code);
+
+
+    uint32_t * p_ram_start;
+    err_code = nrf_sdh_ble_app_ram_start_get(p_ram_start);
+
+    ble_cfg_t cfg;
+    memset(&cfg, 0, sizeof(cfg));
+
+    cfg.conn_cfg.conn_cfg_tag = APP_BLE_CONN_CFG_TAG;
+    cfg.conn_cfg.params.gatts_conn_cfg.hvn_tx_queue_size = 20;
+
+    sd_ble_cfg_set(BLE_CONN_CFG_GATTS, &cfg, *p_ram_start);
 }
 
 
 /**@brief Function for initializing the Advertising functionality.
  * @details Encodes the required advertising data and passes it to the stack.
- *          Also builds a structure to be passed to the stack when starting advertising.
+ *          Also builds a structure to be passed to the stack when starting
+ * advertising.
  */
 static void advertising_init(void)
 {
@@ -178,10 +184,8 @@ static void advertising_init(void)
     ble_advdata_t advdata;
     ble_advdata_t srdata;
 
-    ble_uuid_t adv_uuids[] =  //        {LBS_UUID_SERVICE, m_lbs.uuid_type},
-    {
-        {SMS_UUID_SERVICE, m_sms.uuid_type}
-    };
+    ble_uuid_t adv_uuids[] = //        {LBS_UUID_SERVICE, m_lbs.uuid_type},
+        {{SMS_UUID_SERVICE, m_sms.uuid_type}};
 
     // Build and set advertising data.
     memset(&advdata, 0, sizeof(advdata));
@@ -194,13 +198,12 @@ static void advertising_init(void)
     srdata.uuids_complete.uuid_cnt = sizeof(adv_uuids) / sizeof(adv_uuids[0]);
     srdata.uuids_complete.p_uuids = adv_uuids;
 
-    err_code = ble_advdata_encode(&advdata, m_adv_data.adv_data.p_data,
-                                  &m_adv_data.adv_data.len);
+    err_code = ble_advdata_encode(
+        &advdata, m_adv_data.adv_data.p_data, &m_adv_data.adv_data.len);
     APP_ERROR_CHECK(err_code);
 
-    err_code =
-        ble_advdata_encode(&srdata, m_adv_data.scan_rsp_data.p_data,
-                           &m_adv_data.scan_rsp_data.len);
+    err_code = ble_advdata_encode(&srdata, m_adv_data.scan_rsp_data.p_data,
+        &m_adv_data.scan_rsp_data.len);
     APP_ERROR_CHECK(err_code);
 
     ble_gap_adv_params_t adv_params;
@@ -210,21 +213,23 @@ static void advertising_init(void)
 
     adv_params.primary_phy = BLE_GAP_PHY_1MBPS;
     adv_params.duration = APP_ADV_DURATION;
-    adv_params.properties.type = BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED;
+    adv_params.properties.type =
+        BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED;
     adv_params.p_peer_addr = NULL;
     adv_params.filter_policy = BLE_GAP_ADV_FP_ANY;
     adv_params.interval = APP_ADV_INTERVAL;
 
-    err_code = sd_ble_gap_adv_set_configure(&m_adv_handle, &m_adv_data,
-                                            &adv_params);
+    err_code =
+        sd_ble_gap_adv_set_configure(&m_adv_handle, &m_adv_data, &adv_params);
     APP_ERROR_CHECK(err_code);
 }
 
 
 /**@brief Function for handling Queued Write Module errors.
- * @details A pointer to this function will be passed to each service which may need to inform the
- *          application about an error.
- * @param[in]   nrf_error   Error code containing information about what went wrong.
+ * @details A pointer to this function will be passed to each service which may
+ * need to inform the application about an error.
+ * @param[in]   nrf_error   Error code containing information about what went
+ * wrong.
  */
 static void nrf_qwr_error_handler(uint32_t nrf_error)
 {
@@ -232,7 +237,8 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
 }
 
 
-/**@brief Function for initializing services that will be used by the application.
+/**@brief Function for initializing services that will be used by the
+ * application.
  */
 static void services_init(void)
 {
@@ -248,9 +254,9 @@ static void services_init(void)
     APP_ERROR_CHECK(err_code);
 
     // Initialize LBS.
-    //lbs_init.led_write_handler = m_app_ble_conf->led_write_handler;
-    //err_code = ble_lbs_init(&m_lbs, &lbs_init);
-    //APP_ERROR_CHECK(err_code);
+    // lbs_init.led_write_handler = m_app_ble_conf->led_write_handler;
+    // err_code = ble_lbs_init(&m_lbs, &lbs_init);
+    // APP_ERROR_CHECK(err_code);
 
     // Initialize SMS.
     sms_init.sensor_ctrl_write_cb = m_app_ble_conf->sensor_ctrl_write;
@@ -261,11 +267,11 @@ static void services_init(void)
 
 
 /**@brief Function for handling the Connection Parameters Module.
- * @details This function will be called for all events in the Connection Parameters Module that
- *          are passed to the application.
- * @note All this function does is to disconnect. This could have been done by simply
- *       setting the disconnect_on_fail config parameter, but instead we use the event
- *       handler mechanism to demonstrate its use.
+ * @details This function will be called for all events in the Connection
+ * Parameters Module that are passed to the application.
+ * @note All this function does is to disconnect. This could have been done by
+ * simply setting the disconnect_on_fail config parameter, but instead we use
+ * the event handler mechanism to demonstrate its use.
  * @param[in] p_evt  Event received from the Connection Parameters Module.
  */
 static void on_conn_params_evt(ble_conn_params_evt_t * p_evt)
@@ -274,15 +280,16 @@ static void on_conn_params_evt(ble_conn_params_evt_t * p_evt)
 
     if (p_evt->evt_type == BLE_CONN_PARAMS_EVT_FAILED)
     {
-        err_code = sd_ble_gap_disconnect(m_conn_handle,
-                                         BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
+        err_code = sd_ble_gap_disconnect(
+            m_conn_handle, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
         APP_ERROR_CHECK(err_code);
     }
 }
 
 
 /**@brief Function for handling a Connection Parameters error.
- * @param[in] nrf_error  Error code containing information about what went wrong.
+ * @param[in] nrf_error  Error code containing information about what went
+ * wrong.
  */
 static void conn_params_error_handler(uint32_t nrf_error)
 {
@@ -322,7 +329,7 @@ static void advertising_start(void)
     err_code = sd_ble_gap_adv_start(m_adv_handle, APP_BLE_CONN_CFG_TAG);
     APP_ERROR_CHECK(err_code);
 
-    //bsp_board_led_on(ADVERTISING_LED);
+    // bsp_board_led_on(ADVERTISING_LED);
     NRF_LOG_INFO("ADVERTISING");
 }
 
@@ -339,20 +346,20 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
     {
         case BLE_GAP_EVT_CONNECTED:
             NRF_LOG_INFO("Connected");
-            //bsp_board_led_on(CONNECTED_LED);
-            //bsp_board_led_off(ADVERTISING_LED);
+            // bsp_board_led_on(CONNECTED_LED);
+            // bsp_board_led_off(ADVERTISING_LED);
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, m_conn_handle);
             APP_ERROR_CHECK(err_code);
-            //err_code = app_button_enable();
+            // err_code = app_button_enable();
             APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
             NRF_LOG_INFO("Disconnected");
-            //bsp_board_led_off(CONNECTED_LED);
+            // bsp_board_led_off(CONNECTED_LED);
             m_conn_handle = BLE_CONN_HANDLE_INVALID;
-            //err_code = app_button_disable();
+            // err_code = app_button_disable();
             APP_ERROR_CHECK(err_code);
             advertising_start();
             break;
@@ -360,19 +367,19 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
         case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
             // Pairing not supported
             err_code = sd_ble_gap_sec_params_reply(
-                           m_conn_handle, BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL, NULL);
+                m_conn_handle, BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL, NULL);
             APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
         {
             NRF_LOG_DEBUG("PHY update request.");
-            ble_gap_phys_t const phys =
-            {
+            ble_gap_phys_t const phys = {
                 .rx_phys = BLE_GAP_PHY_AUTO,
                 .tx_phys = BLE_GAP_PHY_AUTO,
             };
-            err_code = sd_ble_gap_phy_update(p_ble_evt->evt.gap_evt.conn_handle, &phys);
+            err_code = sd_ble_gap_phy_update(
+                p_ble_evt->evt.gap_evt.conn_handle, &phys);
             APP_ERROR_CHECK(err_code);
         }
         break;
@@ -386,18 +393,18 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
         case BLE_GATTC_EVT_TIMEOUT:
             // Disconnect on GATT Client timeout event.
             NRF_LOG_DEBUG("GATT Client Timeout.");
-            err_code = sd_ble_gap_disconnect(
-                           p_ble_evt->evt.gattc_evt.conn_handle,
-                           BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+            err_code =
+                sd_ble_gap_disconnect(p_ble_evt->evt.gattc_evt.conn_handle,
+                    BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
             APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_GATTS_EVT_TIMEOUT:
             // Disconnect on GATT Server timeout event.
             NRF_LOG_DEBUG("GATT Server Timeout.");
-            err_code = sd_ble_gap_disconnect(
-                           p_ble_evt->evt.gatts_evt.conn_handle,
-                           BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+            err_code =
+                sd_ble_gap_disconnect(p_ble_evt->evt.gatts_evt.conn_handle,
+                    BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
             APP_ERROR_CHECK(err_code);
             break;
 
@@ -407,6 +414,13 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
     }
 }
 
+bool is_connected(void)
+{
+    if (m_conn_handle != BLE_CONN_HANDLE_INVALID)
+        return true;
+    else
+        return false;
+}
 
 /**@brief Function for initializing the BLE stack.
  *
@@ -426,6 +440,6 @@ static void ble_stack_init(void)
     err_code = nrf_sdh_ble_enable(&ram_start);
     APP_ERROR_CHECK(err_code);
     // Register a handler for BLE events.
-    NRF_SDH_BLE_OBSERVER(m_ble_observer, APP_BLE_OBSERVER_PRIO, ble_evt_handler,
-                         NULL);
+    NRF_SDH_BLE_OBSERVER(
+        m_ble_observer, APP_BLE_OBSERVER_PRIO, ble_evt_handler, NULL);
 }

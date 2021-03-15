@@ -8,10 +8,10 @@
 
 typedef enum
 {
-    SENSOR_1,
-    SENSOR_2,
-    SENSOR_3,
-    SENSOR_4,
+    SENSOR_1 = 0,
+    SENSOR_2 = 1,
+    SENSOR_3 = 2,
+    SENSOR_4 = 3,
 } sensor_t;
 
 typedef int16_t sensor_val_t;
@@ -19,6 +19,7 @@ typedef int16_t sensor_val_t;
 typedef struct
 {
     sensor_val_t buffer[SENSOR_BUFF_SIZE];
+    uint8_t is_updated;
 } sensor_buffer_t;
 
 typedef struct
@@ -28,20 +29,11 @@ typedef struct
     uint8_t enable;
 } sensor_ctrl_t;
 
-
 typedef struct
 {
     sensor_t sensor;
     sensor_buffer_t * sensor_buffer;
     sensor_ctrl_t control;
 } sensor_handle_t;
-
-typedef struct 
-{
-    sensor_handle_t* s1;
-    sensor_handle_t* s2;
-    sensor_handle_t* s3;
-    sensor_handle_t* s4;
-} sensor_handles_arr_t;
 
 #endif

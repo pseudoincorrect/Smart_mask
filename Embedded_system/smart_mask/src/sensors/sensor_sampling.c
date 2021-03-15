@@ -17,10 +17,11 @@
 #endif
 
 #define SAMPLES_IN_BUFFER SENSORS_COUNT
-#define SAMPLE_RATE_MS 200
+#define SAMPLE_RATE_MS 500
 
 static const nrfx_timer_t saadc_timer_instance = NRFX_TIMER_INSTANCE(2);
 
+static int mock_adc;
 
 void saadc_callback(nrfx_saadc_evt_t const * p_event)
 {
@@ -67,7 +68,6 @@ ret_code_t saadc_init(void)
     return err_code;
 }
 
-static int temp_i = 0;
 
 void make_a_conversion(void)
 {
@@ -75,31 +75,35 @@ void make_a_conversion(void)
     nrf_saadc_value_t adc_val;
     sensor_buffer_t * buffer;
 
-    err_code = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN2, &adc_val);
-    // NRF_LOG_INFO("ADC 2 val = %d ", adc_val);
-    get_sensor_buffer(SENSOR_1, buffer);
-    buffer->buffer[0] = 0;
-
-    err_code = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN3, &adc_val);
-    // NRF_LOG_INFO("ADC 3 val = %d ", adc_val);
-    get_sensor_buffer(SENSOR_2, buffer);
-    buffer->buffer[0] = 0;
-
-    err_code = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN4, &adc_val);
-    // NRF_LOG_INFO("ADC 4 val = %d ", adc_val);
-    get_sensor_buffer(SENSOR_3, buffer);
-    buffer->buffer[0] = 0;
-
     nrf_gpio_pin_set(SENSOR_1_PWR_PIN);
     nrf_delay_ms(10);
-
     err_code = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN6, &adc_val);
     // NRF_LOG_INFO("ADC 6 val = %d ", adc_val);
-    get_sensor_buffer(SENSOR_1, buffer);
+    buffer = get_sensor_buffer(SENSOR_1);
     buffer->buffer[0] = adc_val;
-
-
+    buffer->is_updated = true;
     nrf_gpio_pin_clear(SENSOR_1_PWR_PIN);
+
+    //err_code = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN2, &adc_val);
+    // NRF_LOG_INFO("ADC 2 val = %d ", adc_val);
+    buffer = get_sensor_buffer(SENSOR_2);
+    buffer->buffer[0] = mock_adc++;
+    buffer->is_updated = true;
+
+    //err_code = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN3, &adc_val);
+    // NRF_LOG_INFO("ADC 3 val = %d ", adc_val);
+    buffer = get_sensor_buffer(SENSOR_3);
+    buffer->buffer[0] = 0;
+    buffer->is_updated = true;
+
+    //err_code = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN4, &adc_val);
+    // NRF_LOG_INFO("ADC 4 val = %d ", adc_val);
+    buffer = get_sensor_buffer(SENSOR_4);
+    buffer->buffer[0] = 0;
+    buffer->is_updated = true;
+
+    //buffer = get_sensor_buffer(SENSOR_1);
+    //NRF_LOG_INFO("buffer[0] = %d", buffer->buffer[0]);
 }
 
 
@@ -122,13 +126,15 @@ ret_code_t saadc_timer_init(void)
     ret_code_t err_code;
     nrfx_timer_config_t timer_conf = NRFX_TIMER_DEFAULT_CONFIG;
     timer_conf.bit_width = NRF_TIMER_BIT_WIDTH_32;
-    err_code = nrfx_timer_init(&saadc_timer_instance, &timer_conf, saadc_timer_handler);
+    err_code = nrfx_timer_init(
+        &saadc_timer_instance, &timer_conf, saadc_timer_handler);
     APP_ERROR_CHECK(err_code);
 
-    uint32_t time_ticks = nrfx_timer_ms_to_ticks(&saadc_timer_instance, SAMPLE_RATE_MS);
+    uint32_t time_ticks =
+        nrfx_timer_ms_to_ticks(&saadc_timer_instance, SAMPLE_RATE_MS);
 
-    nrfx_timer_extended_compare(&saadc_timer_instance, NRF_TIMER_CC_CHANNEL0, time_ticks,
-        NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK, true);
+    nrfx_timer_extended_compare(&saadc_timer_instance, NRF_TIMER_CC_CHANNEL0,
+        time_ticks, NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK, true);
 
     nrfx_timer_enable(&saadc_timer_instance);
 }
@@ -139,7 +145,10 @@ ret_code_t sensor_sampling_init(void)
 #if (MOCK_ADC)
     random_vector_generate_init();
 #else
+
+    mock_adc = 0;
     init_sensor_handles();
+    // init_sensor_buffer();
     saadc_init();
     saadc_timer_init();
 #endif

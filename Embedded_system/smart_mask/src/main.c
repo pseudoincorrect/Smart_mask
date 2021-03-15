@@ -2,22 +2,23 @@
  * Includes
  ************************/
 
-// SDK 
+// SDK
+#include "app_button.h"
+#include "app_error.h"
+#include "app_timer.h"
+#include "boards.h"
 #include "nordic_common.h"
 #include "nrf.h"
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
-#include "nrf_sdm.h"
 #include "nrf_pwr_mgmt.h"
-#include "app_error.h"
-#include "app_button.h"
-#include "app_timer.h"
-#include "boards.h"
+#include "nrf_sdm.h"
+#include "nrf_delay.h"
 // Project
 #include "app_ble.h"
-#include "sensor_sampling.h"
 #include "sensor_handle.h"
+#include "sensor_sampling.h"
 //#include "sensors.h"
 
 /*************************
@@ -30,11 +31,14 @@
 #define CONNECTED_LED BSP_BOARD_LED_1
 // LED to be toggled with the help of the LED Button Service
 #define LEDBUTTON_LED BSP_BOARD_LED_2
-// Button that will trigger the notification event with the LED Button Service */
+// Button that will trigger the notification event with the LED Button Service
+// */
 #define CONNECT_BUTTON BSP_BUTTON_0
-// Delay from a GPIOTE event until a button is reported as pushed (in number of timer ticks)
+// Delay from a GPIOTE event until a button is reported as pushed (in number of
+// timer ticks)
 #define BUTTON_DETECTION_DELAY APP_TIMER_TICKS(50)
-// Value used as error code on stack dump, can be used to identify stack location on stack unwind
+// Value used as error code on stack dump, can be used to identify stack
+// location on stack unwind
 #define DEAD_BEEF 0xDEADBEEF
 
 /*************************
@@ -72,11 +76,12 @@ void timer_led_event_handler(nrf_timer_event_t event_type, void * p_context)
 
 
 /**@brief Function for handling write events to the LED characteristic.
- * @param[in] p_lbs     Instance of LED Button Service to which the write applies.
+ * @param[in] p_lbs     Instance of LED Button Service to which the write
+ * applies.
  * @param[in] led_state Written/desired state of the LED.
  */
-static void led_write_handler(uint16_t conn_handle, ble_lbs_t * p_lbs,
-                              uint8_t led_state)
+static void led_write_handler(
+    uint16_t conn_handle, ble_lbs_t * p_lbs, uint8_t led_state)
 {
     if (led_state)
     {
@@ -91,33 +96,21 @@ static void led_write_handler(uint16_t conn_handle, ble_lbs_t * p_lbs,
 }
 
 
-///** @brief Function for handling write event to the output characteristic
-//    @param[in] p_sms Instance of Sensor Measurement Service to which the write applies
-//    @param[in] output_state, Written/desired state of the outputs
-//*/
-//static void output_write_handler(uint16_t conn_handle, ble_sms_t * p_sms,
-//                                 uint8_t output_state)
-//{
-//    NRF_LOG_INFO("output State %d", output_state);
-//}
-
-
-
-static void sensor_ctrl_update(sensor_t sensor, sensor_ctrl_t* sensor_ctrl)
+static void sensor_ctrl_update(sensor_t sensor, sensor_ctrl_t * sensor_ctrl)
 {
-    sensor_ctrl_t* ctrl;
     set_sensor_ctrl(sensor, sensor_ctrl);
     NRF_LOG_INFO("sensor %d", sensor + 1);
-    get_sensor_ctrl(sensor, ctrl);
-    NRF_LOG_INFO("freq %d, gain %d, enable %d",
-        ctrl->frequency, ctrl->gain, ctrl->enable);
+    sensor_ctrl_t * ctrl = get_sensor_ctrl(sensor);
+    NRF_LOG_INFO("freq %d, gain %d, enable %d", ctrl->frequency, ctrl->gain,
+        ctrl->enable);
 }
 
 
 /**@brief Function for assert macro callback.
  * @details This function will be called in case of an assert in the SoftDevice.
  * @warning This handler is an example only and does not fit a final product.
- *          You need to analyze how your product is supposed to react in case of Assert.
+ *          You need to analyze how your product is supposed to react in case of
+ * Assert.
  * @warning On assert from the SoftDevice, the system can only recover on reset.
  * @param[in] line_num    Line number of the failing ASSERT call.
  * @param[in] p_file_name File name of the failing ASSERT call.
@@ -131,10 +124,7 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 /**@brief Function for the LEDs initialization.
  * @details Initializes all LEDs used by the application.
  */
-static void leds_init(void)
-{
-    bsp_board_init(BSP_INIT_LEDS);
-}
+static void leds_init(void) { bsp_board_init(BSP_INIT_LEDS); }
 
 
 /**@brief Function for the Timer initialization.
@@ -160,16 +150,12 @@ static void button_event_handler(uint8_t pin_no, uint8_t button_action)
     {
         case CONNECT_BUTTON:
             NRF_LOG_INFO("Send button state change.");
-            err_code = ble_lbs_on_button_change(
-                           *m_app_ble_conf.ble_conn_handle,
-                           m_app_ble_conf.ble_lbs,
-                           button_action
-                       );
-            if (err_code != NRF_SUCCESS
-                    && err_code != BLE_ERROR_INVALID_CONN_HANDLE
-                    && err_code != NRF_ERROR_INVALID_STATE
-                    && err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING
-               )
+            err_code = ble_lbs_on_button_change(*m_app_ble_conf.ble_conn_handle,
+                m_app_ble_conf.ble_lbs, button_action);
+            if (err_code != NRF_SUCCESS &&
+                err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
+                err_code != NRF_ERROR_INVALID_STATE &&
+                err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
             {
                 APP_ERROR_CHECK(err_code);
             }
@@ -187,14 +173,13 @@ static void buttons_init(void)
 {
     ret_code_t err_code;
 
-    // The array must be static because a pointer to it will be saved in the button handler module.
-    static app_button_cfg_t buttons[] =
-    {
-        {CONNECT_BUTTON, false, BUTTON_PULL, button_event_handler}
-    };
+    // The array must be static because a pointer to it will be saved in the
+    // button handler module.
+    static app_button_cfg_t buttons[] = {
+        {CONNECT_BUTTON, false, BUTTON_PULL, button_event_handler}};
 
-    err_code = app_button_init(buttons, ARRAY_SIZE(buttons),
-                               BUTTON_DETECTION_DELAY);
+    err_code =
+        app_button_init(buttons, ARRAY_SIZE(buttons), BUTTON_DETECTION_DELAY);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -221,7 +206,8 @@ static void power_management_init(void)
 
 
 /**@brief Function for handling the idle state (main loop).
- * @details If there is no pending log operation, then sleep until next the next event occurs.
+ * @details If there is no pending log operation, then sleep until next the next
+ * event occurs.
  */
 static void idle_state_handle(void)
 {
@@ -236,23 +222,29 @@ static void idle_state_handle(void)
  */
 void check_sensors_update(void)
 {
-    //ret_code_t err_code;
-    //for (int i = 0; i < SENSORS_COUNT; i++)
-    //{
-    //    if (m_sensors.values[i] != m_sensors_previous.values[i])
-    //    {
-    //        err_code = ble_sms_on_sensors_update(*m_app_ble_conf.ble_conn_handle,
-    //                                             m_app_ble_conf.ble_sms, m_sensors.values);
-    //        if (err_code != NRF_SUCCESS && err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
-    //                err_code != NRF_ERROR_INVALID_STATE
-    //                && err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
-    //        {
-    //            APP_ERROR_CHECK(err_code);
-    //        }
-    //        memcpy(m_sensors_previous.values, m_sensors.values,
-    //               sizeof(sensors_value_t) * SENSORS_COUNT);
-    //    }
-    //}
+    if (! is_connected())
+        return; 
+
+    ret_code_t err_code;
+    sensor_buffer_t * buff;
+    for (sensor_t s_i = SENSOR_1; s_i <= SENSOR_4; s_i++)
+    {
+        buff = get_sensor_buffer(s_i);
+        if (buff->is_updated)
+        {
+            err_code = ble_sms_on_sensors_update(
+                *m_app_ble_conf.ble_conn_handle, m_app_ble_conf.ble_sms, s_i);
+
+            if (err_code != NRF_SUCCESS &&
+                err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
+                err_code != NRF_ERROR_INVALID_STATE &&
+                err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
+            {
+                APP_ERROR_CHECK(err_code);
+            }
+            buff->is_updated = false;
+        }
+    }
 }
 
 /**@brief App Error handler (override the weak one)
@@ -275,14 +267,15 @@ void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
         {
             assert_info_t * p_info = (assert_info_t *)info;
             NRF_LOG_ERROR("ASSERTION FAILED at %s:%u", p_info->p_file_name,
-                          p_info->line_num);
+                p_info->line_num);
             break;
         }
         case NRF_FAULT_ID_SDK_ERROR:
         {
             error_info_t * p_info = (error_info_t *)info;
-            NRF_LOG_ERROR("ERROR %u [%s] at %s:%u\r\nPC at: 0x%08x", p_info->err_code,
-                          nrf_strerror_get(p_info->err_code), p_info->p_file_name, p_info->line_num, pc);
+            NRF_LOG_ERROR("ERROR %u [%s] at %s:%u\r\nPC at: 0x%08x",
+                p_info->err_code, nrf_strerror_get(p_info->err_code),
+                p_info->p_file_name, p_info->line_num, pc);
             NRF_LOG_ERROR("End of error report");
             break;
         }
@@ -324,4 +317,3 @@ int main(void)
         check_sensors_update();
     }
 }
-
