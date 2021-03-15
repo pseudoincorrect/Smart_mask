@@ -2,9 +2,9 @@
 #define __sensors_h__
 
 #include "stdint.h"
+#include "nrf_ringbuf.h"
 
 #define SENSORS_COUNT 4
-#define SENSOR_BUFF_SIZE 10
 
 typedef enum
 {
@@ -18,12 +18,6 @@ typedef int16_t sensor_val_t;
 
 typedef struct
 {
-    sensor_val_t buffer[SENSOR_BUFF_SIZE];
-    uint8_t is_updated;
-} sensor_buffer_t;
-
-typedef struct
-{
     uint32_t frequency;
     uint8_t gain;
     uint8_t enable;
@@ -32,7 +26,7 @@ typedef struct
 typedef struct
 {
     sensor_t sensor;
-    sensor_buffer_t * sensor_buffer;
+    const nrf_ringbuf_t* buffer;
     sensor_ctrl_t control;
 } sensor_handle_t;
 

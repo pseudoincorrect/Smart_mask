@@ -17,7 +17,7 @@
 #endif
 
 #define SAMPLES_IN_BUFFER SENSORS_COUNT
-#define SAMPLE_RATE_MS 500
+#define SAMPLE_RATE_MS 1000
 
 static const nrfx_timer_t saadc_timer_instance = NRFX_TIMER_INSTANCE(2);
 
@@ -57,7 +57,7 @@ ret_code_t saadc_init(void)
         NRFX_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN6);
 
     channel_6_config.gain = SAADC_CH_CONFIG_GAIN_Gain1_6;
-    // channel_6_config.reference = NRF_SAADC_REFERENCE_VDD4;
+     //channel_6_config.reference = NRF_SAADC_REFERENCE_VDD4;
     channel_6_config.reference = NRF_SAADC_REFERENCE_INTERNAL;
     err_code = nrfx_saadc_channel_init(6, &channel_6_config);
 
@@ -71,39 +71,29 @@ ret_code_t saadc_init(void)
 
 void make_a_conversion(void)
 {
-    ret_code_t err_code;
+    ret_code_t err;
     nrf_saadc_value_t adc_val;
-    sensor_buffer_t * buffer;
 
     nrf_gpio_pin_set(SENSOR_1_PWR_PIN);
     nrf_delay_ms(10);
-    err_code = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN6, &adc_val);
-    // NRF_LOG_INFO("ADC 6 val = %d ", adc_val);
-    buffer = get_sensor_buffer(SENSOR_1);
-    buffer->buffer[0] = adc_val;
-    buffer->is_updated = true;
+    err = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN6, &adc_val);
+    NRF_LOG_INFO("ADC SENSOR_1 val = %d ", adc_val);
+    err = add_value(SENSOR_1, adc_val);
+    APP_ERROR_CHECK(err);
     nrf_gpio_pin_clear(SENSOR_1_PWR_PIN);
 
-    //err_code = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN2, &adc_val);
-    // NRF_LOG_INFO("ADC 2 val = %d ", adc_val);
-    buffer = get_sensor_buffer(SENSOR_2);
-    buffer->buffer[0] = mock_adc++;
-    buffer->is_updated = true;
+    //err = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN2, &adc_val);
+    err = add_value(SENSOR_2, mock_adc++);
+    APP_ERROR_CHECK(err);
 
-    //err_code = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN3, &adc_val);
-    // NRF_LOG_INFO("ADC 3 val = %d ", adc_val);
-    buffer = get_sensor_buffer(SENSOR_3);
-    buffer->buffer[0] = 0;
-    buffer->is_updated = true;
+    //err = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN3, &adc_val);
+    err = add_value(SENSOR_3, 0);
+    APP_ERROR_CHECK(err);
 
-    //err_code = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN4, &adc_val);
-    // NRF_LOG_INFO("ADC 4 val = %d ", adc_val);
-    buffer = get_sensor_buffer(SENSOR_4);
-    buffer->buffer[0] = 0;
-    buffer->is_updated = true;
+    //err = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN4, &adc_val);
+    err = add_value(SENSOR_4, 0);
+    APP_ERROR_CHECK(err);
 
-    //buffer = get_sensor_buffer(SENSOR_1);
-    //NRF_LOG_INFO("buffer[0] = %d", buffer->buffer[0]);
 }
 
 

@@ -56,18 +56,19 @@ void ble_sms_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context)
 uint32_t ble_sms_on_sensors_update(
     uint16_t conn_handle, ble_sms_t * p_sms, sensor_t sensor)
 {
-    uint16_t len = sizeof(sensor_val_t);
+    ret_code_t ret;
+    uint16_t len = SENSOR_VAL_AMOUNT_NOTIF * sizeof(sensor_val_t);
     ble_gatts_hvx_params_t params;
     memset(&params, 0, sizeof(params));
     params.type = BLE_GATT_HVX_NOTIFICATION;
     params.p_len = &len;
 
-    sensor_buffer_t * buffer;
-    buffer = get_sensor_buffer(sensor);
-    //NRF_LOG_INFO("sensor %d buffer[0] = %d", sensor + 1, buffer->buffer[0]);
+    sensor_val_t vals[SENSOR_VAL_AMOUNT_NOTIF];
+    ret = get_values(sensor, vals, SENSOR_VAL_AMOUNT_NOTIF);
 
-    params.p_data = (uint8_t *) &buffer->buffer[0];
-    //NRF_LOG_INFO("sensor %d data[0] = %d", sensor + 1, (int16_t) *params.p_data);
+    params.p_data = (uint8_t *) vals;
+    int16_t tmp = *(params.p_data + 1) << 8 | *params.p_data;
+    NRF_LOG_INFO("sensor %d data = %d", sensor + 1, tmp);
 
     switch (sensor)
     {
@@ -85,9 +86,8 @@ uint32_t ble_sms_on_sensors_update(
             break;
     }
 
-
-    //return NRF_SUCCESS;
-    return sd_ble_gatts_hvx(conn_handle, &params);
+    return NRF_SUCCESS;
+    //return sd_ble_gatts_hvx(conn_handle, &params);
 }
 
 
@@ -97,14 +97,14 @@ static uint32_t add_sensor_vals_char(
     uint32_t err_code;
     ble_add_char_params_t params;
 
-    sensor_val_t sensors_init_values[SENSOR_BUFF_SIZE];
+    sensor_val_t sensors_init_values[SENSOR_VAL_AMOUNT_NOTIF];
     memset(sensors_init_values, 0, sizeof(sensors_init_values));
 
     memset(&params, 0, sizeof(params));
     params.uuid = uuid;
     params.uuid_type = p_sms->uuid_type;
-    params.max_len = sizeof(sensor_val_t) * SENSOR_BUFF_SIZE;
-    params.init_len = sizeof(sensor_val_t) * SENSOR_BUFF_SIZE;
+    params.max_len = sizeof(sensor_val_t) * SENSOR_VAL_AMOUNT_NOTIF;
+    params.init_len = sizeof(sensor_val_t) * SENSOR_VAL_AMOUNT_NOTIF;
     params.char_props.read = 1;
     params.char_props.notify = 1;
     params.p_init_value = (uint8_t *)sensors_init_values;

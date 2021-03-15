@@ -222,15 +222,13 @@ static void idle_state_handle(void)
  */
 void check_sensors_update(void)
 {
-    if (! is_connected())
-        return; 
+    //if (! is_connected())
+    //    return; 
 
     ret_code_t err_code;
-    sensor_buffer_t * buff;
     for (sensor_t s_i = SENSOR_1; s_i <= SENSOR_4; s_i++)
     {
-        buff = get_sensor_buffer(s_i);
-        if (buff->is_updated)
+        if (available_data(s_i) >= SENSOR_VAL_AMOUNT_NOTIF)
         {
             err_code = ble_sms_on_sensors_update(
                 *m_app_ble_conf.ble_conn_handle, m_app_ble_conf.ble_sms, s_i);
@@ -242,9 +240,9 @@ void check_sensors_update(void)
             {
                 APP_ERROR_CHECK(err_code);
             }
-            buff->is_updated = false;
         }
     }
+    NRF_LOG_INFO("");
 }
 
 /**@brief App Error handler (override the weak one)

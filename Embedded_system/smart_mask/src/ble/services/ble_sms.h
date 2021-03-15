@@ -34,6 +34,8 @@
 #define SMS_UUID_SENSOR_4_VALS_CHAR (uint8_t)0x1607
 #define SMS_UUID_SENSOR_4_CTRL_CHAR (uint8_t)0x1608
 
+#define SENSOR_VAL_AMOUNT_NOTIF 1
+
 typedef struct ble_sms_s ble_sms_t;
 
 typedef void (*ble_sms_sensor_ctrl_write_cb)(
