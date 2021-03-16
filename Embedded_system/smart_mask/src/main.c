@@ -228,7 +228,7 @@ void check_sensors_update(void)
     ret_code_t err_code;
     for (sensor_t s_i = SENSOR_1; s_i <= SENSOR_4; s_i++)
     {
-        if (available_data(s_i) >= SENSOR_VAL_AMOUNT_NOTIF)
+        if (available_sensor_data(s_i) >= SENSOR_VAL_AMOUNT_NOTIF)
         {
             err_code = ble_sms_on_sensors_update(
                 *m_app_ble_conf.ble_conn_handle, m_app_ble_conf.ble_sms, s_i);

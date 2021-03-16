@@ -5,6 +5,7 @@
 #include "sdk_common.h"
 #include "nrf_log.h"
 #include "sensor_handle.h"
+#include "app_error.h"
 
 /**@brief Function for handling the Write event.
  *
@@ -57,34 +58,42 @@ uint32_t ble_sms_on_sensors_update(
     uint16_t conn_handle, ble_sms_t * p_sms, sensor_t sensor)
 {
     ret_code_t ret;
-    uint16_t len = SENSOR_VAL_AMOUNT_NOTIF * sizeof(sensor_val_t);
-    ble_gatts_hvx_params_t params;
-    memset(&params, 0, sizeof(params));
-    params.type = BLE_GATT_HVX_NOTIFICATION;
-    params.p_len = &len;
+
+
+    //ble_gatts_hvx_params_t params;
+    //memset(&params, 0, sizeof(params));
+    //params.type = BLE_GATT_HVX_NOTIFICATION;
+    //params.p_len = &len;
 
     sensor_val_t vals[SENSOR_VAL_AMOUNT_NOTIF];
-    ret = get_values(sensor, vals, SENSOR_VAL_AMOUNT_NOTIF);
 
-    params.p_data = (uint8_t *) vals;
-    int16_t tmp = *(params.p_data + 1) << 8 | *params.p_data;
-    NRF_LOG_INFO("sensor %d data = %d", sensor + 1, tmp);
+    uint16_t amount = SENSOR_VAL_AMOUNT_NOTIF;
+    ret = get_sensor_values(sensor, vals, amount);
+    APP_ERROR_CHECK(ret);
 
-    switch (sensor)
-    {
-        case (SENSOR_1):
-            params.handle = p_sms->s1_val_char.value_handle;
-            break;
-        case (SENSOR_2):
-            params.handle = p_sms->s2_val_char.value_handle;
-            break;
-        case (SENSOR_3):
-            params.handle = p_sms->s3_val_char.value_handle;
-            break;
-        case (SENSOR_4):
-            params.handle = p_sms->s4_val_char.value_handle;
-            break;
-    }
+    int16_t tmp1 = vals[0];
+    int16_t tmp2 = vals[1];
+
+    NRF_LOG_INFO("sensor %d data1 = %d data2 = %d", sensor + 1, tmp1, tmp2);
+
+    //int16_t tmp1 = *(params.p_data + 1) << 8 | *params.p_data;
+    //int16_t tmp2 = *(params.p_data + 3) << 8 | *(params.p_data + 2);
+    //params.p_data = (uint8_t *) vals;
+    //switch (sensor)
+    //{
+    //    case (SENSOR_1):
+    //        params.handle = p_sms->s1_val_char.value_handle;
+    //        break;
+    //    case (SENSOR_2):
+    //        params.handle = p_sms->s2_val_char.value_handle;
+    //        break;
+    //    case (SENSOR_3):
+    //        params.handle = p_sms->s3_val_char.value_handle;
+    //        break;
+    //    case (SENSOR_4):
+    //        params.handle = p_sms->s4_val_char.value_handle;
+    //        break;
+    //}
 
     return NRF_SUCCESS;
     //return sd_ble_gatts_hvx(conn_handle, &params);

@@ -78,20 +78,20 @@ void make_a_conversion(void)
     nrf_delay_ms(10);
     err = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN6, &adc_val);
     NRF_LOG_INFO("ADC SENSOR_1 val = %d ", adc_val);
-    err = add_value(SENSOR_1, adc_val);
+    err = add_sensor_value(SENSOR_2, adc_val);
     APP_ERROR_CHECK(err);
     nrf_gpio_pin_clear(SENSOR_1_PWR_PIN);
 
     //err = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN2, &adc_val);
-    err = add_value(SENSOR_2, mock_adc++);
+    err = add_sensor_value(SENSOR_3, mock_adc++);
     APP_ERROR_CHECK(err);
 
     //err = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN3, &adc_val);
-    err = add_value(SENSOR_3, 0);
+    err = add_sensor_value(SENSOR_1, 0);
     APP_ERROR_CHECK(err);
 
     //err = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN4, &adc_val);
-    err = add_value(SENSOR_4, 0);
+    err = add_sensor_value(SENSOR_4, 0);
     APP_ERROR_CHECK(err);
 
 }
