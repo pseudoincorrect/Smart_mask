@@ -1,6 +1,7 @@
 #ifndef __smart_mask_v_2_0_h__
 #define __smart_mask_v_2_0_h__
 
+#include "nrfx_saadc.h"
 
 #define RX_PIN_NUMBER   18
 #define TX_PIN_NUMBER   20
@@ -11,17 +12,26 @@
 
 #define USR_BUTTON_PIN  16
 
-#define SENSOR_1_PWR_PIN    25
-#define SENSOR_1_ADC_PIN    30
+#define SENSOR_1_PWR_PIN        25
+#define SENSOR_1_ADC_PIN        30
+#define SENSOR_1_ANALOG_INPUT   NRF_SAADC_INPUT_AIN6
+#define SENSOR_1_ADC_CHANNEL    6
 
-#define SENSOR_2_PWR_PIN    1
-#define SENSOR_2_ADC_PIN    28
+#define SENSOR_2_PWR_PIN        1
+#define SENSOR_2_ADC_PIN        28
+#define SENSOR_2_ANALOG_INPUT   NRF_SAADC_INPUT_AIN2
+#define SENSOR_2_ADC_CHANNEL    2
 
-#define SENSOR_3_PWR_PIN    6
-#define SENSOR_3_ADC_PIN    4
+#define SENSOR_3_PWR_PIN        6
+#define SENSOR_3_ADC_PIN        4
+#define SENSOR_3_ANALOG_INPUT   NRF_SAADC_INPUT_AIN3
+#define SENSOR_3_ADC_CHANNEL    3
 
-#define SENSOR_4_PWR_PIN    9
-#define SENSOR_4_ADC_PIN    5
+#define SENSOR_4_PWR_PIN        9
+#define SENSOR_4_ADC_PIN        5
+#define SENSOR_4_ANALOG_INPUT   NRF_SAADC_INPUT_AIN4
+#define SENSOR_4_ADC_CHANNEL    4
+
 
 // BSP Leds (for compatibility with SDK)
 #define LEDS_NUMBER    3

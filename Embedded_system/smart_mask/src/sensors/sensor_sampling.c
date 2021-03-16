@@ -28,72 +28,90 @@ void saadc_callback(nrfx_saadc_evt_t const * p_event)
     NRF_LOG_INFO("saadc_callback, p_event->type = %d", p_event->type);
 }
 
+ret_code_t saadc_config_channel(sensor_t sensor, sensor_ctrl_t * ctrl)
+{
+    sensor_hardware_t * hardware;
+    nrf_saadc_channel_config_t conf =
+        NRFX_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NULL);
+    hardware = get_sensor_hardware(sensor);
+    conf.pin_p = hardware->analog_input;
+    conf.gain = SAADC_CH_CONFIG_GAIN_Gain1_6;
+    conf.reference = NRF_SAADC_REFERENCE_INTERNAL;
+    return nrfx_saadc_channel_init(hardware->adc_chanel, &conf);
+}
+
 ret_code_t saadc_init(void)
 {
-    ret_code_t err_code;
+    ret_code_t err;
 
     static nrfx_saadc_config_t default_config = NRFX_SAADC_DEFAULT_CONFIG;
     default_config.resolution = NRF_SAADC_RESOLUTION_12BIT;
 
-    err_code = nrfx_saadc_init(&default_config, saadc_callback);
-    APP_ERROR_CHECK(err_code);
+    err = nrfx_saadc_init(&default_config, saadc_callback);
+    APP_ERROR_CHECK(err);
 
-    // nrf_saadc_channel_config_t channel_2_config =
-    //    NRFX_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN2);
-    // err_code = nrfx_saadc_channel_init(2, &channel_2_config);
-    // APP_ERROR_CHECK(err_code);
+    sensor_hardware_t * hardware;
+    nrf_saadc_channel_config_t conf =
+        NRFX_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NULL);
 
-    // nrf_saadc_channel_config_t channel_3_config =
-    //    NRFX_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN3);
-    // err_code = nrfx_saadc_channel_init(3, &channel_3_config);
-    // APP_ERROR_CHECK(err_code);
+    for (sensor_t s_i = SENSOR_FIRST; s_i <= SENSOR_LAST; s_i++)
+    {
+        sensor_ctrl_t * ctrl = get_sensor_ctrl(s_i);
+        hardware = get_sensor_hardware(s_i);
+        err = saadc_config_channel(s_i, ctrl);
+        APP_ERROR_CHECK(err);
+        NRF_LOG_INFO("sensor %d pwr_pin %d", s_i + 1, hardware->pwr_pin);
+        nrf_gpio_cfg_output(hardware->pwr_pin);
+    }
 
-    // nrf_saadc_channel_config_t channel_4_config =
-    //    NRFX_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN4);
-    // err_code = nrfx_saadc_channel_init(4, &channel_4_config);
-
-
-    nrf_saadc_channel_config_t channel_6_config =
-        NRFX_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN6);
-
-    channel_6_config.gain = SAADC_CH_CONFIG_GAIN_Gain1_6;
-     //channel_6_config.reference = NRF_SAADC_REFERENCE_VDD4;
-    channel_6_config.reference = NRF_SAADC_REFERENCE_INTERNAL;
-    err_code = nrfx_saadc_channel_init(6, &channel_6_config);
-
-    APP_ERROR_CHECK(err_code);
-
-    nrf_gpio_cfg_output(SENSOR_1_PWR_PIN);
-
-    return err_code;
+    return NRF_SUCCESS;
 }
 
+ret_code_t saadc_change_gain(void) { return NRF_SUCCESS; }
 
-void make_a_conversion(void)
+ret_code_t update_sensor_control(
+    sensor_t sensor, sensor_ctrl_t * new_sensor_ctrl)
+{
+    ret_code_t err;
+    sensor_hardware_t * hardware = get_sensor_hardware(sensor);
+    err = nrfx_saadc_channel_uninit(hardware->adc_chanel);
+    APP_ERROR_CHECK(err);
+    err = saadc_config_channel(sensor, new_sensor_ctrl);
+    APP_ERROR_CHECK(err);
+    return NRF_SUCCESS;
+}
+
+void sample_one_sensor(sensor_t sensor)
 {
     ret_code_t err;
     nrf_saadc_value_t adc_val;
-
-    nrf_gpio_pin_set(SENSOR_1_PWR_PIN);
-    nrf_delay_ms(10);
-    err = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN6, &adc_val);
-    NRF_LOG_INFO("ADC SENSOR_1 val = %d ", adc_val);
-    err = add_sensor_value(SENSOR_2, adc_val);
+    sensor_hardware_t * hardware = get_sensor_hardware(sensor);
+    nrf_gpio_pin_set(hardware->pwr_pin);
+    nrf_delay_ms(1);
+    err = nrfx_saadc_sample_convert(hardware->adc_chanel, &adc_val);
     APP_ERROR_CHECK(err);
-    nrf_gpio_pin_clear(SENSOR_1_PWR_PIN);
+    err = add_sensor_value(sensor, adc_val);
+    APP_ERROR_CHECK(err);
+    nrf_gpio_pin_clear(hardware->pwr_pin);
+}
 
-    //err = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN2, &adc_val);
-    err = add_sensor_value(SENSOR_3, mock_adc++);
+void sample_all_sensors(void)
+{
+    ret_code_t err;
+
+    sample_one_sensor(SENSOR_1);
+
+    // err = nrfx_saadc_sample_convert(SENSOR_2_ADC_CHANNEL, &adc_val);
+    err = add_sensor_value(SENSOR_2, mock_adc++);
     APP_ERROR_CHECK(err);
 
-    //err = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN3, &adc_val);
-    err = add_sensor_value(SENSOR_1, 0);
+    // err = nrfx_saadc_sample_convert(SENSOR_3_ADC_CHANNEL, &adc_val);
+    err = add_sensor_value(SENSOR_3, 0);
     APP_ERROR_CHECK(err);
 
-    //err = nrfx_saadc_sample_convert(NRF_SAADC_INPUT_AIN4, &adc_val);
+    // err = nrfx_saadc_sample_convert(SENSOR_4_ADC_CHANNEL, &adc_val);
     err = add_sensor_value(SENSOR_4, 0);
     APP_ERROR_CHECK(err);
-
 }
 
 
@@ -102,7 +120,7 @@ void saadc_timer_handler(nrf_timer_event_t event_type, void * p_context)
     switch (event_type)
     {
         case NRF_TIMER_EVENT_COMPARE0:
-            make_a_conversion();
+            sample_all_sensors();
             break;
 
         default:

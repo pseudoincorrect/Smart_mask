@@ -1,11 +1,11 @@
 // BLE SENSORS MEASUREMENT SERVICE
 
 #include "ble_sms.h"
-#include "ble_srv_common.h"
-#include "sdk_common.h"
-#include "nrf_log.h"
-#include "sensor_handle.h"
 #include "app_error.h"
+#include "ble_srv_common.h"
+#include "nrf_log.h"
+#include "sdk_common.h"
+#include "sensor_handle.h"
 
 /**@brief Function for handling the Write event.
  *
@@ -54,49 +54,48 @@ void ble_sms_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context)
     }
 }
 
+
 uint32_t ble_sms_on_sensors_update(
     uint16_t conn_handle, ble_sms_t * p_sms, sensor_t sensor)
 {
+    static sensor_val_t vals[SENSOR_VAL_AMOUNT_NOTIF];
     ret_code_t ret;
+    int16_t len = SENSOR_VAL_AMOUNT_NOTIF * sizeof(sensor_val_t);
 
+    ble_gatts_hvx_params_t params;
+    memset(&params, 0, sizeof(params));
+    params.type = BLE_GATT_HVX_NOTIFICATION;
+    params.p_len = &len;
 
-    //ble_gatts_hvx_params_t params;
-    //memset(&params, 0, sizeof(params));
-    //params.type = BLE_GATT_HVX_NOTIFICATION;
-    //params.p_len = &len;
-
-    sensor_val_t vals[SENSOR_VAL_AMOUNT_NOTIF];
 
     uint16_t amount = SENSOR_VAL_AMOUNT_NOTIF;
     ret = get_sensor_values(sensor, vals, amount);
     APP_ERROR_CHECK(ret);
 
-    int16_t tmp1 = vals[0];
-    int16_t tmp2 = vals[1];
+    params.p_data = (uint8_t *)vals;
 
-    NRF_LOG_INFO("sensor %d data1 = %d data2 = %d", sensor + 1, tmp1, tmp2);
+    switch (sensor)
+    {
+        case (SENSOR_1):
+            params.handle = p_sms->s1_val_char.value_handle;
+            break;
+        case (SENSOR_2):
+            params.handle = p_sms->s2_val_char.value_handle;
+            break;
+        case (SENSOR_3):
+            params.handle = p_sms->s3_val_char.value_handle;
+            break;
+        case (SENSOR_4):
+            params.handle = p_sms->s4_val_char.value_handle;
+            break;
+    }
 
-    //int16_t tmp1 = *(params.p_data + 1) << 8 | *params.p_data;
-    //int16_t tmp2 = *(params.p_data + 3) << 8 | *(params.p_data + 2);
-    //params.p_data = (uint8_t *) vals;
-    //switch (sensor)
-    //{
-    //    case (SENSOR_1):
-    //        params.handle = p_sms->s1_val_char.value_handle;
-    //        break;
-    //    case (SENSOR_2):
-    //        params.handle = p_sms->s2_val_char.value_handle;
-    //        break;
-    //    case (SENSOR_3):
-    //        params.handle = p_sms->s3_val_char.value_handle;
-    //        break;
-    //    case (SENSOR_4):
-    //        params.handle = p_sms->s4_val_char.value_handle;
-    //        break;
-    //}
-
-    return NRF_SUCCESS;
-    //return sd_ble_gatts_hvx(conn_handle, &params);
+    return sd_ble_gatts_hvx(conn_handle, &params);
+    
+    //if (sensor == SENSOR_2)
+    //    NRF_LOG_INFO("sensor %d, first %d, last %d", sensor + 1,
+    //        *(params.p_data + 1) << 8 | *(params.p_data + 0),
+    //        *(params.p_data + 19) << 8 | *(params.p_data + 18));
 }
 
 
@@ -186,14 +185,14 @@ uint32_t ble_sms_init(ble_sms_t * p_sms, const ble_sms_init_t * p_sms_init)
 
     sensor_ctrl_t sensor_ctrl = {0};
 
-    add_sensor_ctrl_char(p_sms, SMS_UUID_SENSOR_1_CTRL_CHAR,
-        &p_sms->s1_ctrl_char, &sensor_ctrl);
-    add_sensor_ctrl_char(p_sms, SMS_UUID_SENSOR_2_CTRL_CHAR,
-        &p_sms->s2_ctrl_char, &sensor_ctrl);
-    add_sensor_ctrl_char(p_sms, SMS_UUID_SENSOR_3_CTRL_CHAR,
-        &p_sms->s3_ctrl_char, &sensor_ctrl);
-    add_sensor_ctrl_char(p_sms, SMS_UUID_SENSOR_4_CTRL_CHAR,
-        &p_sms->s4_ctrl_char, &sensor_ctrl);
+    add_sensor_ctrl_char(
+        p_sms, SMS_UUID_SENSOR_1_CTRL_CHAR, &p_sms->s1_ctrl_char, &sensor_ctrl);
+    add_sensor_ctrl_char(
+        p_sms, SMS_UUID_SENSOR_2_CTRL_CHAR, &p_sms->s2_ctrl_char, &sensor_ctrl);
+    add_sensor_ctrl_char(
+        p_sms, SMS_UUID_SENSOR_3_CTRL_CHAR, &p_sms->s3_ctrl_char, &sensor_ctrl);
+    add_sensor_ctrl_char(
+        p_sms, SMS_UUID_SENSOR_4_CTRL_CHAR, &p_sms->s4_ctrl_char, &sensor_ctrl);
 
     return err_code;
 }

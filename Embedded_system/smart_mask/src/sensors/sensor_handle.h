@@ -8,6 +8,8 @@ void init_sensor_handles(void);
 
 sensor_ctrl_t * get_sensor_ctrl(sensor_t sensor);
 
+sensor_hardware_t * get_sensor_hardware(sensor_t sensor);
+
 ret_code_t set_sensor_ctrl(sensor_t sensor, sensor_ctrl_t* sensor_ctrl);
 
 int available_sensor_data(sensor_t sensor);

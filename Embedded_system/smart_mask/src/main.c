@@ -222,11 +222,11 @@ static void idle_state_handle(void)
  */
 void check_sensors_update(void)
 {
-    //if (! is_connected())
-    //    return; 
+    if (! is_connected())
+        return; 
 
     ret_code_t err_code;
-    for (sensor_t s_i = SENSOR_1; s_i <= SENSOR_4; s_i++)
+    for (sensor_t s_i = SENSOR_FIRST; s_i <= SENSOR_LAST; s_i++)
     {
         if (available_sensor_data(s_i) >= SENSOR_VAL_AMOUNT_NOTIF)
         {
@@ -242,7 +242,6 @@ void check_sensors_update(void)
             }
         }
     }
-    NRF_LOG_INFO("");
 }
 
 /**@brief App Error handler (override the weak one)

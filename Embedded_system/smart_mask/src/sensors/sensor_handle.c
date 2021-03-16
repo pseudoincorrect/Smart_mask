@@ -2,9 +2,10 @@
 #include "nrf_log.h"
 #include "nrf_ringbuf.h"
 #include "nrf_saadc.h"
+#include "boards.h"
 #include <string.h>
 
-#define SENSOR_BUFF_SIZE 8 // needs to be a power of 2
+#define SENSOR_BUFF_SIZE 256 // needs to be a power of 2
 
 static sensor_handle_t s_h_1, s_h_2, s_h_3, s_h_4;
 
@@ -51,10 +52,40 @@ void init_sensor_handles(void)
     nrf_ringbuf_init(s_h_3.buffer);
     nrf_ringbuf_init(s_h_4.buffer);
 
-    NRF_LOG_INFO("avail 1 %d",buf_available_data(s_h_1.buffer));
-    NRF_LOG_INFO("avail 2 %d",buf_available_data(s_h_2.buffer));
-    NRF_LOG_INFO("avail 3 %d",buf_available_data(s_h_3.buffer));
-    NRF_LOG_INFO("avail 4 %d",buf_available_data(s_h_4.buffer));
+    sensor_ctrl_t * ctrl;
+    for (sensor_t s_i = SENSOR_FIRST; s_i <= SENSOR_LAST; s_i++)
+    {
+        ctrl = get_sensor_ctrl(s_i);
+        ctrl->gain = SAADC_CH_CONFIG_GAIN_Gain1_6;
+        ctrl->enable = true;
+        ctrl->frequency = 100; // ms
+    }
+
+    s_h_1.hardware.pwr_pin      = SENSOR_1_PWR_PIN;
+    s_h_1.hardware.adc_pin      = SENSOR_1_ADC_PIN;
+    s_h_1.hardware.adc_chanel   = SENSOR_1_ADC_CHANNEL;
+    s_h_1.hardware.analog_input = SENSOR_1_ANALOG_INPUT;
+    
+    s_h_2.hardware.pwr_pin      = SENSOR_2_PWR_PIN;
+    s_h_2.hardware.adc_pin      = SENSOR_2_ADC_PIN;
+    s_h_2.hardware.adc_chanel   = SENSOR_2_ADC_CHANNEL;
+    s_h_2.hardware.analog_input = SENSOR_2_ANALOG_INPUT;
+
+    s_h_3.hardware.pwr_pin      = SENSOR_3_PWR_PIN;
+    s_h_3.hardware.adc_pin      = SENSOR_3_ADC_PIN;
+    s_h_3.hardware.adc_chanel   = SENSOR_3_ADC_CHANNEL;
+    s_h_3.hardware.analog_input = SENSOR_3_ANALOG_INPUT;
+
+    s_h_4.hardware.pwr_pin      = SENSOR_4_PWR_PIN;
+    s_h_4.hardware.adc_pin      = SENSOR_4_ADC_PIN;
+    s_h_4.hardware.adc_chanel   = SENSOR_4_ADC_CHANNEL;
+    s_h_4.hardware.analog_input = SENSOR_4_ANALOG_INPUT;
+}
+
+sensor_hardware_t * get_sensor_hardware(sensor_t sensor)
+{
+    sensor_handle_t * s_h = get_sensor_handle(sensor);
+    return &s_h->hardware;
 }
 
 sensor_ctrl_t * get_sensor_ctrl(sensor_t sensor)
@@ -86,19 +117,19 @@ int available_sensor_data(sensor_t sensor)
 
 ret_code_t add_sensor_value(sensor_t sensor, sensor_val_t val)
 {
-    ret_code_t ret;
+    ret_code_t err;
     const nrf_ringbuf_t * buf = get_sensor_buffer(sensor);
     size_t len = sizeof(sensor_val_t);
 
     uint8_t * data_p;
     uint8_t ** data_pp = &data_p;
 
-    ret = nrf_ringbuf_alloc(buf, data_pp, &len, false);
-    if (ret != NRF_SUCCESS || len != sizeof(sensor_val_t))
+    err = nrf_ringbuf_alloc(buf, data_pp, &len, false);
+    if (err != NRF_SUCCESS || len != sizeof(sensor_val_t))
         return NRF_ERROR_DATA_SIZE;
 
-    ret = nrf_ringbuf_cpy_put(buf, (uint8_t *)&val, &len);
-    if (ret != NRF_SUCCESS || len != sizeof(sensor_val_t))
+    err = nrf_ringbuf_cpy_put(buf, (uint8_t *)&val, &len);
+    if (err != NRF_SUCCESS || len != sizeof(sensor_val_t))
         return NRF_ERROR_DATA_SIZE;
 
     return NRF_SUCCESS;
@@ -106,16 +137,16 @@ ret_code_t add_sensor_value(sensor_t sensor, sensor_val_t val)
 
 ret_code_t get_sensor_values(sensor_t sensor, sensor_val_t * vals, uint8_t amount)
 {
-    ret_code_t ret;
+    ret_code_t err;
     const nrf_ringbuf_t * buf = get_sensor_buffer(sensor);
     size_t len = amount * sizeof(sensor_val_t);
 
     if (buf_available_data(buf) < len)
         return NRF_ERROR_DATA_SIZE;
     
-    ret = nrf_ringbuf_cpy_get(buf, (uint8_t *)vals, &len);
+    err = nrf_ringbuf_cpy_get(buf, (uint8_t *)vals, &len);
     if (len != amount * sizeof(sensor_val_t))
         return NRF_ERROR_DATA_SIZE;
     
-    return ret;
+    return err;
 }
