@@ -1,7 +1,15 @@
 #ifndef __smart_mask_v_2_0_h__
 #define __smart_mask_v_2_0_h__
 
+/*************************
+ * Includes
+ ************************/
+
 #include "nrfx_saadc.h"
+
+/*************************
+ * Defines
+ ************************/
 
 #define RX_PIN_NUMBER   18
 #define TX_PIN_NUMBER   20
@@ -56,6 +64,5 @@
 #define BUTTONS_ACTIVE_STATE 0
 #define BUTTONS_LIST { BUTTON_1}
 #define BSP_BUTTON_0   BUTTON_1
-
 
 #endif

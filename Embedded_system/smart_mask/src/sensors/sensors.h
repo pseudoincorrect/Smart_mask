@@ -1,10 +1,22 @@
 #ifndef __sensors_h__
 #define __sensors_h__
 
+/*************************
+ * Includes
+ ************************/
+
 #include "stdint.h"
 #include "nrf_ringbuf.h"
 
+/*************************
+ * Defines
+ ************************/
+
 #define SENSORS_COUNT 4
+
+/*************************
+ * Typedefs
+ ************************/
 
 typedef enum
 {

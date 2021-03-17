@@ -53,7 +53,7 @@ static void saadc_callback(nrfx_saadc_evt_t const * p_event)
     NRF_LOG_INFO("saadc_callback, p_event->type = %d", p_event->type);
 }
 
-/**
+/**ef
  * @brief configure an ADC channel (gain, reference, polarity, etc..) for
  *        a particular sensor
  * 
@@ -62,12 +62,13 @@ static void saadc_callback(nrfx_saadc_evt_t const * p_event)
  *
  * @retval NRF_SUCCESS on success, otherwise an error code is returned            
  */
-ret_code_t saadc_config_channel(sensor_t sensor, sensor_ctrl_t * ctrl)
+ret_code_t saadc_config_channel(sensor_t sensor)
 {
-    sensor_hardware_t * hardware;
+    sensor_hardware_t * hardware = sensor_handle_get_hardware(sensor);
+    sensor_ctrl_t * ctrl = sensor_handle_get_control(sensor);
     nrf_saadc_channel_config_t conf =
         NRFX_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NULL);
-    hardware = sensor_handle_get_hardware(sensor);
+
     conf.pin_p = hardware->analog_input;
     conf.gain = SAADC_CH_CONFIG_GAIN_Gain1_6;
     conf.reference = NRF_SAADC_REFERENCE_INTERNAL;
@@ -95,9 +96,8 @@ static ret_code_t saadc_init(void)
 
     for (sensor_t s_i = SENSOR_FIRST; s_i <= SENSOR_LAST; s_i++)
     {
-        sensor_ctrl_t * ctrl = sensor_handle_get_control(s_i);
         hardware = sensor_handle_get_hardware(s_i);
-        err = saadc_config_channel(s_i, ctrl);
+        err = saadc_config_channel(s_i);
         APP_ERROR_CHECK(err);
         NRF_LOG_INFO("sensor %d pwr_pin %d", s_i + 1, hardware->pwr_pin);
         nrf_gpio_cfg_output(hardware->pwr_pin);
@@ -283,9 +283,9 @@ ret_code_t sensor_sampling_update_sensor_control(
     sensor_hardware_t * hardware = sensor_handle_get_hardware(sensor);
     err = nrfx_saadc_channel_uninit(hardware->adc_chanel);
     APP_ERROR_CHECK(err);
-    err = saadc_config_channel(sensor, new_sensor_ctrl);
-    APP_ERROR_CHECK(err);
     err = sensor_handle_set_control(sensor, new_sensor_ctrl);
+    APP_ERROR_CHECK(err);
+    err = saadc_config_channel(sensor);
     APP_ERROR_CHECK(err);
     return NRF_SUCCESS;
 }

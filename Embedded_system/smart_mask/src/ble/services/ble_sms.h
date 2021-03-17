@@ -1,10 +1,16 @@
-// BLE SENSORS MEASUREMENT SERVICE
-
 #ifndef __ble_sms_h__
 #define __ble_sms_h__
 
+/*************************
+ * Includes
+ ************************/
+
 #include "nrf_sdh_ble.h"
 #include "sensors.h"
+
+/*************************
+ * Defines
+ ************************/
 
 #define BLE_SMS_DEF(_name)                                                     \
     static ble_sms_t _name;                                                    \
@@ -32,6 +38,10 @@
 #define SMS_UUID_SENSOR_4_CTRL_CHAR (uint8_t)0x1608
 
 #define SENSOR_VAL_AMOUNT_NOTIF 10
+
+/*************************
+ * Typedefs
+ ************************/
 
 typedef struct ble_sms_s ble_sms_t;
 
@@ -76,6 +86,10 @@ struct ble_sms_s
     //// Event handler to be called when the LED characteristic is written
     // ble_sms_output_write_handler_t output_write_handler;
 };
+
+/*************************
+ * Function Declarations
+ ************************/
 
 void ble_sms_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context);
 

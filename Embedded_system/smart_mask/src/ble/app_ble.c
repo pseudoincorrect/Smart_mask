@@ -18,7 +18,6 @@
 #include "ble_conn_params.h"
 #include "ble_err.h"
 #include "ble_hci.h"
-#include "ble_lbs.h"
 #include "ble_srv_common.h"
 #include "nrf_ble_gatt.h"
 #include "nrf_ble_qwr.h"
@@ -65,8 +64,6 @@
 #define MAX_CONN_PARAMS_UPDATE_COUNT 3
 // Sensors Measurement Service instance
 BLE_SMS_DEF(m_sms);
-// LED Button Service instance
-BLE_LBS_DEF(m_lbs);
 // GATT module instance
 NRF_BLE_GATT_DEF(m_gatt);
 // Context for the Queued Write module.*/
@@ -233,11 +230,6 @@ static void services_init(void)
     err_code = nrf_ble_qwr_init(&m_qwr, &qwr_init);
     APP_ERROR_CHECK(err_code);
 
-    // Initialize LBS.
-    // lbs_init.led_write_handler = m_app_ble_conf->led_write_handler;
-    // err_code = ble_lbs_init(&m_lbs, &lbs_init);
-    // APP_ERROR_CHECK(err_code);
-
     // Initialize SMS.
     sms_init.sensor_ctrl_write_cb = m_app_ble_conf->sensor_ctrl_write;
 
@@ -315,7 +307,6 @@ static void advertising_start(void)
     err_code = sd_ble_gap_adv_start(m_adv_handle, APP_BLE_CONN_CFG_TAG);
     APP_ERROR_CHECK(err_code);
 
-    // bsp_board_led_on(ADVERTISING_LED);
     NRF_LOG_INFO("ADVERTISING");
 }
 
@@ -334,21 +325,15 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
     {
         case BLE_GAP_EVT_CONNECTED:
             NRF_LOG_INFO("Connected");
-            // bsp_board_led_on(CONNECTED_LED);
-            // bsp_board_led_off(ADVERTISING_LED);
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, m_conn_handle);
             APP_ERROR_CHECK(err_code);
-            // err_code = app_button_enable();
             APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
             NRF_LOG_INFO("Disconnected");
-            // bsp_board_led_off(CONNECTED_LED);
             m_conn_handle = BLE_CONN_HANDLE_INVALID;
-            // err_code = app_button_disable();
-            //APP_ERROR_CHECK(err_code);
             advertising_start();
             break;
 
@@ -433,7 +418,6 @@ ret_code_t app_ble_init(app_ble_conf_t * app_ble_conf)
 {
     m_app_ble_conf = app_ble_conf;
     app_ble_conf->ble_conn_handle = &m_conn_handle;
-    app_ble_conf->ble_lbs = &m_lbs;
     app_ble_conf->ble_sms = &m_sms;
     ble_stack_init();
     gap_params_init();

@@ -1,4 +1,4 @@
-/** 
+/**
  * @file
  * @brief main: Top level module
  */
@@ -14,12 +14,12 @@
 #include "boards.h"
 #include "nordic_common.h"
 #include "nrf.h"
+#include "nrf_delay.h"
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 #include "nrf_pwr_mgmt.h"
 #include "nrf_sdm.h"
-#include "nrf_delay.h"
 // Project
 #include "app_ble.h"
 #include "sensor_handle.h"
@@ -63,9 +63,10 @@ APP_TIMER_DEF(m_timer_sensors_id);
 /**
  * @brief    Handler for timer events.
  * @param[in] event_type Timer event (compare)
- * @param[in] p_context  Can be used to pass extra arguments to the handler 
+ * @param[in] p_context  Can be used to pass extra arguments to the handler
  */
-static void timer_led_event_handler(nrf_timer_event_t event_type, void * p_context)
+static void timer_led_event_handler(
+    nrf_timer_event_t event_type, void * p_context)
 {
     static uint32_t i;
     uint32_t led_to_invert = ((i++) % LEDS_NUMBER);
@@ -104,20 +105,18 @@ static void led_write_handler(
 
 /**
  * @brief function to handler sensor control changer (from BLE char)
- * 
+ *
  * @param[in] sensor      selected sensor
- * @param[in] sensor_ctrl sensor control handler with new value          
+ * @param[in] sensor_ctrl sensor control handler with new value
  */
 static void sensor_ctrl_update(sensor_t sensor, sensor_ctrl_t * sensor_ctrl)
 {
     sensor_handle_set_control(sensor, sensor_ctrl);
     NRF_LOG_INFO("sensor %d", sensor + 1);
     sensor_ctrl_t * ctrl = sensor_handle_get_control(sensor);
-    NRF_LOG_INFO("sample period ms %d, gain %d, enable %d", 
+    NRF_LOG_INFO("sample period ms %d, gain %d, enable %d",
         ctrl->sample_period_ms, ctrl->gain, ctrl->enable);
 }
-
-
 
 
 /**@brief   Function for the LEDs initialization.
@@ -148,16 +147,7 @@ static void button_event_handler(uint8_t pin_no, uint8_t button_action)
     switch (pin_no)
     {
         case CONNECT_BUTTON:
-            NRF_LOG_INFO("Send button state change.");
-            err_code = ble_lbs_on_button_change(*m_app_ble_conf.ble_conn_handle,
-                m_app_ble_conf.ble_lbs, button_action);
-            if (err_code != NRF_SUCCESS &&
-                err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
-                err_code != NRF_ERROR_INVALID_STATE &&
-                err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
-            {
-                APP_ERROR_CHECK(err_code);
-            }
+            NRF_LOG_INFO("button state change.");
             break;
         default:
             APP_ERROR_HANDLER(pin_no);
@@ -221,8 +211,8 @@ static void idle_state_handle(void)
  */
 static void check_sensors_update(void)
 {
-    if (! app_ble_is_connected())
-        return; 
+    if (!app_ble_is_connected())
+        return;
 
     ret_code_t err_code;
     for (sensor_t s_i = SENSOR_FIRST; s_i <= SENSOR_LAST; s_i++)
@@ -244,10 +234,10 @@ static void check_sensors_update(void)
 }
 
 /**@brief App Error handler (override the weak one)
- * 
+ *
  * @param[in] id    id of the group of error(soft dev error, sdk error, etc..)
  * @param[in] pc    program counter
- * @param[in] info  address that point to a error info type 
+ * @param[in] info  address that point to a error info type
  *                  (type depending on the id)
  */
 void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
