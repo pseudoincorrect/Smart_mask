@@ -19,9 +19,6 @@
 
 #define SMS_UUID_SERVICE (uint8_t)0x1600
 
-//#define SMS_UUID_SENSORS_CHAR 0x1601
-//#define SMS_UUID_OUTPUT_CHAR  0x1602
-
 #define SMS_UUID_SENSOR_1_VALS_CHAR (uint8_t)0x1601
 #define SMS_UUID_SENSOR_1_CTRL_CHAR (uint8_t)0x1602
 
@@ -80,39 +77,11 @@ struct ble_sms_s
     // ble_sms_output_write_handler_t output_write_handler;
 };
 
-/**@brief Function for handling the application's BLE stack events.
- *
- * @details This function handles all events from the BLE stack that are of
- * interest to the Sensor Measurement Service.
- *
- * @param[in] p_ble_evt  Event received from the BLE stack.
- * @param[in] p_context  Sensor Measurement Service structure.
- */
 void ble_sms_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context);
 
-/**@brief Function for sending a sensor notification.
- *
- ' @param[in] conn_handle   Handle of the peripheral connection to which the
- sensor state notification will be sent.
- * @param[in] p_sms         Sensor Measurement Service Button Service structure.
- * @param[in] value         Pointer to sensor values.
- *
- * @retval NRF_SUCCESS If the notification was sent successfully. Otherwise, an
- error code is returned.
- */
 uint32_t ble_sms_on_sensors_update(
     uint16_t conn_handle, ble_sms_t * p_sms, sensor_t sensor);
 
-/**@brief Function for initializing the Sensor Measurement Service.
- *
- * @param[out] p_sms      Sensor Measurement Service structure. This structure
- * must be supplied by the application. It is initialized by this function and
- * will later be used to identify this particular service instance.
- * @param[in] p_sms_init  Information needed to initialize the service.
- *
- * @retval NRF_SUCCESS If the service was initialized successfully. Otherwise,
- * an error code is returned.
- */
 uint32_t ble_sms_init(ble_sms_t * p_sms, const ble_sms_init_t * p_sms_init);
 
 #endif

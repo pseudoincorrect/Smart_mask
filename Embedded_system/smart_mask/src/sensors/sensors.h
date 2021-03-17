@@ -20,11 +20,10 @@ typedef int16_t sensor_val_t;
 
 typedef struct
 {
-    uint32_t frequency;
+    uint32_t sample_period_ms;
     uint8_t gain;
     uint8_t enable;
 } sensor_ctrl_t;
-
 
 typedef struct
 {

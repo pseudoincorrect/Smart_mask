@@ -1,3 +1,10 @@
+/** 
+ * @file
+ * @brief app_ble (Bluetooth Application): Module that manages all the 
+ * BLE related tasks besides services (that are managed by their specific
+ * modules)
+ */
+
 /*************************
  * Includes
  ************************/
@@ -79,51 +86,19 @@ static uint8_t m_adv_handle = BLE_GAP_ADV_SET_HANDLE_NOT_SET;
 static uint8_t m_enc_advdata[BLE_GAP_ADV_SET_DATA_SIZE_MAX];
 // Buffer for storing an encoded scan data
 static uint8_t m_enc_scan_response_data[BLE_GAP_ADV_SET_DATA_SIZE_MAX];
-/**@brief Struct that contains pointers to the encoded advertising data. */
+/**
+ * @brief Struct that contains pointers to the encoded advertising data. */
 static ble_gap_adv_data_t m_adv_data = {
     .adv_data = {.p_data = m_enc_advdata, .len = BLE_GAP_ADV_SET_DATA_SIZE_MAX},
     .scan_rsp_data = {.p_data = m_enc_scan_response_data,
         .len = BLE_GAP_ADV_SET_DATA_SIZE_MAX}};
 
 /*************************
- * Function Prototypes
+ * Static Functions
  ************************/
 
-static void gap_params_init(void);
-static void gatt_init(void);
-static void advertising_init(void);
-static void nrf_qwr_error_handler(uint32_t nrf_error);
-static void output_write_handler(
-    uint16_t conn_handle, ble_sms_t * p_sms, uint8_t output_state);
-static void services_init(void);
-static void on_conn_params_evt(ble_conn_params_evt_t * p_evt);
-static void conn_params_error_handler(uint32_t nrf_error);
-static void conn_params_init(void);
-static void advertising_start(void);
-static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context);
-static void ble_stack_init(void);
-
-/*************************
- * Function Definitions
- ************************/
-
-ret_code_t app_ble_init(app_ble_conf_t * app_ble_conf)
-{
-    m_app_ble_conf = app_ble_conf;
-    app_ble_conf->ble_conn_handle = &m_conn_handle;
-    app_ble_conf->ble_lbs = &m_lbs;
-    app_ble_conf->ble_sms = &m_sms;
-    ble_stack_init();
-    gap_params_init();
-    gatt_init();
-    services_init();
-    advertising_init();
-    conn_params_init();
-    advertising_start();
-}
-
-
-/**@brief Function for the GAP initialization.
+/**
+ * @brief Function for the GAP initialization.
  * @details This function sets up all the necessary GAP (Generic Access Profile)
  * parameters of the device including the device name, appearance, and
  * the preferred connection parameters.
@@ -152,7 +127,8 @@ static void gap_params_init(void)
 }
 
 
-/**@brief Function for initializing the GATT module.
+/**
+ * @brief Function for initializing the GATT module.
  */
 static void gatt_init(void)
 {
@@ -173,7 +149,8 @@ static void gatt_init(void)
 }
 
 
-/**@brief Function for initializing the Advertising functionality.
+/**
+ * @brief Function for initializing the Advertising functionality.
  * @details Encodes the required advertising data and passes it to the stack.
  *          Also builds a structure to be passed to the stack when starting
  * advertising.
@@ -225,9 +202,11 @@ static void advertising_init(void)
 }
 
 
-/**@brief Function for handling Queued Write Module errors.
+/**
+ * @brief Function for handling Queued Write Module errors.
  * @details A pointer to this function will be passed to each service which may
  * need to inform the application about an error.
+ * 
  * @param[in]   nrf_error   Error code containing information about what went
  * wrong.
  */
@@ -237,7 +216,8 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
 }
 
 
-/**@brief Function for initializing services that will be used by the
+/**
+ * @brief Function for initializing services that will be used by the
  * application.
  */
 static void services_init(void)
@@ -266,12 +246,14 @@ static void services_init(void)
 }
 
 
-/**@brief Function for handling the Connection Parameters Module.
+/**
+ * @brief Function for handling the Connection Parameters Module.
  * @details This function will be called for all events in the Connection
  * Parameters Module that are passed to the application.
  * @note All this function does is to disconnect. This could have been done by
  * simply setting the disconnect_on_fail config parameter, but instead we use
  * the event handler mechanism to demonstrate its use.
+ * 
  * @param[in] p_evt  Event received from the Connection Parameters Module.
  */
 static void on_conn_params_evt(ble_conn_params_evt_t * p_evt)
@@ -287,7 +269,9 @@ static void on_conn_params_evt(ble_conn_params_evt_t * p_evt)
 }
 
 
-/**@brief Function for handling a Connection Parameters error.
+/**
+ * @brief Function for handling a Connection Parameters error.
+ * 
  * @param[in] nrf_error  Error code containing information about what went
  * wrong.
  */
@@ -297,7 +281,8 @@ static void conn_params_error_handler(uint32_t nrf_error)
 }
 
 
-/**@brief Function for initializing the Connection Parameters module.
+/**
+ * @brief Function for initializing the Connection Parameters module.
  */
 static void conn_params_init(void)
 {
@@ -320,7 +305,8 @@ static void conn_params_init(void)
 }
 
 
-/**@brief Function for starting advertising.
+/**
+ * @brief Function for starting advertising.
  */
 static void advertising_start(void)
 {
@@ -334,7 +320,9 @@ static void advertising_start(void)
 }
 
 
-/**@brief Function for handling BLE events.
+/**
+ * @brief Function for handling BLE events.
+ * 
  * @param[in]   p_ble_evt   Bluetooth stack event.
  * @param[in]   p_context   Unused.
  */
@@ -414,15 +402,8 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
     }
 }
 
-bool is_connected(void)
-{
-    if (m_conn_handle != BLE_CONN_HANDLE_INVALID)
-        return true;
-    else
-        return false;
-}
-
-/**@brief Function for initializing the BLE stack.
+/**
+ * @brief Function for initializing the BLE stack.
  *
  * @details Initializes the SoftDevice and the BLE event interrupt.
  */
@@ -442,4 +423,36 @@ static void ble_stack_init(void)
     // Register a handler for BLE events.
     NRF_SDH_BLE_OBSERVER(
         m_ble_observer, APP_BLE_OBSERVER_PRIO, ble_evt_handler, NULL);
+}
+
+/*************************
+ * Public Functions
+ ************************/
+
+ret_code_t app_ble_init(app_ble_conf_t * app_ble_conf)
+{
+    m_app_ble_conf = app_ble_conf;
+    app_ble_conf->ble_conn_handle = &m_conn_handle;
+    app_ble_conf->ble_lbs = &m_lbs;
+    app_ble_conf->ble_sms = &m_sms;
+    ble_stack_init();
+    gap_params_init();
+    gatt_init();
+    services_init();
+    advertising_init();
+    conn_params_init();
+    advertising_start();
+}
+
+/**
+ * @brief Function to check whether the bluetooth state is connected.
+ *
+ * @retval true if bluetooth is connecter, false otherwise
+ */
+bool app_ble_is_connected(void)
+{
+    if (m_conn_handle != BLE_CONN_HANDLE_INVALID)
+        return true;
+    else
+        return false;
 }

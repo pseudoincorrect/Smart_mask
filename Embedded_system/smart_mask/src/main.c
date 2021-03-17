@@ -1,3 +1,8 @@
+/** 
+ * @file
+ * @brief main: Top level module
+ */
+
 /*************************
  * Includes
  ************************/
@@ -52,13 +57,15 @@ static app_ble_conf_t m_app_ble_conf;
 APP_TIMER_DEF(m_timer_sensors_id);
 
 /*************************
- * Function Definitions
+ * Static Functions
  ************************/
 
 /**
- * @brief Handler for timer events.
+ * @brief    Handler for timer events.
+ * @param[in] event_type Timer event (compare)
+ * @param[in] p_context  Can be used to pass extra arguments to the handler 
  */
-void timer_led_event_handler(nrf_timer_event_t event_type, void * p_context)
+static void timer_led_event_handler(nrf_timer_event_t event_type, void * p_context)
 {
     static uint32_t i;
     uint32_t led_to_invert = ((i++) % LEDS_NUMBER);
@@ -75,9 +82,9 @@ void timer_led_event_handler(nrf_timer_event_t event_type, void * p_context)
 }
 
 
-/**@brief Function for handling write events to the LED characteristic.
+/**@brief     Function for handling write events to the LED characteristic.
  * @param[in] p_lbs     Instance of LED Button Service to which the write
- * applies.
+ *                      applies.
  * @param[in] led_state Written/desired state of the LED.
  */
 static void led_write_handler(
@@ -95,40 +102,32 @@ static void led_write_handler(
     }
 }
 
-
+/**
+ * @brief function to handler sensor control changer (from BLE char)
+ * 
+ * @param[in] sensor      selected sensor
+ * @param[in] sensor_ctrl sensor control handler with new value          
+ */
 static void sensor_ctrl_update(sensor_t sensor, sensor_ctrl_t * sensor_ctrl)
 {
-    set_sensor_ctrl(sensor, sensor_ctrl);
+    sensor_handle_set_control(sensor, sensor_ctrl);
     NRF_LOG_INFO("sensor %d", sensor + 1);
-    sensor_ctrl_t * ctrl = get_sensor_ctrl(sensor);
-    NRF_LOG_INFO("freq %d, gain %d, enable %d", ctrl->frequency, ctrl->gain,
-        ctrl->enable);
+    sensor_ctrl_t * ctrl = sensor_handle_get_control(sensor);
+    NRF_LOG_INFO("sample period ms %d, gain %d, enable %d", 
+        ctrl->sample_period_ms, ctrl->gain, ctrl->enable);
 }
 
 
-/**@brief Function for assert macro callback.
- * @details This function will be called in case of an assert in the SoftDevice.
- * @warning This handler is an example only and does not fit a final product.
- *          You need to analyze how your product is supposed to react in case of
- * Assert.
- * @warning On assert from the SoftDevice, the system can only recover on reset.
- * @param[in] line_num    Line number of the failing ASSERT call.
- * @param[in] p_file_name File name of the failing ASSERT call.
- */
-void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
-{
-    app_error_handler(DEAD_BEEF, line_num, p_file_name);
-}
 
 
-/**@brief Function for the LEDs initialization.
- * @details Initializes all LEDs used by the application.
+/**@brief   Function for the LEDs initialization.
+ *          Initializes all LEDs used by the application.
  */
 static void leds_init(void) { bsp_board_init(BSP_INIT_LEDS); }
 
 
-/**@brief Function for the Timer initialization.
- * @details Initializes the timer module.
+/**@brief   Function for the Timer initialization.
+ *          Initializes the timer module.
  */
 static void timers_init(void)
 {
@@ -220,15 +219,15 @@ static void idle_state_handle(void)
 
 /**@brief send sensor values over bluetooth if values updated
  */
-void check_sensors_update(void)
+static void check_sensors_update(void)
 {
-    if (! is_connected())
+    if (! app_ble_is_connected())
         return; 
 
     ret_code_t err_code;
     for (sensor_t s_i = SENSOR_FIRST; s_i <= SENSOR_LAST; s_i++)
     {
-        if (available_sensor_data(s_i) >= SENSOR_VAL_AMOUNT_NOTIF)
+        if (sensor_handle_available_data(s_i) >= SENSOR_VAL_AMOUNT_NOTIF)
         {
             err_code = ble_sms_on_sensors_update(
                 *m_app_ble_conf.ble_conn_handle, m_app_ble_conf.ble_sms, s_i);
@@ -245,6 +244,11 @@ void check_sensors_update(void)
 }
 
 /**@brief App Error handler (override the weak one)
+ * 
+ * @param[in] id    id of the group of error(soft dev error, sdk error, etc..)
+ * @param[in] pc    program counter
+ * @param[in] info  address that point to a error info type 
+ *                  (type depending on the id)
  */
 void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
 {
@@ -289,6 +293,29 @@ void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
     NVIC_SystemReset();
 #endif // DEBUG
 }
+
+/*************************
+ * Public Functions
+ ************************/
+
+/**@brief Function for assert macro callback.
+ * @details This function will be called in case of an assert in the SoftDevice.
+ * @warning This handler is an example only and does not fit a final product.
+ *          You need to analyze how your product is supposed to react in case of
+ * Assert.
+ * @warning On assert from the SoftDevice, the system can only recover on reset.
+ * @param[in] line_num    Line number of the failing ASSERT call.
+ * @param[in] p_file_name File name of the failing ASSERT call.
+ */
+void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
+{
+    app_error_handler(DEAD_BEEF, line_num, p_file_name);
+}
+
+
+/*************************
+ * Main Function
+ ************************/
 
 /**@brief Function for application main entry.
  */

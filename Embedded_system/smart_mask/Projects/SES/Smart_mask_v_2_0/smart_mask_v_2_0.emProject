@@ -46,8 +46,6 @@
       <folder Name="Sensors">
         <file file_name="$(PROJ_ROOT)/Src/Sensors/sensor_sampling.c" />
         <file file_name="$(PROJ_ROOT)/Src/Sensors/sensor_sampling.h" />
-        <file file_name="$(PROJ_ROOT)/Src/Sensors/sensor_buffer.c" />
-        <file file_name="$(PROJ_ROOT)/Src/Sensors/sensor_buffer.h" />
         <file file_name="$(PROJ_ROOT)/Src/Sensors/sensor_handle.c" />
         <file file_name="$(PROJ_ROOT)/Src/Sensors/sensor_handle.h" />
         <file file_name="$(PROJ_ROOT)/Src/Sensors/sensors.h" />

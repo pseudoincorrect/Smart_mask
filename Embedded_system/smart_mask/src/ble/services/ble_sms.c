@@ -1,4 +1,14 @@
 // BLE SENSORS MEASUREMENT SERVICE
+/** 
+ * @file
+ * @brief ble_sms (BLE SENSORS MEASUREMENT SERVICE): Module that manages
+ * the sensor measurements bluetooth low energy service. take care of
+ * the sensor data transfer and sensor control.
+ */
+
+/*************************
+ * Includes
+ ************************/
 
 #include "ble_sms.h"
 #include "app_error.h"
@@ -7,7 +17,12 @@
 #include "sdk_common.h"
 #include "sensor_handle.h"
 
-/**@brief Function for handling the Write event.
+/*************************
+ * Static Functions
+ ************************/
+
+/**
+ * @brief Function for handling the Write event.
  *
  * @param[in] p_sms      LED Button Service structure.
  * @param[in] p_ble_evt  Event received from the BLE stack.
@@ -39,7 +54,15 @@ static uint32_t on_write(ble_sms_t * p_sms, ble_evt_t const * p_ble_evt)
     return NRF_SUCCESS;
 }
 
-
+/**
+ * @brief Function for handling the application's BLE stack events.
+ *
+ * @details  This function handles all events from the BLE stack that are of
+ * interest to the Sensor Measurement Service.
+ *
+ * @param[in] p_ble_evt  Event received from the BLE stack.
+ * @param[in] p_context  Sensor Measurement Service structure.
+ */
 void ble_sms_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context)
 {
     ble_sms_t * p_sms = (ble_sms_t *)p_context;
@@ -54,7 +77,16 @@ void ble_sms_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context)
     }
 }
 
-
+/**
+ * @brief Function for sending a sensor notification.
+ *
+ * @param[in] conn_handle   Handle of the peripheral connection to which the
+ *                          sensor state notification will be sent.
+ * @param[in] p_sms         Sensor Measurement Service Button Service structure.
+ * @param[in] value         Pointer to sensor values.
+ *
+ * @retval NRF_SUCCESS on success, otherwise an error code is returned
+ */
 uint32_t ble_sms_on_sensors_update(
     uint16_t conn_handle, ble_sms_t * p_sms, sensor_t sensor)
 {
@@ -69,7 +101,7 @@ uint32_t ble_sms_on_sensors_update(
 
 
     uint16_t amount = SENSOR_VAL_AMOUNT_NOTIF;
-    ret = get_sensor_values(sensor, vals, amount);
+    ret = sensor_handle_get_values(sensor, vals, amount);
     APP_ERROR_CHECK(ret);
 
     params.p_data = (uint8_t *)vals;
@@ -98,7 +130,16 @@ uint32_t ble_sms_on_sensors_update(
     //        *(params.p_data + 19) << 8 | *(params.p_data + 18));
 }
 
-
+/** 
+ * @brief Add a sensor value characteristic
+ * 
+ * @param[in] p_sms             pointer to sms service 
+ * @param[in] uuid              uuid to be used by the new characteristic
+ * @param[in] p_char_handle     pointer to the function that will handle ble 
+ *                              characteristic event
+ *
+ * @retval NRF_SUCCESS on success, otherwise an error code is returned
+ */
 static uint32_t add_sensor_vals_char(
     ble_sms_t * p_sms, uint16_t uuid, ble_gatts_char_handles_t * p_char_handle)
 {
@@ -126,7 +167,20 @@ static uint32_t add_sensor_vals_char(
     return NRF_SUCCESS;
 }
 
+/*************************
+ * Public Functions
+ ************************/
 
+/** 
+ * @brief Add a sensor control characteristic
+ * 
+ * @param[in] p_sms             pointer to sms service 
+ * @param[in] uuid              uuid to be used by the new characteristic
+ * @param[in] p_char_handle     pointer to the function that will handle ble 
+ *                              characteristic event
+ *
+ * @retval NRF_SUCCESS on success, otherwise an error code is returned     
+ */
 static uint32_t add_sensor_ctrl_char(ble_sms_t * p_sms, uint8_t uuid,
     ble_gatts_char_handles_t * p_char_handle, sensor_ctrl_t * sensor_ctrl)
 {
@@ -151,7 +205,17 @@ static uint32_t add_sensor_ctrl_char(ble_sms_t * p_sms, uint8_t uuid,
     return err_code;
 }
 
-
+/** 
+ * @brief Function for initializing the Sensor Measurement Service.
+ *
+ * @param[out] p_sms      Sensor Measurement Service structure. This structure
+ * must be supplied by the application. It is initialized by this function and
+ * will later be used to identify this particular service instance.
+ * @param[in] p_sms_init  Information needed to initialize the service.
+ *
+ * @retval NRF_SUCCESS If the service was initialized successfully. Otherwise,
+ * an error code is returned.
+ */
 uint32_t ble_sms_init(ble_sms_t * p_sms, const ble_sms_init_t * p_sms_init)
 {
     uint32_t err_code;

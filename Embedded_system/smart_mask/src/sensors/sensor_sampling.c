@@ -1,5 +1,15 @@
-#include "sensor_sampling.h"
+/** 
+ * @file
+ * @brief sensor_sampling: Module that takes care of the sampling
+ * of the sensors through ADC with a periodic interupts. it can
+ * also be configured to generated mock values.
+ */
 
+/*************************
+ * Includes
+ ************************/
+
+#include "sensor_sampling.h"
 #include "app_error.h"
 #include "boards.h"
 #include "nrf_delay.h"
@@ -11,36 +21,65 @@
 #include "nrfx_timer.h"
 #include "sensor_handle.h"
 
-
 #if (MOCK_ADC)
 #include "nrf_drv_rng.h"
 #endif
 
+/*************************
+ * Defines
+ ************************/
+
 #define SAMPLES_IN_BUFFER SENSORS_COUNT
 #define SAMPLE_RATE_MS 1000
 
-static const nrfx_timer_t saadc_timer_instance = NRFX_TIMER_INSTANCE(2);
+/*************************
+ * Static Variables
+ ************************/
 
+static const nrfx_timer_t saadc_timer_instance = NRFX_TIMER_INSTANCE(2);
 static int mock_adc;
 
-void saadc_callback(nrfx_saadc_evt_t const * p_event)
+/*************************
+ * Static Functions
+ ************************/
+
+/**
+ * @brief Unsued but mandatory callback function for the ADC
+ * 
+ * @param[in] p_event   pointer to a ADC event          
+ */
+static void saadc_callback(nrfx_saadc_evt_t const * p_event)
 {
     NRF_LOG_INFO("saadc_callback, p_event->type = %d", p_event->type);
 }
 
+/**
+ * @brief configure an ADC channel (gain, reference, polarity, etc..) for
+ *        a particular sensor
+ * 
+ * @param[in] sensor    Selected sensor
+ * @param[in] ctrl      Pointer to a sensor control handle
+ *
+ * @retval NRF_SUCCESS on success, otherwise an error code is returned            
+ */
 ret_code_t saadc_config_channel(sensor_t sensor, sensor_ctrl_t * ctrl)
 {
     sensor_hardware_t * hardware;
     nrf_saadc_channel_config_t conf =
         NRFX_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NULL);
-    hardware = get_sensor_hardware(sensor);
+    hardware = sensor_handle_get_hardware(sensor);
     conf.pin_p = hardware->analog_input;
     conf.gain = SAADC_CH_CONFIG_GAIN_Gain1_6;
     conf.reference = NRF_SAADC_REFERENCE_INTERNAL;
     return nrfx_saadc_channel_init(hardware->adc_chanel, &conf);
 }
 
-ret_code_t saadc_init(void)
+/**
+ * @brief initialize the ADC module and ADC channel for each sensor
+ *
+ * @retval NRF_SUCCESS on success, otherwise an error code is returned            
+ */
+static ret_code_t saadc_init(void)
 {
     ret_code_t err;
 
@@ -56,8 +95,8 @@ ret_code_t saadc_init(void)
 
     for (sensor_t s_i = SENSOR_FIRST; s_i <= SENSOR_LAST; s_i++)
     {
-        sensor_ctrl_t * ctrl = get_sensor_ctrl(s_i);
-        hardware = get_sensor_hardware(s_i);
+        sensor_ctrl_t * ctrl = sensor_handle_get_control(s_i);
+        hardware = sensor_handle_get_hardware(s_i);
         err = saadc_config_channel(s_i, ctrl);
         APP_ERROR_CHECK(err);
         NRF_LOG_INFO("sensor %d pwr_pin %d", s_i + 1, hardware->pwr_pin);
@@ -67,55 +106,62 @@ ret_code_t saadc_init(void)
     return NRF_SUCCESS;
 }
 
-ret_code_t saadc_change_gain(void) { return NRF_SUCCESS; }
-
-ret_code_t update_sensor_control(
-    sensor_t sensor, sensor_ctrl_t * new_sensor_ctrl)
-{
-    ret_code_t err;
-    sensor_hardware_t * hardware = get_sensor_hardware(sensor);
-    err = nrfx_saadc_channel_uninit(hardware->adc_chanel);
-    APP_ERROR_CHECK(err);
-    err = saadc_config_channel(sensor, new_sensor_ctrl);
-    APP_ERROR_CHECK(err);
-    return NRF_SUCCESS;
-}
-
-void sample_one_sensor(sensor_t sensor)
+/**
+ * @brief Sample the ADC channel for one sensor
+ * 
+ * @param[in] sensor    Selected sensor     
+ *       
+ * @retval NRF_SUCCESS on success, otherwise an error code is returned            
+ */
+static ret_code_t sample_one_sensor(sensor_t sensor)
 {
     ret_code_t err;
     nrf_saadc_value_t adc_val;
-    sensor_hardware_t * hardware = get_sensor_hardware(sensor);
+    sensor_hardware_t * hardware = sensor_handle_get_hardware(sensor);
     nrf_gpio_pin_set(hardware->pwr_pin);
     nrf_delay_ms(1);
     err = nrfx_saadc_sample_convert(hardware->adc_chanel, &adc_val);
     APP_ERROR_CHECK(err);
-    err = add_sensor_value(sensor, adc_val);
+    err = sensor_handle_add_value(sensor, adc_val);
     APP_ERROR_CHECK(err);
     nrf_gpio_pin_clear(hardware->pwr_pin);
+
+    return err;
 }
 
-void sample_all_sensors(void)
+/**
+ * @brief Sample the ADC channels for all sensors         
+ * 
+ * @retval NRF_SUCCESS on success, otherwise an error code is returned            
+ */
+static ret_code_t sample_all_sensors(void)
 {
     ret_code_t err;
 
     sample_one_sensor(SENSOR_1);
 
     // err = nrfx_saadc_sample_convert(SENSOR_2_ADC_CHANNEL, &adc_val);
-    err = add_sensor_value(SENSOR_2, mock_adc++);
+    err = sensor_handle_add_value(SENSOR_2, mock_adc++);
     APP_ERROR_CHECK(err);
 
     // err = nrfx_saadc_sample_convert(SENSOR_3_ADC_CHANNEL, &adc_val);
-    err = add_sensor_value(SENSOR_3, 0);
+    err = sensor_handle_add_value(SENSOR_3, 0);
     APP_ERROR_CHECK(err);
 
     // err = nrfx_saadc_sample_convert(SENSOR_4_ADC_CHANNEL, &adc_val);
-    err = add_sensor_value(SENSOR_4, 0);
+    err = sensor_handle_add_value(SENSOR_4, 0);
     APP_ERROR_CHECK(err);
+
+    return err;
 }
 
-
-void saadc_timer_handler(nrf_timer_event_t event_type, void * p_context)
+/**
+ * @brief Timer handler for time event (periodic) for the ADC
+ * 
+ * @param[in] event_type Timer event (compare)
+ * @param[in] p_context  Can be used to pass extra arguments to the handler 
+ */
+static void saadc_timer_handler(nrf_timer_event_t event_type, void * p_context)
 {
     switch (event_type)
     {
@@ -128,8 +174,12 @@ void saadc_timer_handler(nrf_timer_event_t event_type, void * p_context)
     }
 }
 
-
-ret_code_t saadc_timer_init(void)
+/**
+ * @brief Initialize the timer for the periodic ADC sampling
+ * 
+ * @retval NRF_SUCCESS on success, otherwise an error code is returned            
+ */
+static ret_code_t saadc_timer_init(void)
 {
     ret_code_t err_code;
     nrfx_timer_config_t timer_conf = NRFX_TIMER_DEFAULT_CONFIG;
@@ -148,23 +198,15 @@ ret_code_t saadc_timer_init(void)
 }
 
 
-ret_code_t sensor_sampling_init(void)
-{
 #if (MOCK_ADC)
-    random_vector_generate_init();
-#else
-
-    mock_adc = 0;
-    init_sensor_handles();
-    // init_sensor_buffer();
-    saadc_init();
-    saadc_timer_init();
-#endif
-    return NRF_SUCCESS;
-}
-
-
-#if (MOCK_ADC)
+/**
+ * @brief Generate a vector/array of random number
+ * 
+ * @param[in] p_buff    Pointer to a buffer where random number will be copied
+ * @param[in] size      Amount of random number to be generated
+ *
+ * @retval Amount of random numbers that have been generated            
+ */
 static uint8_t random_vector_generate(uint8_t * p_buff, uint8_t size)
 {
     uint32_t err_code;
@@ -176,15 +218,22 @@ static uint8_t random_vector_generate(uint8_t * p_buff, uint8_t size)
     return length;
 }
 
-
-void random_vector_generate_init(void)
+/**
+ * @brief  initialize the random number module 
+ */
+static void random_vector_generate_init(void)
 {
     uint32_t err_code;
     err_code = nrf_drv_rng_init(NULL);
     APP_ERROR_CHECK(err_code);
 }
 
-void mock_sensor_values(sensors_t * sensors)
+/**
+ * @brief generate random values for each sensors
+ * 
+ * @param[in] sensors   Array of sensors         
+ */
+static void mock_sensor_values(sensors_t * sensors)
 {
     uint8_t randoms[SENSORS_COUNT];
     random_vector_generate(randoms, SENSORS_COUNT);
@@ -192,3 +241,51 @@ void mock_sensor_values(sensors_t * sensors)
         sensors->values[i] = randoms[i];
 }
 #endif
+
+/*************************
+ * Public Functions
+ ************************/
+
+/**
+ * @brief Initialize the sensor sampling module: ADC, timer, sensor handles
+ * 
+ * @retval NRF_SUCCESS on success, otherwise an error code is returned            
+ */
+ret_code_t sensor_sampling_init(void)
+{
+#if (MOCK_ADC)
+    random_vector_generate_init();
+#else
+
+    mock_adc = 0;
+    sensor_handles_init();
+    // init_sensor_buffer();
+    saadc_init();
+    saadc_timer_init();
+#endif
+    return NRF_SUCCESS;
+}
+
+/**
+ * @brief update the ADC configuration/control for particuliar sensor
+ * 
+ * @param[in] sensor    Selected sensor
+ * @param[in] ctrl      Pointer to a sensor control handle with new values
+ *
+ * @retval NRF_SUCCESS on success, otherwise an error code is returned            
+ */
+ret_code_t sensor_sampling_update_sensor_control(
+    sensor_t sensor, sensor_ctrl_t * new_sensor_ctrl)
+{
+    ret_code_t err;
+    if (!is_sensor_ctrl_valid(new_sensor_ctrl))
+        return NRF_ERROR_INVALID_DATA;
+    sensor_hardware_t * hardware = sensor_handle_get_hardware(sensor);
+    err = nrfx_saadc_channel_uninit(hardware->adc_chanel);
+    APP_ERROR_CHECK(err);
+    err = saadc_config_channel(sensor, new_sensor_ctrl);
+    APP_ERROR_CHECK(err);
+    err = sensor_handle_set_control(sensor, new_sensor_ctrl);
+    APP_ERROR_CHECK(err);
+    return NRF_SUCCESS;
+}
