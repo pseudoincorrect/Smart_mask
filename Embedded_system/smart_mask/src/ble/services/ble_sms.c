@@ -117,10 +117,7 @@ static uint32_t add_sensor_ctrl_char(ble_sms_t * p_sms, uint8_t uuid,
 static uint32_t ble_sms_event_on_write(
     ble_sms_t * p_sms, ble_evt_t const * p_ble_evt)
 {
-
-    NRF_LOG_INFO("ble_sms_event_on_write: got a write event");
-
-    ble_gatts_evt_write_t const * p_evt_write =
+ble_gatts_evt_write_t const * p_evt_write =
         &p_ble_evt->evt.gatts_evt.params.write;
 
     if (p_evt_write->len != sizeof(sensor_ctrl_t))

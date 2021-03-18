@@ -5,8 +5,8 @@
 //      the usual Insert, delete, etc..
 
 import 'dart:async';
-import 'package:mask/src/logic/database/database.dart';
-import 'package:mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/database/database.dart';
+import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 
 class SensorDataAccess {
   final dbProvider = DatabaseProvider.dbProvider;

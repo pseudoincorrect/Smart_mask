@@ -5,7 +5,7 @@
 //      throughout the app with contex.inherit..
 
 import 'package:flutter/material.dart';
-import 'package:mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
+import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
 
 class SensorDataProvider extends InheritedWidget {
   final SensorDataBloc bloc;

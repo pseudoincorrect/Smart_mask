@@ -22,18 +22,17 @@ const dynamic s = {
       "serviceChanged": {"UUID": "00002aa6-0000-1000-8000-00805f9b34fb"},
     },
   },
-  "ledButtonService": {
-    "UUID": "00001523-1212-efde-1523-785feabcd123",
-    "characteristics": {
-      "button": {"UUID": "00001524-1212-efde-1523-785feabcd123"},
-      "led": {"UUID": "00001525-1212-efde-1523-785feabcd123"},
-    }
-  },
-  "smartMaskService": {
+  "sensorMeasurementService": {
     "UUID": "00001600-1212-efde-1523-785feabcd124",
     "characteristics": {
-      "sensors": {"UUID": "00001601-1212-efde-1523-785feabcd124"},
-      "output": {"UUID": "00001602-1212-efde-1523-785feabcd124"},
+      "sensors_1_vals": {"UUID": "00001601-1212-efde-1523-785feabcd124"},
+      "sensors_1_ctrl": {"UUID": "00001602-1212-efde-1523-785feabcd124"},
+      "sensors_2_vals": {"UUID": "00001603-1212-efde-1523-785feabcd124"},
+      "sensors_2_ctrl": {"UUID": "00001604-1212-efde-1523-785feabcd124"},
+      "sensors_3_vals": {"UUID": "00001605-1212-efde-1523-785feabcd124"},
+      "sensors_3_ctrl": {"UUID": "00001606-1212-efde-1523-785feabcd124"},
+      "sensors_4_vals": {"UUID": "00001607-1212-efde-1523-785feabcd124"},
+      "sensors_4_ctrl": {"UUID": "00001608-1212-efde-1523-785feabcd124"},
     },
   },
 };

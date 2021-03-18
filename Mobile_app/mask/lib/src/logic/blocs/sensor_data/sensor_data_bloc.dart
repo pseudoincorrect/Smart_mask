@@ -8,8 +8,8 @@
 
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
-import 'package:mask/src/logic/database/models/sensor_model.dart';
-import 'package:mask/src/logic/repositories/sensor_data_repo.dart';
+import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
 
 class SensorDataBloc {
   final _sensorDataRepo = SensorDataRepository();

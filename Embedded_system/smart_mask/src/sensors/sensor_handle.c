@@ -106,7 +106,7 @@ void sensor_handles_init(void)
         ctrl = sensor_handle_get_control(s_i);
         ctrl->gain = SAADC_CH_CONFIG_GAIN_Gain1_6;
         ctrl->enable = true;
-        ctrl->sample_period_ms = 100; // ms
+        ctrl->sample_period_ms = 1000; // ms
     }
 
     s_h_1.hardware.pwr_pin = SENSOR_1_PWR_PIN;
@@ -253,7 +253,7 @@ ret_code_t sensor_handle_get_values(
  */
 bool is_sensor_ctrl_valid(sensor_ctrl_t * ctrl)
 {
-    if (ctrl->sample_period_ms < 50 || ctrl->sample_period_ms > 1000)
+    if (ctrl->sample_period_ms < 500 || ctrl->sample_period_ms > 2000)
         return false;
     if (ctrl->gain < SAADC_CH_CONFIG_GAIN_Gain1_6 ||
         ctrl->gain > SAADC_CH_CONFIG_GAIN_Gain4)

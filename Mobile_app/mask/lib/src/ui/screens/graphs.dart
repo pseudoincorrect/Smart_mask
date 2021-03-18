@@ -7,11 +7,11 @@
 // import 'dart:html';
 
 import 'package:flutter/material.dart';
-import 'package:mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
-import 'package:mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
-import 'package:mask/src/ui/screens/sensor_details.dart';
-import 'package:mask/src/ui/widgets/graph/sensor_graph.dart';
-import 'package:mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
+import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
+import 'package:smart_mask/src/ui/screens/sensor_details.dart';
+import 'package:smart_mask/src/ui/widgets/graph/sensor_graph.dart';
+import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 
 const num graphsHeight = 600.0;
 

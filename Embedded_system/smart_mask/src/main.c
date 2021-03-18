@@ -109,13 +109,14 @@ static void led_write_handler(
  * @param[in] sensor      selected sensor
  * @param[in] sensor_ctrl sensor control handler with new value
  */
-static void sensor_ctrl_update(sensor_t sensor, sensor_ctrl_t * sensor_ctrl)
+static void sensor_ctrl_update(sensor_t sensor, sensor_ctrl_t * ctrl)
 {
-    sensor_handle_set_control(sensor, sensor_ctrl);
-    NRF_LOG_INFO("sensor %d", sensor + 1);
-    sensor_ctrl_t * ctrl = sensor_handle_get_control(sensor);
-    NRF_LOG_INFO("sample period ms %d, gain %d, enable %d",
-        ctrl->sample_period_ms, ctrl->gain, ctrl->enable);
+    ret_code_t err;
+    NRF_LOG_INFO("sensor %d sample period ms %d, gain %d, enable %d",
+        sensor + 1, ctrl->sample_period_ms, ctrl->gain, ctrl->enable);
+    err = sensor_sampling_update_sensor_control(sensor, ctrl);
+    if (err == NRF_ERROR_INVALID_DATA)
+        NRF_LOG_INFO("invalid sensor_ctrl_t data");
 }
 
 
