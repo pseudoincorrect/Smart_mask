@@ -104,9 +104,10 @@ void sensor_handles_init(void)
     for (sensor_t s_i = SENSOR_FIRST; s_i <= SENSOR_LAST; s_i++)
     {
         ctrl = sensor_handle_get_control(s_i);
+        //ctrl->gain = SAADC_CH_CONFIG_GAIN_Gain1_6;
         ctrl->gain = SAADC_CH_CONFIG_GAIN_Gain1_6;
         ctrl->enable = true;
-        ctrl->sample_period_ms = 1000; // ms
+        ctrl->sample_period_ms = 100; // ms
     }
 
     s_h_1.hardware.pwr_pin = SENSOR_1_PWR_PIN;

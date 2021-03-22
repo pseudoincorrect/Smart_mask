@@ -22,4 +22,7 @@ class SensorDataRepository {
         sensor,
         interval: interval,
       );
+
+  Future getLatestSensorData(Sensor sensor) =>
+      sensorDataAccess.getLatestSensorData(sensor);
 }

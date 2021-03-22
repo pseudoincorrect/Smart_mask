@@ -13,7 +13,7 @@ import 'package:smart_mask/src/ui/screens/sensor_details.dart';
 import 'package:smart_mask/src/ui/widgets/graph/sensor_graph.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 
-const num graphsHeight = 600.0;
+const num graphsHeight = 650.0;
 
 class Graph extends StatelessWidget {
   @override

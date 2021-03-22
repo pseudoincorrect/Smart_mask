@@ -5,21 +5,24 @@
 //      Organised way. We will find function to deal with
 //      Sensor enum and SensorData class here
 
-enum Sensor { temperature, humidity, acetone, respiration }
+import 'package:smart_mask/src/logic/blocs/bluetooth/smart_mask_services_const.dart'
+    as smsConst;
+
+enum Sensor { sensor_1, sensor_2, sensor_3, sensor_4 }
 
 Sensor sensorStringToEnum(String sensor) {
   switch (sensor) {
-    case 'temperature':
-      return Sensor.temperature;
+    case 'sensor_1':
+      return Sensor.sensor_1;
       break;
-    case 'humidity':
-      return Sensor.humidity;
+    case 'sensor_2':
+      return Sensor.sensor_2;
       break;
-    case 'acetone':
-      return Sensor.acetone;
+    case 'sensor_3':
+      return Sensor.sensor_3;
       break;
-    case 'respiration':
-      return Sensor.respiration;
+    case 'sensor_4':
+      return Sensor.sensor_4;
       break;
     default:
       {
@@ -32,6 +35,26 @@ String sensorEnumToString(Sensor sensor) {
   return sensor.toString().replaceFirst("Sensor.", "");
 }
 
+Sensor sensorFromBLEchararcteristicUUID(String uuid) {
+  final Map<String, Map<String, String>> valuesChars =
+      smsConst.S["sensorMeasurementService"]["characteristics"]["values"];
+
+  final Map<String, Map<String, String>> controlChars =
+      smsConst.S["sensorMeasurementService"]["characteristics"]["control"];
+
+  if (uuid == valuesChars["sensors_1"]["UUID"]) return Sensor.sensor_1;
+  if (uuid == valuesChars["sensors_2"]["UUID"]) return Sensor.sensor_2;
+  if (uuid == valuesChars["sensors_3"]["UUID"]) return Sensor.sensor_3;
+  if (uuid == valuesChars["sensors_4"]["UUID"]) return Sensor.sensor_4;
+
+  if (uuid == controlChars["sensors_1"]["UUID"]) return Sensor.sensor_1;
+  if (uuid == controlChars["sensors_2"]["UUID"]) return Sensor.sensor_2;
+  if (uuid == controlChars["sensors_3"]["UUID"]) return Sensor.sensor_3;
+  if (uuid == controlChars["sensors_4"]["UUID"]) return Sensor.sensor_4;
+
+  return null;
+}
+
 class SensorData {
   int id;
   Sensor sensor;
@@ -40,8 +63,8 @@ class SensorData {
 
   SensorData({this.id, this.sensor, this.timeStamp, this.value});
 
-  factory SensorData.fromSensorAndValue(Sensor sensor, int value) {
-    int timeStamp = DateTime.now().millisecondsSinceEpoch;
+  factory SensorData.fromSensorAndValue(
+      Sensor sensor, int value, int timeStamp) {
     int id = 0;
     return SensorData(
       id: id,

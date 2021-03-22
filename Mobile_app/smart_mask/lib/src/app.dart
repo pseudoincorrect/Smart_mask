@@ -69,16 +69,16 @@ class _TabControlState extends State<TabControl> {
         appBar: AppBar(
           title: Row(
             children: <Widget>[
-              const Text('Q-Blue'),
+              const Text('Smart Mask'),
               Expanded(child: Container()),
               StreamBuilder<bool>(
                 stream: bluetoothBloc.isConnected,
                 initialData: false,
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.data == true) {
-                    return Text("Device Connected");
+                    return Text("Connected");
                   }
-                  return Text("Device Disconnected");
+                  return Text("Disconnected");
                 },
               ),
             ],

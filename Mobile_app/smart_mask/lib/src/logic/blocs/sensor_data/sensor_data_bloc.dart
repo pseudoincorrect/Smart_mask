@@ -13,8 +13,8 @@ import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
 
 class SensorDataBloc {
   final _sensorDataRepo = SensorDataRepository();
-  Sensor _selectedSensor = Sensor.temperature;
-  Duration windowInterval = Duration(seconds: 10);
+  Sensor _selectedSensor = Sensor.sensor_1;
+  Duration windowInterval = Duration(seconds: 30);
   Duration refreshInterval = Duration(seconds: 1);
 
   BehaviorSubject<Sensor> _selectedSensorSubject;
@@ -31,6 +31,7 @@ class SensorDataBloc {
     }
 
     _selectedSensorSubject = BehaviorSubject<Sensor>();
+    setSelectedSensor(_selectedSensor);
 
     setupTimers(refreshInterval);
   }

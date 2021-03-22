@@ -50,7 +50,7 @@ class _SensorGraphState extends State<SensorGraph> {
 
   List<TimeSeriesSensor> _parseSensorData(
       List<SensorData> sensorData, Sensor sensor) {
-    var timeSeries = List<TimeSeriesSensor>();
+    List<TimeSeriesSensor> timeSeries = [];
 
     List<SensorData> namedSensorData =
         sensorData.where((element) => element.sensor == sensor).toList();
