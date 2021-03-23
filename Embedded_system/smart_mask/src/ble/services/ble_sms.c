@@ -111,17 +111,20 @@ static uint32_t add_sensor_ctrl_char(ble_sms_t * p_sms, uint8_t uuid,
 /**
  * @brief Function for handling the Write event
  *
- * @param[in] p_sms      LED Button Service structure
+ * @param[in] p_sms      Sensor Measurement Service structure
  * @param[in] p_ble_evt  Event received from the BLE stack
  */
 static uint32_t ble_sms_event_on_write(
     ble_sms_t * p_sms, ble_evt_t const * p_ble_evt)
 {
-ble_gatts_evt_write_t const * p_evt_write =
+    ble_gatts_evt_write_t const * p_evt_write =
         &p_ble_evt->evt.gatts_evt.params.write;
 
-    if (p_evt_write->len != sizeof(sensor_ctrl_t))
+    if (p_evt_write->len != sizeof(sensor_ctrl_t)){
+        NRF_LOG_INFO("ble_sms_event_on_write wrong length %d", p_evt_write->len);
+        NRF_LOG_INFO("sizeof(sensor_ctrl_t) %d", sizeof(sensor_ctrl_t));
         return NRF_ERROR_INVALID_DATA;
+    }
 
     sensor_t sensor;
     int16_t handle = p_evt_write->handle;
@@ -129,9 +132,9 @@ ble_gatts_evt_write_t const * p_evt_write =
     if (handle == p_sms->s1_ctrl_char.value_handle)
         sensor = SENSOR_1;
     else if (handle == p_sms->s2_ctrl_char.value_handle)
-        sensor = SENSOR_3;
-    else if (handle == p_sms->s3_ctrl_char.value_handle)
         sensor = SENSOR_2;
+    else if (handle == p_sms->s3_ctrl_char.value_handle)
+        sensor = SENSOR_3;
     else if (handle == p_sms->s4_ctrl_char.value_handle)
         sensor = SENSOR_4;
     else

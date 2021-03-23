@@ -11,15 +11,39 @@ String sensorGainEnumToString(SensorGain sensorGain) {
   return sensorGain.toString().replaceFirst("SensorGain.", "");
 }
 
-bool validateSensorSampleRate(int value) {
-  if (value < 100) return false;
-  if (value > 1000) return false;
-  return true;
-}
-
 class SensorControl {
-  SensorGain gain;
-  int samplePeriod;
+  SensorGain _gain;
+  int _samplePeriodMs;
+  bool _enable;
 
-  SensorControl({this.gain, this.samplePeriod});
+  SensorControl({initGain, initSamplePeriodMs}) {
+    _gain = initGain;
+    _samplePeriodMs = initSamplePeriodMs;
+    _enable = true;
+  }
+
+  bool get enable => _enable;
+
+  set enable(bool state) {
+    if (true) _enable = state;
+  }
+
+  int get samplePeriodMs => _samplePeriodMs;
+
+  set samplePeriodMs(int value) {
+    if (!validateSensorSamplePeriod(value)) return;
+    _samplePeriodMs = value;
+  }
+
+  SensorGain get gain => _gain;
+
+  set gain(SensorGain newGain) {
+    if (true) _gain = newGain;
+  }
+
+  bool validateSensorSamplePeriod(int value) {
+    if (value < 100) return false;
+    if (value > 1000) return false;
+    return true;
+  }
 }

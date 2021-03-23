@@ -30,7 +30,7 @@
  ************************/
 
 #define SAMPLES_IN_BUFFER SENSORS_COUNT
-#define INITIAL_SAMPLE_RATE_MS 200
+#define INITIAL_SAMPLE_RATE_MS 500
 
 /*************************
  * Static Variables
@@ -125,7 +125,7 @@ static ret_code_t sample_one_sensor(sensor_t sensor)
     err = sensor_handle_add_value(sensor, adc_val);
     APP_ERROR_CHECK(err);
     nrf_gpio_pin_clear(hardware->pwr_pin);
-    NRF_LOG_INFO("sensor %d adc_val %d", sensor + 1, adc_val);
+    //NRF_LOG_INFO("sensor %d adc_val %d", sensor + 1, adc_val);
 
     return err;
 }

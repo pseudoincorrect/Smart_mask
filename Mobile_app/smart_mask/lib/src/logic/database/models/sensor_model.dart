@@ -42,15 +42,23 @@ Sensor sensorFromBLEchararcteristicUUID(String uuid) {
   final Map<String, Map<String, String>> controlChars =
       smsConst.S["sensorMeasurementService"]["characteristics"]["control"];
 
-  if (uuid == valuesChars["sensors_1"]["UUID"]) return Sensor.sensor_1;
-  if (uuid == valuesChars["sensors_2"]["UUID"]) return Sensor.sensor_2;
-  if (uuid == valuesChars["sensors_3"]["UUID"]) return Sensor.sensor_3;
-  if (uuid == valuesChars["sensors_4"]["UUID"]) return Sensor.sensor_4;
+  if (uuid.toUpperCase() == valuesChars["sensor_1"]["UUID"])
+    return Sensor.sensor_1;
+  if (uuid.toUpperCase() == valuesChars["sensor_2"]["UUID"])
+    return Sensor.sensor_2;
+  if (uuid.toUpperCase() == valuesChars["sensor_3"]["UUID"])
+    return Sensor.sensor_3;
+  if (uuid.toUpperCase() == valuesChars["sensor_4"]["UUID"])
+    return Sensor.sensor_4;
 
-  if (uuid == controlChars["sensors_1"]["UUID"]) return Sensor.sensor_1;
-  if (uuid == controlChars["sensors_2"]["UUID"]) return Sensor.sensor_2;
-  if (uuid == controlChars["sensors_3"]["UUID"]) return Sensor.sensor_3;
-  if (uuid == controlChars["sensors_4"]["UUID"]) return Sensor.sensor_4;
+  if (uuid.toUpperCase() == controlChars["sensor_1"]["UUID"])
+    return Sensor.sensor_1;
+  if (uuid.toUpperCase() == controlChars["sensor_2"]["UUID"])
+    return Sensor.sensor_2;
+  if (uuid.toUpperCase() == controlChars["sensor_3"]["UUID"])
+    return Sensor.sensor_3;
+  if (uuid.toUpperCase() == controlChars["sensor_4"]["UUID"])
+    return Sensor.sensor_4;
 
   return null;
 }

@@ -3,10 +3,12 @@ import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_control_model.dart';
 
 class SampleRateSlider extends StatefulWidget {
+  final Sensor sensor;
   final double initialValue;
-  final void Function(int) setValuefunction;
+  final void Function(Sensor, int) setValuefunction;
 
-  const SampleRateSlider({Key key, this.initialValue, this.setValuefunction})
+  const SampleRateSlider(
+      {Key key, this.sensor, this.initialValue, this.setValuefunction})
       : super(key: key);
 
   @override
@@ -45,7 +47,8 @@ class _SampleRateSliderState extends State<SampleRateSlider> {
       min: 100,
       max: 1000,
       divisions: 99,
-      onChangeEnd: (double value) => widget.setValuefunction(value.toInt()),
+      onChangeEnd: (double value) =>
+          widget.setValuefunction(widget.sensor, value.toInt()),
       onChanged: (double x) {
         setState(() => _currentSliderValue = x);
       },
@@ -56,10 +59,12 @@ class _SampleRateSliderState extends State<SampleRateSlider> {
 ///////////////////////////////////////////////////////////////////////////////
 
 class GainSlider extends StatefulWidget {
+  final Sensor sensor;
   final SensorGain initialGain;
-  final void Function(SensorGain) setValuefunction;
+  final void Function(Sensor, SensorGain) setValuefunction;
 
-  const GainSlider({Key key, this.initialGain, this.setValuefunction})
+  const GainSlider(
+      {Key key, this.sensor, this.initialGain, this.setValuefunction})
       : super(key: key);
 
   @override
@@ -98,9 +103,10 @@ class _GainSliderState extends State<GainSlider> {
       min: 0,
       max: SensorGain.values.length.toDouble() - 1,
       divisions: 99,
-      onChangeEnd: (double value) {
-        print("value ${value.round().toString()}");
-      },
+      onChangeEnd: (double value) => widget.setValuefunction(
+        widget.sensor,
+        SensorGain.values[value.toInt()],
+      ),
       onChanged: (double x) {
         setState(() => _sensorGain = SensorGain.values[x.toInt()]);
       },

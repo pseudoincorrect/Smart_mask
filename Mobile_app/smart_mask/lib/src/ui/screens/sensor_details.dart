@@ -39,62 +39,63 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
   Widget build(BuildContext context) {
     sensorDataBloc = SensorDataProvider.of(context);
     bluetoothBloc = BluetoothProvider.of(context);
+    bool checkBoxVal = true;
 
     return StreamBuilder(
-        stream: sensorDataBloc.getSelectedSensorStream(),
-        builder: (BuildContext context, AsyncSnapshot<Sensor> snapshot) {
-          if (snapshot.hasError) return Text('Empty');
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-              return Text('ConnectionNone');
-            case ConnectionState.waiting:
-              return Text('ConnectionWaiting');
-            case ConnectionState.done:
-              return Text('ConnectionState.done');
-            case ConnectionState.active:
-              return Column(
-                children: <Widget>[
-                  DropButton(
-                    value: sensorEnumToString(snapshot.data),
-                    onChanged: dropButtonOnChanged,
-                    items: sensors,
-                  ),
-                  SizedBox(
-                      height: graphsHeight,
-                      child: SensorGraph(
-                        sensorDataStream:
-                            sensorDataBloc.getStream(snapshot.data),
-                        sensor: snapshot.data,
-                        height: graphsHeight / (Sensor.values.length * 2),
-                      )),
-                  // SampleRateSelector(),
-                  SampleRateSlider(
-                    initialValue: bluetoothBloc.getSampleRateValue().toDouble(),
-                    setValuefunction: bluetoothBloc.setSampleRateValue,
-                  ),
-                  GainSlider(
-                    initialGain: bluetoothBloc.getgainValue(),
-                    setValuefunction: bluetoothBloc.setgainValue,
-                  )
-                  // dropButtonGain(gains[0]),
-                ],
-              );
-          }
-          return Text('Problem');
-        });
+      stream: sensorDataBloc.getSelectedSensorStream(),
+      builder: (BuildContext context, AsyncSnapshot<Sensor> snapshot) {
+        if (snapshot.hasError) return Text('Empty');
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+            return Text('ConnectionNone');
+          case ConnectionState.waiting:
+            return Text('ConnectionWaiting');
+          case ConnectionState.done:
+            return Text('ConnectionState.done');
+          case ConnectionState.active:
+            return Column(
+              children: <Widget>[
+                DropButton(
+                  value: sensorEnumToString(snapshot.data),
+                  onChanged: dropButtonOnChanged,
+                  items: sensors,
+                ),
+                SizedBox(
+                    height: graphsHeight,
+                    child: SensorGraph(
+                      sensorDataStream: sensorDataBloc.getStream(snapshot.data),
+                      sensor: snapshot.data,
+                      height: graphsHeight / (Sensor.values.length * 2),
+                    )),
+                SampleRateSlider(
+                  sensor: snapshot.data,
+                  initialValue:
+                      bluetoothBloc.getSamplePeriod(snapshot.data).toDouble(),
+                  setValuefunction: bluetoothBloc.setSamplePeriod,
+                ),
+                GainSlider(
+                  sensor: snapshot.data,
+                  initialGain: bluetoothBloc.getGain(snapshot.data),
+                  setValuefunction: bluetoothBloc.setGain,
+                ),
+                // CheckboxListTile(
+                //   title: const Text('Enable'),
+                //   value: checkBoxVal,
+                //   onChanged: (bool value) {
+                //     setState(() {
+                //       checkBoxVal = checkBoxVal ? false : true;
+                //     });
+                //   },
+                // ),
+              ],
+            );
+        }
+        return Text('Problem');
+      },
+    );
   }
 
-  // var gains = ["Gain 1", "Gain 2", "Gain 3"];
-  //
-  // Widget dropButtonGain(String newGain) {
-  //   return DropButton(
-  //     value: gains[0],
-  //     onChanged: dropButtonGainOnChanged,
-  //     items: gains,
-  //   );
-  // }
-  //
-  // dropButtonGainOnChanged(String newGain) {}
+
 
   dropButtonOnChanged(String newSensor) {
     Sensor sensor = sensorStringToEnum(newSensor);

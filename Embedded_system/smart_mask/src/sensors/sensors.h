@@ -30,12 +30,17 @@ typedef enum
 
 typedef int16_t sensor_val_t;
 
+// Pack the structure ( = not 32bit aligned)
+#pragma pack(push,1)
+
 typedef struct
 {
     uint32_t sample_period_ms;
     uint8_t gain;
     uint8_t enable;
 } sensor_ctrl_t;
+
+#pragma pack(pop)
 
 typedef struct
 {

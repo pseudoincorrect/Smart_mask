@@ -4,7 +4,6 @@
 //      contain the bluetooth state management for the app
 //      manage data stream (sensors, and notification)
 
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter_blue/flutter_blue.dart';
@@ -14,7 +13,7 @@ import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/smart_mask_services_const.dart'
     as smsConst;
 
-final String sensorService = smsConst.S["sensorMeasurementService"]["UUID"];
+final String sensorServiceUUID = smsConst.S["sensorMeasurementService"]["UUID"];
 
 final Map<String, Map<String, String>> valuesChars =
     smsConst.S["sensorMeasurementService"]["characteristics"]["values"];
@@ -26,7 +25,7 @@ class BluetoothBloc {
   int _sampleRateValue;
   SensorGain _gainValue;
 
-  // Map<Sensor, SensorControl> _sensorControls;
+  Map<Sensor, SensorControl> _sensorControls = Map();
   Stream<BluetoothState> _bluetoothState;
   SensorDataRepository _sensorDataRepository;
   Stream<bool> _isConnected;
@@ -36,8 +35,11 @@ class BluetoothBloc {
     _bluetoothState = FlutterBlue.instance.state;
     _isConnected =
         Stream.periodic(Duration(seconds: 2)).asyncMap((_) => checkConnected());
-    _sampleRateValue = 200;
-    _gainValue = SensorGain.one;
+
+    for (var i in Sensor.values) {
+      _sensorControls[i] =
+          SensorControl(initGain: SensorGain.one, initSamplePeriodMs: 200);
+    }
   }
 
   Future<bool> checkConnected() async {
@@ -70,7 +72,7 @@ class BluetoothBloc {
 
   updateCharacteristics(List<BluetoothCharacteristic> characteristics) async {
     for (var characteristic in characteristics) {
-      var uuid = characteristic.uuid.toString();
+      var uuid = characteristic.uuid.toString().toUpperCase();
 
       dynamic uuids = [];
       valuesChars.forEach((key, value) {
@@ -87,7 +89,6 @@ class BluetoothBloc {
     characteristic.value.listen((x) => onReceiveValue(x, characteristic));
     if (!characteristic.isNotifying) {
       await characteristic.setNotifyValue(true);
-      print(characteristic.isNotifying);
     }
   }
 
@@ -122,16 +123,74 @@ class BluetoothBloc {
     return sensorDatas;
   }
 
-  setSampleRateValue(int newValue) {
-    if (!validateSensorSampleRate(newValue)) return null;
-    _sampleRateValue = newValue.round();
+  SensorControl getSensorControl(Sensor sensor) => _sensorControls[sensor];
+
+  int getSamplePeriod(Sensor sensor) {
+    var ctrl = getSensorControl(sensor);
+    return ctrl.samplePeriodMs;
   }
 
-  int getSampleRateValue() => _sampleRateValue;
+  setSamplePeriod(Sensor sensor, int newPeriodMs) {
+    var ctrl = getSensorControl(sensor);
+    ctrl.samplePeriodMs = newPeriodMs;
+    setSensorCtrlBle(sensor);
+  }
 
-  setgainValue(SensorGain newValue) => _gainValue = newValue;
+  SensorGain getGain(Sensor sensor) {
+    var ctrl = getSensorControl(sensor);
+    return ctrl.gain;
+  }
 
-  SensorGain getgainValue() => _gainValue;
+  setGain(Sensor sensor, SensorGain newGain) async {
+    SensorControl ctrl = getSensorControl(sensor);
+    ctrl.gain = newGain;
+    setSensorCtrlBle(sensor);
+  }
+
+  Future<BluetoothCharacteristic> getSensorCtrlChar(Sensor sensor) async {
+    List<BluetoothDevice> devices = await FlutterBlue.instance.connectedDevices;
+    BluetoothDevice device;
+    if (devices[0].name.contains("Smart")) device = devices[0];
+    List<BluetoothService> services = await device.services.first;
+    BluetoothService smsService = services
+        .where((s) => s.uuid.toString().toUpperCase() == sensorServiceUUID)
+        .first;
+    List<BluetoothCharacteristic> characteristics = smsService.characteristics;
+    BluetoothCharacteristic ctrlChar = characteristics
+        .where((c) =>
+            c.uuid.toString().toUpperCase() ==
+            controlChars[sensorEnumToString(sensor)]["UUID"])
+        .first;
+    return ctrlChar;
+  }
+
+  setSensorCtrlBle(Sensor sensor) async {
+    var ctrl = getSensorControl(sensor);
+    var ctrlPacket = SensorControlPacket(ctrl);
+    var char = await getSensorCtrlChar(sensor);
+    await char.write(ctrlPacket.buffer, withoutResponse: false);
+  }
 
   dispose() {}
+}
+
+class SensorControlPacket {
+  List<int> buffer = [];
+
+  SensorControlPacket(SensorControl sensorControl) {
+    // uint32_t samplePeriodMs
+    int byte;
+    byte = sensorControl.samplePeriodMs & 0x000000FF;
+    buffer.add(byte);
+    byte = (sensorControl.samplePeriodMs & 0x0000FF00) >> 8;
+    buffer.add(byte);
+    byte = (sensorControl.samplePeriodMs & 0x00FF0000) >> 16;
+    buffer.add(byte);
+    byte = (sensorControl.samplePeriodMs & 0xFF000000) >> 24;
+    buffer.add(byte);
+    // uint8_t gain
+    buffer.add(sensorControl.gain.index);
+    // uint8_t enable
+    buffer.add(sensorControl.enable ? 1 : 0);
+  }
 }
