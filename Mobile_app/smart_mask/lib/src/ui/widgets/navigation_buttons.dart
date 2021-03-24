@@ -5,9 +5,9 @@
 //      push button to insert to change pages
 
 import 'package:flutter/material.dart';
-// import 'package:mask/src/ui/screens/home.dart';
-// import 'package:mask/src/ui/screens/bluetooth_devices_list.dart';
-// import 'package:mask/src/ui/screens/graphs.dart';
+// import 'package:mask/src/ui/screens/home_screen.dart';
+// import 'package:mask/src/ui/screens/ble_device_screen.dart';
+// import 'package:mask/src/ui/screens/graphs_screen.dart';
 
 class NavigationButtons extends StatelessWidget {
   @override

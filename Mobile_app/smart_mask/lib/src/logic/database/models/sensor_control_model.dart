@@ -16,10 +16,10 @@ class SensorControl {
   int _samplePeriodMs;
   bool _enable;
 
-  SensorControl({initGain, initSamplePeriodMs}) {
+  SensorControl({initGain, initSamplePeriodMs, initEnable}) {
     _gain = initGain;
     _samplePeriodMs = initSamplePeriodMs;
-    _enable = true;
+    _enable = initEnable;
   }
 
   bool get enable => _enable;
@@ -42,7 +42,7 @@ class SensorControl {
   }
 
   bool validateSensorSamplePeriod(int value) {
-    if (value < 100) return false;
+    if (value < 200) return false;
     if (value > 1000) return false;
     return true;
   }

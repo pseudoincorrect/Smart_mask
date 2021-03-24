@@ -228,7 +228,7 @@ static void check_sensors_update(void)
                 err_code != NRF_ERROR_INVALID_STATE &&
                 err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
             {
-                APP_ERROR_CHECK(err_code);
+                //APP_ERROR_CHECK(err_code);
             }
         }
     }
@@ -322,7 +322,6 @@ int main(void)
     power_management_init();
     sensor_sampling_init();
     app_ble_init(&m_app_ble_conf);
-    // sensors_init_buffer(&m_sensors_previous);
 
     NRF_LOG_INFO("Starting main process");
 

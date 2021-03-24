@@ -5,10 +5,10 @@ import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
-import 'package:smart_mask/src/ui/screens/bluetooth_devices_list.dart';
-import 'package:smart_mask/src/ui/screens/graphs.dart';
-import 'package:smart_mask/src/ui/screens/sensor_details.dart';
-import 'package:smart_mask/src/ui/screens/home.dart';
+import 'package:smart_mask/src/ui/screens/bluetooth/ble_find_device_screen.dart';
+import 'package:smart_mask/src/ui/screens/graphs_screen.dart';
+import 'package:smart_mask/src/ui/screens/sensor_details_screen.dart';
+import 'package:smart_mask/src/ui/screens/home_screen.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: "Smart Mask",
           theme: getTheme(),
-          home: TabControl(),
+          home: HomeScreen(),
         ),
       ),
     );
@@ -51,6 +51,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return TabControl();
+  }
+}
+
 class TabControl extends StatefulWidget {
   TabControl({Key key}) : super(key: key);
 
@@ -65,14 +72,18 @@ class _TabControlState extends State<TabControl> {
     bluetoothBloc = BluetoothProvider.of(context);
     return DefaultTabController(
       length: choices.length,
+      initialIndex: 1,
       child: Scaffold(
         appBar: AppBar(
           title: Row(
             children: <Widget>[
-              const Text('Smart Mask'),
+              const Text(
+                'Smart Mask',
+                style: TextStyle(fontSize: 30),
+              ),
               Expanded(child: Container()),
               StreamBuilder<bool>(
-                stream: bluetoothBloc.isConnected,
+                stream: bluetoothBloc.isConnectedStream,
                 initialData: false,
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.data == true) {
@@ -108,8 +119,10 @@ FloatingActionButton connectButton(BuildContext context) {
   return FloatingActionButton(
     onPressed: () {
       print("connectButton Pressed");
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => bluetoothDevicesList()));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => bluetoothDevicesListScreen()));
     },
     child: Icon(Icons.bluetooth),
   );
@@ -140,7 +153,7 @@ List<Choice> choices = <Choice>[
   ),
   Choice(
     title: 'Details',
-    icon: Icons.details,
+    icon: Icons.zoom_in,
     widget: (BuildContext context) => GraphDetails(),
   ),
 ];

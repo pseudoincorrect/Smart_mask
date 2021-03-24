@@ -9,15 +9,11 @@ import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
-import 'package:smart_mask/src/ui/widgets/drop_button.dart';
 import 'package:smart_mask/src/ui/widgets/graph/sensor_graph.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_control_model.dart';
 import 'package:smart_mask/src/ui/widgets/sensor_control_widgets.dart';
 
 const num graphsHeight = 300.0;
-final List<String> sensors =
-    Sensor.values.map((Sensor s) => sensorEnumToString(s)).toList();
 
 class GraphDetails extends StatelessWidget {
   @override
@@ -39,7 +35,6 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
   Widget build(BuildContext context) {
     sensorDataBloc = SensorDataProvider.of(context);
     bluetoothBloc = BluetoothProvider.of(context);
-    bool checkBoxVal = true;
 
     return StreamBuilder(
       stream: sensorDataBloc.getSelectedSensorStream(),
@@ -53,12 +48,12 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
           case ConnectionState.done:
             return Text('ConnectionState.done');
           case ConnectionState.active:
-            return Column(
+            return SingleChildScrollView(
+                child: Column(
               children: <Widget>[
                 DropButton(
-                  value: sensorEnumToString(snapshot.data),
-                  onChanged: dropButtonOnChanged,
-                  items: sensors,
+                  sensor: snapshot.data,
+                  changeSensorFunction: sensorDataBloc.setSelectedSensor,
                 ),
                 SizedBox(
                     height: graphsHeight,
@@ -78,27 +73,16 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
                   initialGain: bluetoothBloc.getGain(snapshot.data),
                   setValuefunction: bluetoothBloc.setGain,
                 ),
-                // CheckboxListTile(
-                //   title: const Text('Enable'),
-                //   value: checkBoxVal,
-                //   onChanged: (bool value) {
-                //     setState(() {
-                //       checkBoxVal = checkBoxVal ? false : true;
-                //     });
-                //   },
-                // ),
+                EnableCheckbox(
+                  sensor: snapshot.data,
+                  initialEnable: bluetoothBloc.getEnable(snapshot.data),
+                  setValuefunction: bluetoothBloc.setEnable,
+                )
               ],
-            );
+            ));
         }
         return Text('Problem');
       },
     );
-  }
-
-
-
-  dropButtonOnChanged(String newSensor) {
-    Sensor sensor = sensorStringToEnum(newSensor);
-    sensorDataBloc.setSelectedSensor(sensor);
   }
 }

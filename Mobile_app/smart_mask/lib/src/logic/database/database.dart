@@ -29,10 +29,10 @@ class DatabaseProvider {
     String path = join(documentsDirectory.path, 'SensorData.db');
 
     await deleteDatabase(path);
-    print("database deleted");
+    // print("database deleted");
 
     var database = await openDatabase(path, version: 1, onCreate: initDb);
-    print("database created");
+    // print("database created");
 
     return database;
   }

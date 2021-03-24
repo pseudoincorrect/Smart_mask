@@ -63,7 +63,7 @@ class SensorDataBloc {
   }
 
   startTimeout(Duration refreshInterval, Sensor sensor) {
-    return new Timer.periodic(
+    return Timer.periodic(
         refreshInterval, (Timer t) => sensorRefreshTimeout(sensor));
   }
 

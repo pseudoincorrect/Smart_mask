@@ -30,7 +30,7 @@
  ************************/
 
 #define SAMPLES_IN_BUFFER SENSORS_COUNT
-#define INITIAL_SAMPLE_RATE_MS 500
+#define INITIAL_SAMPLE_RATE_MS 200
 
 /*************************
  * Static Variables

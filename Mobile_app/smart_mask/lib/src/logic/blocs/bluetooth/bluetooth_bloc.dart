@@ -4,9 +4,11 @@
 //      contain the bluetooth state management for the app
 //      manage data stream (sensors, and notification)
 
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_control_model.dart';
 import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
@@ -28,45 +30,43 @@ class BluetoothBloc {
   Map<Sensor, SensorControl> _sensorControls = Map();
   Stream<BluetoothState> _bluetoothState;
   SensorDataRepository _sensorDataRepository;
-  Stream<bool> _isConnected;
+  BehaviorSubject<bool> _isConnectedSubject;
 
   BluetoothBloc() {
     _sensorDataRepository = SensorDataRepository();
-    _bluetoothState = FlutterBlue.instance.state;
-    _isConnected =
-        Stream.periodic(Duration(seconds: 2)).asyncMap((_) => checkConnected());
 
+    Timer.periodic(Duration(seconds: 2), (Timer t) => _checkConnected());
+
+    _isConnectedSubject = BehaviorSubject<bool>();
+
+    var j = 0;
     for (var i in Sensor.values) {
-      _sensorControls[i] =
-          SensorControl(initGain: SensorGain.one, initSamplePeriodMs: 200);
+      _sensorControls[i] = SensorControl(
+        initGain: SensorGain.fifth,
+        initSamplePeriodMs: 200 + j * 10,
+        initEnable: true,
+      );
+      j++;
     }
   }
 
-  Future<bool> checkConnected() async {
-    List<BluetoothDevice> devices = await FlutterBlue.instance.connectedDevices;
-    if (devices.length > 0) {
-      return Future.value(true);
-    }
-    return Future.value(false);
+  _checkConnected() async {
+    var devices = await FlutterBlue.instance.connectedDevices;
+    if (devices.length > 0)
+      _isConnectedSubject.add(true);
+    else
+      _isConnectedSubject.add(false);
   }
 
-  Stream<BluetoothState> get bluetoothStateStream {
-    return _bluetoothState;
-  }
+  Stream<bool> get isConnectedStream => _isConnectedSubject.stream;
 
-  listenDevice(BluetoothDevice device) async {
-    if (!await checkConnected()) {
-      device.services.listen(onUpdateServices);
-    }
-  }
-
-  Stream<bool> get isConnected {
-    return _isConnected;
-  }
-
-  onUpdateServices(List<BluetoothService> services) async {
-    for (var service in services) {
-      updateCharacteristics(service.characteristics);
+  checkServiceUpdate(BluetoothDevice device) async {
+    print("checkServiceUpdate ${device.name}");
+    var services = await device.discoverServices();
+    print(services);
+    for (var s in services) {
+      print(s.uuid);
+      await updateCharacteristics(s.characteristics);
     }
   }
 
@@ -81,6 +81,7 @@ class BluetoothBloc {
 
       if (uuids.contains(uuid)) {
         await setSensorReceive(characteristic);
+        print("enabled characteristic ${characteristic.uuid}");
       }
     }
   }
@@ -117,7 +118,8 @@ class BluetoothBloc {
       int value = bdata.getInt16(0);
       // Since we receive a list of value from one sensor, we need to assign
       // a different time stamp for each value
-      int calcTime = timeNow - j * smsConst.SAMPLE_PERIOD_MS;
+      int calcTime = timeNow - j * getSamplePeriod(sensor);
+      // int calcTime = timeNow - j * smsConst.SAMPLE_PERIOD_MS;
       sensorDatas.add(SensorData.fromSensorAndValue(sensor, value, calcTime));
     }
     return sensorDatas;
@@ -127,6 +129,7 @@ class BluetoothBloc {
 
   int getSamplePeriod(Sensor sensor) {
     var ctrl = getSensorControl(sensor);
+    // print("sample period ${sensorEnumToString(sensor)} ${ctrl.samplePeriodMs}");
     return ctrl.samplePeriodMs;
   }
 
@@ -144,6 +147,17 @@ class BluetoothBloc {
   setGain(Sensor sensor, SensorGain newGain) async {
     SensorControl ctrl = getSensorControl(sensor);
     ctrl.gain = newGain;
+    setSensorCtrlBle(sensor);
+  }
+
+  bool getEnable(Sensor sensor) {
+    var ctrl = getSensorControl(sensor);
+    return ctrl.enable;
+  }
+
+  setEnable(Sensor sensor, bool newEnable) {
+    SensorControl ctrl = getSensorControl(sensor);
+    ctrl.enable = newEnable;
     setSensorCtrlBle(sensor);
   }
 
@@ -171,7 +185,9 @@ class BluetoothBloc {
     await char.write(ctrlPacket.buffer, withoutResponse: false);
   }
 
-  dispose() {}
+  dispose() {
+    _isConnectedSubject.close();
+  }
 }
 
 class SensorControlPacket {

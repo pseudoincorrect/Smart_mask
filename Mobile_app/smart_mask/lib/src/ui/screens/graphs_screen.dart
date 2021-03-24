@@ -9,23 +9,24 @@
 import 'package:flutter/material.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
-import 'package:smart_mask/src/ui/screens/sensor_details.dart';
+import 'package:smart_mask/src/ui/screens/sensor_details_screen.dart';
 import 'package:smart_mask/src/ui/widgets/graph/sensor_graph.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 
-const num graphsHeight = 650.0;
+const num graphsHeight = 800.0;
 
 class Graph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return SingleChildScrollView(
+        child: Column(
       children: <Widget>[
         SizedBox(
           height: graphsHeight,
           child: RefreshingGraphs(),
         ),
       ],
-    );
+    ));
   }
 }
 
@@ -50,7 +51,7 @@ class _RefreshingGraphsState extends State<RefreshingGraphs> {
           title: Row(children: [
             Text(sensorEnumToString(sensor).toUpperCase()),
             Expanded(child: Container()),
-            RaisedButton(
+            ElevatedButton(
                 onPressed: () => navigateSensorDetails(sensor),
                 child: Text("Details"))
           ]),
@@ -67,10 +68,5 @@ class _RefreshingGraphsState extends State<RefreshingGraphs> {
   void navigateSensorDetails(Sensor sensor) {
     sensorDataBloc.setSelectedSensor(sensor);
     DefaultTabController.of(context).animateTo(2);
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => GraphDetails()),
-    // );
-    // print("navigateSensorDetails");
   }
 }
