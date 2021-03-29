@@ -12,17 +12,21 @@ import 'package:smart_mask/src/logic/database/access_operations/sensor_data_acce
 class SensorDataRepository {
   final sensorDataAccess = SensorDataAccess();
 
-  Future insertSensorData(SensorData sensorData) =>
+  Future<int> insertSensorData(SensorData sensorData) =>
       sensorDataAccess.createSensorData(sensorData);
 
-  Future deleteAllSensorData() => sensorDataAccess.deleteAllSensorData();
+  Future<int> deleteAllSensorData() => sensorDataAccess.deleteAllSensorData();
 
-  Future getSensorData(Sensor sensor, {List<DateTime> interval}) =>
+  Future<List<SensorData>> getSensorData(Sensor sensor,
+          {List<DateTime> interval}) =>
       sensorDataAccess.getSensorData(
         sensor,
         interval: interval,
       );
 
-  Future getLatestSensorData(Sensor sensor) =>
+  Future<SensorData> getEarliestSensorData(Sensor sensor) =>
+      sensorDataAccess.getEarliestSensorData(sensor);
+
+  Future<SensorData> getLatestSensorData(Sensor sensor) =>
       sensorDataAccess.getLatestSensorData(sensor);
 }

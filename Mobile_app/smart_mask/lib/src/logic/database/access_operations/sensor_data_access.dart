@@ -17,6 +17,19 @@ class SensorDataAccess {
     return result;
   }
 
+  Future<SensorData> getEarliestSensorData(Sensor sensor) async {
+    final db = await dbProvider.database;
+    List<Map<String, dynamic>> result;
+    String query =
+        'SELECT * FROM $sensorDataTABLE WHERE sensor = \'${sensorEnumToString(sensor)}\' ORDER BY ID ASC LIMIT 1';
+
+    result = await db.rawQuery(query);
+
+    List<SensorData> sensorData =
+        result.map((item) => SensorData.fromDatabaseJson(item)).toList();
+    return sensorData[0];
+  }
+
   Future<SensorData> getLatestSensorData(Sensor sensor) async {
     final db = await dbProvider.database;
     List<Map<String, dynamic>> result;

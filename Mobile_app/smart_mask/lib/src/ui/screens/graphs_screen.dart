@@ -15,58 +15,41 @@ import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 
 const num graphsHeight = 800.0;
 
-class Graph extends StatelessWidget {
+class GraphsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SensorDataBloc sensorDataBloc = SensorDataProvider.of(context);
     return SingleChildScrollView(
         child: Column(
       children: <Widget>[
         SizedBox(
           height: graphsHeight,
-          child: RefreshingGraphs(),
+          child: ListView.builder(
+            itemCount: Sensor.values.length,
+            itemBuilder: (context, index) {
+              Sensor sensor = Sensor.values[index];
+              return ListTile(
+                title: Row(children: [
+                  Text(sensorEnumToString(sensor).toUpperCase()),
+                  Expanded(child: Container()),
+                  ElevatedButton(
+                    onPressed: () {
+                      sensorDataBloc.setSelectedSensor(sensor);
+                      DefaultTabController.of(context).animateTo(2);
+                    },
+                    child: Text("Details"),
+                  ),
+                ]),
+                subtitle: SensorGraph(
+                  sensorDataStream: sensorDataBloc.getStream(sensor),
+                  sensor: sensor,
+                  height: graphsHeight / (Sensor.values.length * 2),
+                ),
+              );
+            },
+          ),
         ),
       ],
     ));
-  }
-}
-
-class RefreshingGraphs extends StatefulWidget {
-  @override
-  _RefreshingGraphsState createState() => _RefreshingGraphsState();
-}
-
-class _RefreshingGraphsState extends State<RefreshingGraphs> {
-  SensorDataBloc sensorDataBloc;
-
-  @override
-  Widget build(BuildContext context) {
-    sensorDataBloc = SensorDataProvider.of(context);
-
-    return ListView.builder(
-      itemCount: Sensor.values.length,
-      itemBuilder: (context, index) {
-        Sensor sensor = Sensor.values[index];
-
-        return ListTile(
-          title: Row(children: [
-            Text(sensorEnumToString(sensor).toUpperCase()),
-            Expanded(child: Container()),
-            ElevatedButton(
-                onPressed: () => navigateSensorDetails(sensor),
-                child: Text("Details"))
-          ]),
-          subtitle: SensorGraph(
-            sensorDataStream: sensorDataBloc.getStream(sensor),
-            sensor: sensor,
-            height: graphsHeight / (Sensor.values.length * 2),
-          ),
-        );
-      },
-    );
-  }
-
-  void navigateSensorDetails(Sensor sensor) {
-    sensorDataBloc.setSelectedSensor(sensor);
-    DefaultTabController.of(context).animateTo(2);
   }
 }

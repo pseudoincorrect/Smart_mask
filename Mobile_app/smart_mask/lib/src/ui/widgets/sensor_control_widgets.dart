@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_control_model.dart';
 
-class DropButton extends StatelessWidget {
+class SensorSelectDropButton extends StatelessWidget {
   final Sensor sensor;
   final void Function(Sensor) changeSensorFunction;
 
-  const DropButton({Key key, this.sensor, this.changeSensorFunction})
+  const SensorSelectDropButton({Key key, this.sensor, this.changeSensorFunction})
       : super(key: key);
 
   @override

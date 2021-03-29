@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:smart_mask/src/logic/blocs/analytics/analytics_bloc.dart';
+import 'package:smart_mask/src/logic/blocs/analytics/analytics_provider.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
 import 'package:smart_mask/src/ui/screens/bluetooth/ble_find_device_screen.dart';
 import 'package:smart_mask/src/ui/screens/graphs_screen.dart';
+import 'package:smart_mask/src/ui/screens/analytics_screen.dart';
 import 'package:smart_mask/src/ui/screens/sensor_details_screen.dart';
 import 'package:smart_mask/src/ui/screens/home_screen.dart';
 
@@ -22,15 +25,19 @@ class MyApp extends StatelessWidget {
 
     final bluetoothBloc = BluetoothBloc();
     final sensorDataBloc = SensorDataBloc();
+    final analyticsBloc = AnalyticsBloc();
 
     return SensorDataProvider(
       bloc: sensorDataBloc,
       child: BluetoothProvider(
         bloc: bluetoothBloc,
-        child: MaterialApp(
-          title: "Smart Mask",
-          theme: getTheme(),
-          home: HomeScreen(),
+        child: AnalyticsProvider(
+          bloc: analyticsBloc,
+          child: MaterialApp(
+            title: "Smart Mask",
+            theme: getTheme(),
+            home: SplashScreen(),
+          ),
         ),
       ),
     );
@@ -51,7 +58,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TabControl();
@@ -72,7 +79,7 @@ class _TabControlState extends State<TabControl> {
     bluetoothBloc = BluetoothProvider.of(context);
     return DefaultTabController(
       length: choices.length,
-      initialIndex: 1,
+      initialIndex: 3,
       child: Scaffold(
         appBar: AppBar(
           title: Row(
@@ -144,40 +151,21 @@ List<Choice> choices = <Choice>[
   Choice(
     title: 'Home',
     icon: Icons.home,
-    widget: (BuildContext context) => Home(),
+    widget: (BuildContext context) => HomeScreen(),
   ),
   Choice(
     title: 'Graphs',
     icon: Icons.show_chart,
-    widget: (BuildContext context) => Graph(),
+    widget: (BuildContext context) => GraphsScreen(),
   ),
   Choice(
     title: 'Details',
     icon: Icons.zoom_in,
-    widget: (BuildContext context) => GraphDetails(),
+    widget: (BuildContext context) => GraphDetailsScreen(),
+  ),
+  Choice(
+    title: 'Analytics',
+    icon: Icons.analytics_outlined,
+    widget: (BuildContext context) => AnalyticsScreen(),
   ),
 ];
-
-class ChoiceCard extends StatelessWidget {
-  const ChoiceCard({Key key, this.choice}) : super(key: key);
-
-  final Choice choice;
-
-  @override
-  Widget build(BuildContext context) {
-    final TextStyle textStyle = Theme.of(context).textTheme.bodyText2;
-    return Card(
-      color: Colors.white,
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Icon(choice.icon, size: 128.0, color: textStyle.color),
-            Text(choice.title, style: textStyle),
-          ],
-        ),
-      ),
-    );
-  }
-}

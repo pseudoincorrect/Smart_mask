@@ -8,14 +8,16 @@
 
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
+import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_mock.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
 
 class SensorDataBloc {
   final _sensorDataRepo = SensorDataRepository();
   Sensor _selectedSensor = Sensor.sensor_1;
-  Duration windowInterval = Duration(seconds: 30);
+  Duration windowInterval = Duration(seconds: 10);
   Duration refreshInterval = Duration(seconds: 1);
+  SensorsMock sensorsMock;
 
   BehaviorSubject<Sensor> _selectedSensorSubject;
   Map<Sensor, BehaviorSubject<List<SensorData>>> _sensorDataSubjects = Map();
@@ -34,6 +36,8 @@ class SensorDataBloc {
     setSelectedSensor(_selectedSensor);
 
     setupTimers(refreshInterval);
+
+    // sensorsMock = SensorsMock();
   }
 
   getSensorData(Sensor sensor, {List<DateTime> interval}) async {

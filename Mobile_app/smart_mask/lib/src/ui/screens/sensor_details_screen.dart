@@ -15,26 +15,11 @@ import 'package:smart_mask/src/ui/widgets/sensor_control_widgets.dart';
 
 const num graphsHeight = 300.0;
 
-class GraphDetails extends StatelessWidget {
+class GraphDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return RefreshingGraph();
-  }
-}
-
-class RefreshingGraph extends StatefulWidget {
-  @override
-  _RefreshingGraphState createState() => _RefreshingGraphState();
-}
-
-class _RefreshingGraphState extends State<RefreshingGraph> {
-  SensorDataBloc sensorDataBloc;
-  BluetoothBloc bluetoothBloc;
-
-  @override
-  Widget build(BuildContext context) {
-    sensorDataBloc = SensorDataProvider.of(context);
-    bluetoothBloc = BluetoothProvider.of(context);
+    SensorDataBloc sensorDataBloc = SensorDataProvider.of(context);
+    BluetoothBloc bluetoothBloc = BluetoothProvider.of(context);
 
     return StreamBuilder(
       stream: sensorDataBloc.getSelectedSensorStream(),
@@ -51,7 +36,7 @@ class _RefreshingGraphState extends State<RefreshingGraph> {
             return SingleChildScrollView(
                 child: Column(
               children: <Widget>[
-                DropButton(
+                SensorSelectDropButton(
                   sensor: snapshot.data,
                   changeSensorFunction: sensorDataBloc.setSelectedSensor,
                 ),
