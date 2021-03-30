@@ -25,6 +25,7 @@ class AnalyticsScreen extends StatelessWidget {
                 // ),
               ),
               IntervalSlider(),
+              FilterSelect(),
             ],
           ),
         ),
