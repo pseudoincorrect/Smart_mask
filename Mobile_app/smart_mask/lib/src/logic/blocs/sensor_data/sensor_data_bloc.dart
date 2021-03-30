@@ -15,6 +15,7 @@ import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
 class SensorDataBloc {
   final _sensorDataRepo = SensorDataRepository();
   Sensor _selectedSensor = Sensor.sensor_1;
+  bool mockDataEnabled = false;
   Duration windowInterval = Duration(seconds: 10);
   Duration refreshInterval = Duration(seconds: 1);
   SensorsMock sensorsMock;
@@ -37,7 +38,7 @@ class SensorDataBloc {
 
     setupTimers(refreshInterval);
 
-    // sensorsMock = SensorsMock();
+    sensorsMock = SensorsMock();
   }
 
   getSensorData(Sensor sensor, {List<DateTime> interval}) async {
@@ -82,6 +83,17 @@ class SensorDataBloc {
 
   Stream<Sensor> getSelectedSensorStream() {
     return _selectedSensorSubject.stream;
+  }
+
+  bool isMockDataEnabled() {
+    return sensorsMock.isEnabled();
+  }
+
+  void toggleMockData() {
+    if (sensorsMock.isEnabled())
+      sensorsMock.disableMock();
+    else
+      sensorsMock.enableMock();
   }
 
   dispose() {

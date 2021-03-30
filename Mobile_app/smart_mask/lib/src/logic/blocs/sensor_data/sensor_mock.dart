@@ -18,7 +18,6 @@ class SensorsMock {
     for (var s in Sensor.values) {
       sensorMockData[s] = 0;
     }
-    mockTimer = Timer.periodic(addInterval, (Timer t) => addMockData());
   }
 
   addMockData() {
@@ -38,6 +37,22 @@ class SensorsMock {
 
       _sensorDataRepo.insertSensorData(sensorData);
     }
+  }
+
+  bool isEnabled() {
+    if (mockTimer == null || !mockTimer.isActive) return false;
+    return true;
+  }
+
+  enableMock() {
+    if (mockTimer == null || !mockTimer.isActive) {
+      mockTimer = Timer.periodic(addInterval, (Timer t) => addMockData());
+    }
+  }
+
+  disableMock() {
+    if (mockTimer == null) return;
+    if (mockTimer.isActive) mockTimer.cancel();
   }
 
   dispose() {

@@ -100,6 +100,14 @@ class AnalyticsBloc {
     triggerAnalyticsRefresh();
   }
 
+  saveProcessedData() {
+    print("saveProcessedData");
+  }
+
+  saveRawData() {
+    print("saveRawData");
+  }
+
   dispose() {
     _sensorDataProcessedSubject.close();
     _selectedSensorSubject.close();
