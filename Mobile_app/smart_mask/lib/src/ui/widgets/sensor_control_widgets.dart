@@ -11,7 +11,8 @@ class SensorSelectDropButton extends StatelessWidget {
   final Sensor sensor;
   final void Function(Sensor) changeSensorFunction;
 
-  const SensorSelectDropButton({Key key, this.sensor, this.changeSensorFunction})
+  const SensorSelectDropButton(
+      {Key? key, required this.sensor, required this.changeSensorFunction})
       : super(key: key);
 
   @override
@@ -33,9 +34,9 @@ class SensorSelectDropButton extends StatelessWidget {
     );
   }
 
-  onChanged(String newSensor) {
-    Sensor sensor = sensorStringToEnum(newSensor);
-    changeSensorFunction(sensor);
+  onChanged(String? newSensor) {
+    Sensor? sensor = sensorStringToEnum(newSensor);
+    if (sensor != null) changeSensorFunction(sensor);
   }
 }
 
@@ -47,7 +48,10 @@ class SampleRateSlider extends StatefulWidget {
   final void Function(Sensor, int) setValuefunction;
 
   const SampleRateSlider(
-      {Key key, this.sensor, this.initialValue, this.setValuefunction})
+      {Key? key,
+      required this.sensor,
+      required this.initialValue,
+      required this.setValuefunction})
       : super(key: key);
 
   @override
@@ -55,7 +59,7 @@ class SampleRateSlider extends StatefulWidget {
 }
 
 class _SampleRateSliderState extends State<SampleRateSlider> {
-  double _currentSliderValue;
+  late double _currentSliderValue;
 
   @override
   void didUpdateWidget(dynamic oldWidget) {
@@ -114,7 +118,10 @@ class GainSlider extends StatefulWidget {
   final void Function(Sensor, SensorGain) setValuefunction;
 
   const GainSlider(
-      {Key key, this.sensor, this.initialGain, this.setValuefunction})
+      {Key? key,
+      required this.sensor,
+      required this.initialGain,
+      required this.setValuefunction})
       : super(key: key);
 
   @override
@@ -122,7 +129,7 @@ class GainSlider extends StatefulWidget {
 }
 
 class _GainSliderState extends State<GainSlider> {
-  SensorGain _sensorGain;
+  late SensorGain _sensorGain;
 
   @override
   void initState() {
@@ -182,7 +189,10 @@ class EnableCheckbox extends StatefulWidget {
   final void Function(Sensor, bool) setValuefunction;
 
   const EnableCheckbox(
-      {Key key, this.sensor, this.initialEnable, this.setValuefunction})
+      {Key? key,
+      required this.sensor,
+      required this.initialEnable,
+      required this.setValuefunction})
       : super(key: key);
 
   @override
@@ -190,7 +200,7 @@ class EnableCheckbox extends StatefulWidget {
 }
 
 class _EnableCheckboxState extends State<EnableCheckbox> {
-  bool _enable;
+  late bool _enable;
 
   @override
   void initState() {
@@ -214,9 +224,10 @@ class _EnableCheckboxState extends State<EnableCheckbox> {
       margin: EdgeInsets.only(left: 10, right: 200, top: 10),
       // margin: EdgeInsets.all(10),
       child: CheckboxListTile(
+        activeColor: Theme.of(context).accentColor,
         title: const Text('Enable Sensor'),
         value: _enable,
-        onChanged: (bool value) {
+        onChanged: (bool? value) {
           setState(() {
             _enable = !_enable;
             widget.setValuefunction(widget.sensor, _enable);

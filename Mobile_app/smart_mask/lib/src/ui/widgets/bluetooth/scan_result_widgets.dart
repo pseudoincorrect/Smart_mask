@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
 class ScanResultTile extends StatelessWidget {
-  const ScanResultTile({Key key, this.result, this.onTap}) : super(key: key);
+  const ScanResultTile({Key? key, required this.result, required this.onTap})
+      : super(key: key);
 
   final ScanResult result;
   final VoidCallback onTap;
@@ -77,7 +78,7 @@ class ScanResultTile extends StatelessWidget {
               value,
               style: Theme.of(context)
                   .textTheme
-                  .caption
+                  .caption!
                   .apply(color: Colors.black),
               softWrap: true,
             ),
@@ -92,7 +93,7 @@ class ScanResultTile extends StatelessWidget {
         .toUpperCase();
   }
 
-  String getNiceManufacturerData(Map<int, List<int>> data) {
+  String? getNiceManufacturerData(Map<int, List<int>> data) {
     if (data.isEmpty) {
       return null;
     }
@@ -104,7 +105,7 @@ class ScanResultTile extends StatelessWidget {
     return res.join(', ');
   }
 
-  String getNiceServiceData(Map<String, List<int>> data) {
+  String? getNiceServiceData(Map<String, List<int>> data) {
     if (data.isEmpty) {
       return null;
     }

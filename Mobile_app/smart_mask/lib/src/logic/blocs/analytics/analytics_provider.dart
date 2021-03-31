@@ -10,12 +10,12 @@ import 'package:smart_mask/src/logic/blocs/analytics/analytics_bloc.dart';
 class AnalyticsProvider extends InheritedWidget {
   final AnalyticsBloc bloc;
 
-  AnalyticsProvider({Key key, Widget child, this.bloc})
+  AnalyticsProvider({Key? key, required Widget child, required this.bloc})
       : super(key: key, child: child);
 
   bool updateShouldNotify(_) => true;
 
   static AnalyticsBloc of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<AnalyticsProvider>().bloc;
+    return context.dependOnInheritedWidgetOfExactType<AnalyticsProvider>()!.bloc;
   }
 }

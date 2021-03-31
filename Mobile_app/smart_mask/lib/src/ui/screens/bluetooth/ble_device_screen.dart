@@ -8,19 +8,16 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
 import 'package:smart_mask/src/ui/widgets/bluetooth/bluetooth_services.dart';
 
 class DeviceScreen extends StatelessWidget {
-  const DeviceScreen({Key key, this.device}) : super(key: key);
+  const DeviceScreen({Key? key, required this.device}) : super(key: key);
 
   final BluetoothDevice device;
 
   @override
   Widget build(BuildContext context) {
-    var bluetoothBloc = BluetoothProvider.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(device.name),
@@ -45,7 +42,7 @@ class DeviceScreen extends StatelessWidget {
                   stream: device.isDiscoveringServices,
                   initialData: false,
                   builder: (c, snapshot) => IndexedStack(
-                    index: snapshot.data ? 1 : 0,
+                    index: snapshot.data! ? 1 : 0,
                     children: <Widget>[
                       IconButton(
                         icon: Icon(Icons.refresh),
@@ -83,7 +80,7 @@ class DeviceScreen extends StatelessWidget {
               initialData: [],
               builder: (c, snapshot) {
                 return Column(
-                  children: _buildServiceTiles(snapshot.data),
+                  children: _buildServiceTiles(snapshot.data!),
                 );
               },
             ),
@@ -126,7 +123,7 @@ class DeviceScreen extends StatelessWidget {
             text = 'CONNECT';
             break;
           default:
-            onPressed = null;
+            onPressed = () => null;
             text = snapshot.data.toString().substring(21).toUpperCase();
             break;
         }

@@ -18,15 +18,15 @@ class SensorDataRepository {
   Future<int> deleteAllSensorData() => sensorDataAccess.deleteAllSensorData();
 
   Future<List<SensorData>> getSensorData(Sensor sensor,
-          {List<DateTime> interval}) =>
+          {required List<DateTime> interval}) =>
       sensorDataAccess.getSensorData(
         sensor,
         interval: interval,
       );
 
-  Future<SensorData> getEarliestSensorData(Sensor sensor) =>
-      sensorDataAccess.getEarliestSensorData(sensor);
+  Future<SensorData?> getOldestSensorData(Sensor sensor) =>
+      sensorDataAccess.getOldestSensorData(sensor);
 
-  Future<SensorData> getLatestSensorData(Sensor sensor) =>
-      sensorDataAccess.getLatestSensorData(sensor);
+  Future<SensorData?> getNewestSensorData(Sensor sensor) =>
+      sensorDataAccess.getNewestSensorData(sensor);
 }

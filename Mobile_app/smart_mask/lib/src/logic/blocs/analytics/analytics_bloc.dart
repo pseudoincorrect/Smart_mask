@@ -12,12 +12,12 @@ import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
 class AnalyticsBloc {
   final _sensorDataRepo = SensorDataRepository();
   Sensor _selectedSensor = Sensor.sensor_1;
-  AnalyticsState _analyticsState = AnalyticsState();
+  late AnalyticsState _analyticsState;
 
-  BehaviorSubject<Sensor> _selectedSensorSubject;
-  BehaviorSubject<TimeInterval> _timeRangeSubject;
-  BehaviorSubject<List<SensorData>> _sensorDataProcessedSubject;
-  BehaviorSubject<bool> _analyticsRefresh;
+  late BehaviorSubject<Sensor> _selectedSensorSubject;
+  late BehaviorSubject<TimeInterval> _timeRangeSubject;
+  late BehaviorSubject<List<SensorData>> _sensorDataProcessedSubject;
+  late BehaviorSubject<bool> _analyticsRefresh;
 
   AnalyticsBloc() {
     _selectedSensorSubject = BehaviorSubject<Sensor>();
@@ -26,6 +26,13 @@ class AnalyticsBloc {
     _analyticsRefresh = BehaviorSubject<bool>();
     _analyticsRefresh.stream.listen((event) => processAnalytics());
     setSelectedSensor(_selectedSensor);
+
+    print("analytics state preparation");
+    var interval = getAvailableInterval();
+    interval.then((interval) {
+      _analyticsState = AnalyticsState(interval);
+      print("analytics state set");
+    });
   }
 
   processAnalytics() {
@@ -33,10 +40,15 @@ class AnalyticsBloc {
   }
 
   Future<TimeInterval> getAvailableInterval() async {
-    var start = await _sensorDataRepo.getEarliestSensorData(_selectedSensor);
-    var end = await _sensorDataRepo.getLatestSensorData(_selectedSensor);
+    print("hey 1");
+    var start = await _sensorDataRepo.getOldestSensorData(_selectedSensor);
+    var end = await _sensorDataRepo.getNewestSensorData(_selectedSensor);
+    if (start == null || end == null)
+      return TimeInterval(DateTime.now(), DateTime.now());
+
     var startDate = DateTime.fromMillisecondsSinceEpoch(start.timeStamp);
     var endDate = DateTime.fromMillisecondsSinceEpoch(end.timeStamp);
+    print("hey 2");
     return TimeInterval(startDate, endDate);
   }
 
@@ -85,13 +97,17 @@ class AnalyticsBloc {
     triggerAnalyticsRefresh();
   }
 
-  setTime(int value) {
-    _analyticsState.time = value;
+  setTimefromInt(int value) async {
+    var ti = await getAvailableInterval();
+    print("start interval ${ti.start}");
+    print("end interval ${ti.end}");
     triggerAnalyticsRefresh();
   }
 
   increaseZoomLevel() {
-    _analyticsState.zoomLevel += 1;
+    // _analyticsState.zoomLevel += 1;
+    getAvailableInterval();
+    // setTimefromInt(0);
     triggerAnalyticsRefresh();
   }
 
@@ -116,30 +132,34 @@ class AnalyticsBloc {
 }
 
 class TimeInterval {
-  DateTime start;
-  DateTime end;
+  late DateTime start;
+  late DateTime end;
 
   TimeInterval(this.start, this.end);
 
   factory TimeInterval.fromMsSinceEpoch(RangeValues range) {
     DateTime dateStart =
-        DateTime.fromMicrosecondsSinceEpoch(range.start.toInt());
-    DateTime dateEnd = DateTime.fromMicrosecondsSinceEpoch(range.end.toInt());
+        DateTime.fromMillisecondsSinceEpoch(range.start.toInt());
+    DateTime dateEnd = DateTime.fromMillisecondsSinceEpoch(range.end.toInt());
     return TimeInterval(dateStart, dateEnd);
   }
 }
 
 class AnalyticsState {
-  int _time;
-  int _zoomLevel;
-  double _lowPassFilter;
-  double _highPassFilter;
+  late TimeInterval _workTimeInterval;
+  late DateTime _time;
+  late int _zoomLevel;
+  late double _lowPassFilter;
+  late double _highPassFilter;
 
-  AnalyticsState() {
-    _time = DateTime.now().millisecondsSinceEpoch;
+  AnalyticsState(TimeInterval workTi) {
     _zoomLevel = 0;
     _lowPassFilter = 100.0;
     _highPassFilter = 0.2;
+    workTimeInterval = workTi;
+    int startMs = workTi.start.millisecondsSinceEpoch;
+    int endMs = workTi.end.millisecondsSinceEpoch;
+    _time = DateTime.fromMillisecondsSinceEpoch((endMs - startMs) ~/ 2);
   }
 
   double get lowPassFilter => _lowPassFilter;
@@ -156,13 +176,11 @@ class AnalyticsState {
     _highPassFilter = value;
   }
 
-  int get time => _time;
+  DateTime get time => _time;
 
-  set time(int value) {
-    int nowMs = DateTime.now().millisecondsSinceEpoch;
-    int nowMinus1monthMs =
-        DateTime.now().subtract(Duration(days: 30)).millisecondsSinceEpoch;
-    if (value > nowMs || value < nowMinus1monthMs) return;
+  set time(DateTime value) {
+    if (value.isAfter(DateTime.now())) return;
+    if (value.isBefore(DateTime.now().subtract(Duration(days: 30)))) return;
     _time = value;
   }
 
@@ -173,9 +191,19 @@ class AnalyticsState {
     _zoomLevel = value;
   }
 
+  TimeInterval get workTimeInteral => _workTimeInterval;
+
+  set workTimeInterval(TimeInterval ti) {
+    var start = ti.start;
+    var end = ti.end;
+    if (ti.start.isBefore(ti.end.subtract(Duration(hours: 1))))
+      start = ti.end.subtract(Duration(hours: 1));
+    _workTimeInterval = TimeInterval(start, end);
+  }
+
   @override
   String toString() {
-    return "Analytics State ${DateTime.fromMillisecondsSinceEpoch(_time)}, "
+    return "Analytics State $_time, "
         "Zoom level : $_zoomLevel, Low pass $_lowPassFilter, High pass $_highPassFilter";
   }
 }

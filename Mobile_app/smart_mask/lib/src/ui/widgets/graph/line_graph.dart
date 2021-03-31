@@ -6,14 +6,15 @@
 
 import 'dart:math';
 import 'package:charts_flutter/flutter.dart' as charts;
+
 import 'package:flutter/material.dart';
 import 'time_series.dart';
 
 class LineChart extends StatelessWidget {
-  final List<charts.Series> seriesList;
+  final List<charts.Series<dynamic, DateTime>> seriesList;
   final bool animate;
 
-  LineChart(this.seriesList, {this.animate});
+  LineChart(this.seriesList, {required this.animate});
 
   @override
   Widget build(BuildContext context) {

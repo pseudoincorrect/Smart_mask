@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
 class AdapterStateTile extends StatelessWidget {
-  const AdapterStateTile({Key key, @required this.state}) : super(key: key);
+  const AdapterStateTile({Key? key, required this.state}) : super(key: key);
 
   final BluetoothState state;
 
@@ -17,7 +17,7 @@ class AdapterStateTile extends StatelessWidget {
         ),
         trailing: Icon(
           Icons.error,
-          color: Theme.of(context).primaryTextTheme.headline2.color,
+          color: Theme.of(context).primaryTextTheme.headline2!.color,
         ),
       ),
     );

@@ -10,7 +10,7 @@ import 'package:smart_mask/src/ui/widgets/graph/sensor_graph.dart';
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const num graphsHeight = 300.0;
+const double graphsHeight = 300.0;
 
 class AnalyticsSensorGraph extends StatelessWidget {
   @override
@@ -27,20 +27,23 @@ class AnalyticsSensorGraph extends StatelessWidget {
           case ConnectionState.done:
             return Text("Sensor Selection not ready");
           case ConnectionState.active:
-            // return Text("Soon, there will be a graph here"),
-            return Container(
-              child: SizedBox(
-                height: graphsHeight,
-                child: SensorGraph(
-                  sensorDataStream: bloc.getSensorDataStream(),
-                  sensor: snapshot.data,
-                  height: graphsHeight / (Sensor.values.length * 2),
-                ),
-              ),
-            );
+            return _buildAnalyticsSensorGraph(snapshot.data!, bloc);
+          // return Text("Soon, there will be a graph here"),
         }
-        return Container(color: Colors.red);
       },
+    );
+  }
+
+  Widget _buildAnalyticsSensorGraph(Sensor sensor, AnalyticsBloc bloc) {
+    return Container(
+      child: SizedBox(
+        height: graphsHeight,
+        child: SensorGraph(
+          sensorDataStream: bloc.getSensorDataStream(),
+          sensor: sensor,
+          height: graphsHeight / (Sensor.values.length * 2),
+        ),
+      ),
     );
   }
 }
@@ -48,7 +51,7 @@ class AnalyticsSensorGraph extends StatelessWidget {
 ///////////////////////////////////////////////////////////////////////////////
 
 class SensorSelectAnalyticsDropButton extends StatelessWidget {
-  const SensorSelectAnalyticsDropButton({Key key}) : super(key: key);
+  const SensorSelectAnalyticsDropButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +76,8 @@ class SensorSelectAnalyticsDropButton extends StatelessWidget {
               icon: Icon(Icons.arrow_downward),
               iconSize: 24,
               elevation: 16,
-              onChanged: (String newSensor) {
-                Sensor sensor = sensorStringToEnum(newSensor);
+              onChanged: (String? newSensor) {
+                Sensor sensor = sensorStringToEnum(newSensor!)!;
                 bloc.setSelectedSensor(sensor);
               },
               items: sensors.map<DropdownMenuItem<String>>(
@@ -87,7 +90,6 @@ class SensorSelectAnalyticsDropButton extends StatelessWidget {
               ).toList(),
             );
         }
-        return null; // unreachable
       },
     );
   }
@@ -96,15 +98,15 @@ class SensorSelectAnalyticsDropButton extends StatelessWidget {
 ///////////////////////////////////////////////////////////////////////////////
 
 class IntervalSlider extends StatefulWidget {
-  const IntervalSlider({Key key}) : super(key: key);
+  const IntervalSlider({Key? key}) : super(key: key);
 
   @override
   _IntervalSliderState createState() => _IntervalSliderState();
 }
 
 class _IntervalSliderState extends State<IntervalSlider> {
-  double _currentSliderValue;
-  AnalyticsBloc bloc;
+  late double _currentSliderValue;
+  late AnalyticsBloc bloc;
 
   @override
   void initState() {
@@ -165,7 +167,7 @@ class _IntervalSliderState extends State<IntervalSlider> {
       max: 1000,
       divisions: 99,
       onChangeEnd: (double value) {
-        bloc.setTime(value.toInt());
+        bloc.setTimefromInt(value.toInt());
       },
       onChanged: (double x) {
         setState(() => _currentSliderValue = x);
@@ -301,7 +303,7 @@ class DownloadButtons extends StatelessWidget {
 ///////////////////////////////////////////////////////////////////////////////
 
 class EnableMockDataCheckbox extends StatefulWidget {
-  const EnableMockDataCheckbox({Key key}) : super(key: key);
+  const EnableMockDataCheckbox({Key? key}) : super(key: key);
 
   @override
   _EnableMockDataCheckboxState createState() => _EnableMockDataCheckboxState();
@@ -327,9 +329,10 @@ class _EnableMockDataCheckboxState extends State<EnableMockDataCheckbox> {
     return Container(
       margin: EdgeInsets.only(left: 0, right: 80, top: 10),
       child: CheckboxListTile(
+        activeColor: Theme.of(context).accentColor,
         title: const Text('Randomly Generated Sensor Data'),
         value: _enable,
-        onChanged: (bool value) {
+        onChanged: (bool? value) {
           sensorDataBloc.toggleMockData();
           setState(() {
             _enable = sensorDataBloc.isMockDataEnabled();

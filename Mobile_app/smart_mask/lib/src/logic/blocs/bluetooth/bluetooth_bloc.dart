@@ -24,13 +24,9 @@ final Map<String, Map<String, String>> controlChars =
     smsConst.S["sensorMeasurementService"]["characteristics"]["control"];
 
 class BluetoothBloc {
-  int _sampleRateValue;
-  SensorGain _gainValue;
-
   Map<Sensor, SensorControl> _sensorControls = Map();
-  Stream<BluetoothState> _bluetoothState;
-  SensorDataRepository _sensorDataRepository;
-  BehaviorSubject<bool> _isConnectedSubject;
+  late SensorDataRepository _sensorDataRepository;
+  late BehaviorSubject<bool> _isConnectedSubject;
 
   BluetoothBloc() {
     _sensorDataRepository = SensorDataRepository();
@@ -96,7 +92,7 @@ class BluetoothBloc {
   onReceiveValue(List<int> values, BluetoothCharacteristic char) async {
     List<SensorData> sensorDatas;
     final String uuid = char.uuid.toString();
-    final sensor = sensorFromBLEchararcteristicUUID(uuid);
+    final sensor = sensorFromBLEchararcteristicUUID(uuid)!;
     sensorDatas = await parseSensorValues(values, sensor);
     for (var sensorData in sensorDatas) {
       await _sensorDataRepository.insertSensorData(sensorData);
@@ -125,7 +121,7 @@ class BluetoothBloc {
     return sensorDatas;
   }
 
-  SensorControl getSensorControl(Sensor sensor) => _sensorControls[sensor];
+  SensorControl getSensorControl(Sensor sensor) => _sensorControls[sensor]!;
 
   int getSamplePeriod(Sensor sensor) {
     var ctrl = getSensorControl(sensor);
@@ -161,10 +157,13 @@ class BluetoothBloc {
     setSensorCtrlBle(sensor);
   }
 
-  Future<BluetoothCharacteristic> getSensorCtrlChar(Sensor sensor) async {
+  Future<BluetoothCharacteristic?> getSensorCtrlChar(Sensor sensor) async {
     List<BluetoothDevice> devices = await FlutterBlue.instance.connectedDevices;
     BluetoothDevice device;
-    if (devices[0].name.contains("Smart")) device = devices[0];
+    if (devices[0].name.contains("Smart"))
+      device = devices[0];
+    else
+      return null;
     List<BluetoothService> services = await device.services.first;
     BluetoothService smsService = services
         .where((s) => s.uuid.toString().toUpperCase() == sensorServiceUUID)
@@ -173,7 +172,7 @@ class BluetoothBloc {
     BluetoothCharacteristic ctrlChar = characteristics
         .where((c) =>
             c.uuid.toString().toUpperCase() ==
-            controlChars[sensorEnumToString(sensor)]["UUID"])
+            controlChars[sensorEnumToString(sensor)]!["UUID"])
         .first;
     return ctrlChar;
   }
@@ -182,7 +181,8 @@ class BluetoothBloc {
     var ctrl = getSensorControl(sensor);
     var ctrlPacket = SensorControlPacket(ctrl);
     var char = await getSensorCtrlChar(sensor);
-    await char.write(ctrlPacket.buffer, withoutResponse: false);
+    if (char != null)
+      await char.write(ctrlPacket.buffer, withoutResponse: false);
   }
 
   dispose() {

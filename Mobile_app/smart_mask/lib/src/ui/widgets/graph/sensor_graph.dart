@@ -11,9 +11,13 @@ import 'package:smart_mask/src/ui/widgets/graph/line_graph.dart';
 class SensorGraph extends StatefulWidget {
   final Stream<List<SensorData>> sensorDataStream;
   final Sensor sensor;
-  final num height;
+  final double height;
 
-  SensorGraph({Key key, this.sensorDataStream, this.sensor, this.height})
+  SensorGraph(
+      {Key? key,
+      required this.sensorDataStream,
+      required this.sensor,
+      required this.height})
       : super(key: key);
 
   @override
@@ -34,17 +38,20 @@ class _SensorGraphState extends State<SensorGraph> {
           case ConnectionState.waiting:
             return Text('ConnectionWaiting');
           case ConnectionState.active:
-            return SizedBox(
-              height: widget.height,
-              child: LineChart.withSampleData(
-                _parseSensorData(snapshot.data, widget.sensor),
-              ),
-            );
+            return _buildSensorGraph(snapshot.data!);
           case ConnectionState.done:
             return Text('ConnectionDone');
         }
-        return Text('Problem');
       },
+    );
+  }
+
+  Widget _buildSensorGraph(List<SensorData> sensorData) {
+    return SizedBox(
+      height: widget.height,
+      child: LineChart.withSampleData(
+        _parseSensorData(sensorData, widget.sensor),
+      ),
     );
   }
 

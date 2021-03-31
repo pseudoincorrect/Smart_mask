@@ -8,10 +8,10 @@ import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
 class SensorsMock {
   final _sensorDataRepo = SensorDataRepository();
   Map<Sensor, int> sensorMockData = Map();
-  Random rng;
+  late Random rng;
 
   Duration addInterval = Duration(milliseconds: 200);
-  Timer mockTimer;
+  Timer? mockTimer;
 
   SensorsMock() {
     rng = Random();
@@ -24,38 +24,42 @@ class SensorsMock {
     for (var s in Sensor.values) {
       var rand = rng.nextInt(10);
 
-      if (rng.nextBool())
-        sensorMockData[s] += rand;
-      else
-        sensorMockData[s] -= rand;
+      int sMockInt = sensorMockData[s] ?? 0;
 
-      if (sensorMockData[s] < -3000) sensorMockData[s] = -3000;
-      if (sensorMockData[s] > 3000) sensorMockData[s] = 3000;
+      if (rng.nextBool())
+        sMockInt += rand;
+      else
+        sMockInt -= rand;
+
+      if (sMockInt < -3000) sMockInt = -3000;
+      if (sMockInt > 3000) sMockInt = 3000;
 
       var sensorData = SensorData.fromSensorAndValue(
-          s, sensorMockData[s], DateTime.now().millisecondsSinceEpoch);
+          s, sMockInt, DateTime.now().millisecondsSinceEpoch);
 
       _sensorDataRepo.insertSensorData(sensorData);
+
+      sensorMockData[s] = sMockInt;
     }
   }
 
   bool isEnabled() {
-    if (mockTimer == null || !mockTimer.isActive) return false;
+    if (mockTimer == null || !mockTimer!.isActive) return false;
     return true;
   }
 
   enableMock() {
-    if (mockTimer == null || !mockTimer.isActive) {
+    if (mockTimer == null || !mockTimer!.isActive) {
       mockTimer = Timer.periodic(addInterval, (Timer t) => addMockData());
     }
   }
 
   disableMock() {
     if (mockTimer == null) return;
-    if (mockTimer.isActive) mockTimer.cancel();
+    if (mockTimer!.isActive) mockTimer!.cancel();
   }
 
   dispose() {
-    mockTimer.cancel();
+    mockTimer!.cancel();
   }
 }

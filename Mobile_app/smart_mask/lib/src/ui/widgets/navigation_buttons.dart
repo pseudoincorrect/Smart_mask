@@ -5,6 +5,7 @@
 //      push button to insert to change pages
 
 import 'package:flutter/material.dart';
+
 // import 'package:mask/src/ui/screens/home_screen.dart';
 // import 'package:mask/src/ui/screens/ble_device_screen.dart';
 // import 'package:mask/src/ui/screens/graphs_screen.dart';
@@ -14,15 +15,15 @@ class NavigationButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        FlatButton(
+        TextButton(
           onPressed: () => connectButton(context),
           child: Text("Connect"),
         ),
-        FlatButton(
+        TextButton(
           onPressed: () => graphButton(context),
           child: Text("Graphs"),
         ),
-        FlatButton(
+        TextButton(
           onPressed: () => homeButton(context),
           child: Text("Home"),
         ),

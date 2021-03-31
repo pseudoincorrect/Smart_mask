@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
 class BluetoothOffScreen extends StatelessWidget {
-  const BluetoothOffScreen({Key key, this.state}) : super(key: key);
+  const BluetoothOffScreen({Key? key, required this.state}) : super(key: key);
 
   final BluetoothState state;
 
@@ -23,7 +23,7 @@ class BluetoothOffScreen extends StatelessWidget {
               'Bluetooth Adapter is ${state.toString().substring(15)}.',
               style: Theme.of(context)
                   .primaryTextTheme
-                  .headline2
+                  .headline2!
                   .copyWith(color: Colors.white),
             ),
           ],

@@ -1,6 +1,6 @@
 enum SensorGain { sixth, fifth, fourth, third, half, one, two, four }
 
-SensorGain sensorGainStringToEnum(String sensorGain) {
+SensorGain? sensorGainStringToEnum(String sensorGain) {
   for (var i in SensorGain.values) {
     if (sensorGain == sensorGainEnumToString(i)) return i;
   }
@@ -12,9 +12,9 @@ String sensorGainEnumToString(SensorGain sensorGain) {
 }
 
 class SensorControl {
-  SensorGain _gain;
-  int _samplePeriodMs;
-  bool _enable;
+  late SensorGain _gain;
+  late int _samplePeriodMs;
+  late bool _enable;
 
   SensorControl({initGain, initSamplePeriodMs, initEnable}) {
     _gain = initGain;

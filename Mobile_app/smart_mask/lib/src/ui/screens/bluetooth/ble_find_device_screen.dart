@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_helper.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
 import 'file:///C:/Users/maxim/Documents/git/smart_mask/Mobile_app/smart_mask/lib/src/ui/screens/bluetooth/ble_device_screen.dart';
 import 'package:smart_mask/src/ui/screens/bluetooth/ble_off_screen.dart';
@@ -17,7 +16,7 @@ Widget bluetoothDevicesListScreen() {
         if (state == BluetoothState.on) {
           return FindDevicesScreen();
         }
-        return BluetoothOffScreen(state: state);
+        return BluetoothOffScreen(state: state!);
       });
 }
 
@@ -38,7 +37,7 @@ class FindDevicesScreen extends StatelessWidget {
           stream: bleblock.isConnectedStream,
           initialData: false,
           builder: (context, snapshot) {
-            bool isConnected = snapshot.data;
+            bool isConnected = snapshot.data!;
             if (isConnected) {
               return connectedDevicesList(context);
             } else {
@@ -60,7 +59,7 @@ class FindDevicesScreen extends StatelessWidget {
       ]),
       initialData: [],
       builder: (context, snapshot) => Column(
-        children: snapshot.data
+        children: snapshot.data!
             .map(
               (device) => ListTile(
                 title: Text(device.name),
@@ -96,7 +95,7 @@ class FindDevicesScreen extends StatelessWidget {
       initialData: [],
       builder: (context, snapshot) {
         return Column(
-          children: snapshot.data
+          children: snapshot.data!
               .where((scanResults) => scanResults.device.name == "Smart_Mask")
               .toList()
               .map(
@@ -130,7 +129,7 @@ class FindDevicesScreen extends StatelessWidget {
       stream: FlutterBlue.instance.isScanning,
       initialData: false,
       builder: (context, snapshot) {
-        if (snapshot.data) {
+        if (snapshot.data!) {
           return FloatingActionButton(
             child: Icon(Icons.stop),
             onPressed: () => FlutterBlue.instance.stopScan(),

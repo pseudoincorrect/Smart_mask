@@ -13,9 +13,9 @@ import 'package:smart_mask/src/ui/widgets/graph/sensor_graph.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 import 'package:smart_mask/src/ui/widgets/sensor_control_widgets.dart';
 
-const num graphsHeight = 300.0;
-
 class GraphDetailsScreen extends StatelessWidget {
+  final double graphsHeight = 300.0;
+
   @override
   Widget build(BuildContext context) {
     SensorDataBloc sensorDataBloc = SensorDataProvider.of(context);
@@ -33,41 +33,47 @@ class GraphDetailsScreen extends StatelessWidget {
           case ConnectionState.done:
             return Text('ConnectionState.done');
           case ConnectionState.active:
-            return SingleChildScrollView(
-                child: Column(
-              children: <Widget>[
-                SensorSelectDropButton(
-                  sensor: snapshot.data,
-                  changeSensorFunction: sensorDataBloc.setSelectedSensor,
-                ),
-                SizedBox(
-                    height: graphsHeight,
-                    child: SensorGraph(
-                      sensorDataStream: sensorDataBloc.getStream(snapshot.data),
-                      sensor: snapshot.data,
-                      height: graphsHeight / (Sensor.values.length * 2),
-                    )),
-                SampleRateSlider(
-                  sensor: snapshot.data,
-                  initialValue:
-                      bluetoothBloc.getSamplePeriod(snapshot.data).toDouble(),
-                  setValuefunction: bluetoothBloc.setSamplePeriod,
-                ),
-                GainSlider(
-                  sensor: snapshot.data,
-                  initialGain: bluetoothBloc.getGain(snapshot.data),
-                  setValuefunction: bluetoothBloc.setGain,
-                ),
-                EnableCheckbox(
-                  sensor: snapshot.data,
-                  initialEnable: bluetoothBloc.getEnable(snapshot.data),
-                  setValuefunction: bluetoothBloc.setEnable,
-                )
-              ],
-            ));
+            return _buildGraphDetailsScreen(
+                snapshot.data!, sensorDataBloc, bluetoothBloc);
         }
-        return Text('Problem');
       },
+    );
+  }
+
+  Widget _buildGraphDetailsScreen(Sensor sensor, SensorDataBloc sensorDataBloc,
+      BluetoothBloc bluetoothBloc) {
+    return SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          SensorSelectDropButton(
+            sensor: sensor,
+            changeSensorFunction: sensorDataBloc.setSelectedSensor,
+          ),
+          SizedBox(
+            height: graphsHeight,
+            child: SensorGraph(
+              sensorDataStream: sensorDataBloc.getStream(sensor),
+              sensor: sensor,
+              height: graphsHeight / (Sensor.values.length * 2),
+            ),
+          ),
+          SampleRateSlider(
+            sensor: sensor,
+            initialValue: bluetoothBloc.getSamplePeriod(sensor).toDouble(),
+            setValuefunction: bluetoothBloc.setSamplePeriod,
+          ),
+          GainSlider(
+            sensor: sensor,
+            initialGain: bluetoothBloc.getGain(sensor),
+            setValuefunction: bluetoothBloc.setGain,
+          ),
+          EnableCheckbox(
+            sensor: sensor,
+            initialEnable: bluetoothBloc.getEnable(sensor),
+            setValuefunction: bluetoothBloc.setEnable,
+          )
+        ],
+      ),
     );
   }
 }

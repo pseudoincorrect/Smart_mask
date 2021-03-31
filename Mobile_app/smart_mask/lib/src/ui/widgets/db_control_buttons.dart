@@ -14,7 +14,7 @@ import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_provider.dart
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 
 class DbControlButtons extends StatefulWidget {
-  DbControlButtons({Key key}) : super(key: key);
+  DbControlButtons({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -23,8 +23,8 @@ class DbControlButtons extends StatefulWidget {
 }
 
 class _DbControlButtonsState extends State<DbControlButtons> {
-  SensorDataBloc sensorDataBloc;
-  BluetoothBloc bluetoothBloc;
+  late SensorDataBloc sensorDataBloc;
+  late BluetoothBloc bluetoothBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +32,11 @@ class _DbControlButtonsState extends State<DbControlButtons> {
     sensorDataBloc = SensorDataProvider.of(context);
     return Row(
       children: <Widget>[
-        RaisedButton(
+        ElevatedButton(
           onPressed: () => insertDataButton(context),
           child: Text("Insert Data"),
         ),
-        RaisedButton(
+        ElevatedButton(
           onPressed: () => deleteDataButton(context),
           child: Text("Delete Data"),
         ),

@@ -9,11 +9,10 @@
 import 'package:flutter/material.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
-import 'package:smart_mask/src/ui/screens/sensor_details_screen.dart';
 import 'package:smart_mask/src/ui/widgets/graph/sensor_graph.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 
-const num graphsHeight = 800.0;
+const double graphsHeight = 800.0;
 
 class GraphsScreen extends StatelessWidget {
   @override
@@ -35,7 +34,7 @@ class GraphsScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       sensorDataBloc.setSelectedSensor(sensor);
-                      DefaultTabController.of(context).animateTo(2);
+                      DefaultTabController.of(context)!.animateTo(2);
                     },
                     child: Text("Details"),
                   ),

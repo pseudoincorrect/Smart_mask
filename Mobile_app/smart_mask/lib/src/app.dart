@@ -66,14 +66,14 @@ class SplashScreen extends StatelessWidget {
 }
 
 class TabControl extends StatefulWidget {
-  TabControl({Key key}) : super(key: key);
+  TabControl({Key? key}) : super(key: key);
 
   @override
   _TabControlState createState() => _TabControlState();
 }
 
 class _TabControlState extends State<TabControl> {
-  BluetoothBloc bluetoothBloc;
+  BluetoothBloc? bluetoothBloc;
 
   Widget build(BuildContext context) {
     bluetoothBloc = BluetoothProvider.of(context);
@@ -90,7 +90,7 @@ class _TabControlState extends State<TabControl> {
               ),
               Expanded(child: Container()),
               StreamBuilder<bool>(
-                stream: bluetoothBloc.isConnectedStream,
+                stream: bluetoothBloc!.isConnectedStream,
                 initialData: false,
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.data == true) {
@@ -136,7 +136,7 @@ FloatingActionButton connectButton(BuildContext context) {
 }
 
 class Choice {
-  const Choice({this.title, this.icon, this.widget});
+  const Choice({required this.title, required this.icon, this.widget});
 
   final String title;
   final IconData icon;

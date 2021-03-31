@@ -18,11 +18,12 @@ class SensorDataBloc {
   bool mockDataEnabled = false;
   Duration windowInterval = Duration(seconds: 10);
   Duration refreshInterval = Duration(seconds: 1);
-  SensorsMock sensorsMock;
+  late SensorsMock sensorsMock;
 
-  BehaviorSubject<Sensor> _selectedSensorSubject;
-  Map<Sensor, BehaviorSubject<List<SensorData>>> _sensorDataSubjects = Map();
-  Map<Sensor, Stream<List<SensorData>>> _sensorDataStreams = Map();
+  late BehaviorSubject<Sensor> _selectedSensorSubject;
+  late Map<Sensor, BehaviorSubject<List<SensorData>>> _sensorDataSubjects =
+      Map();
+  late Map<Sensor, Stream<List<SensorData>>> _sensorDataStreams = Map();
 
   SensorDataBloc() {
     for (var i = 0; i < Sensor.values.length; i++) {
@@ -30,7 +31,7 @@ class SensorDataBloc {
           BehaviorSubject<List<SensorData>>();
 
       _sensorDataStreams[Sensor.values[i]] =
-          _sensorDataSubjects[Sensor.values[i]].stream;
+          _sensorDataSubjects[Sensor.values[i]]!.stream;
     }
 
     _selectedSensorSubject = BehaviorSubject<Sensor>();
@@ -41,15 +42,15 @@ class SensorDataBloc {
     sensorsMock = SensorsMock();
   }
 
-  getSensorData(Sensor sensor, {List<DateTime> interval}) async {
-    _sensorDataSubjects[sensor].sink.add(await _sensorDataRepo.getSensorData(
+  getSensorData(Sensor sensor, {required List<DateTime> interval}) async {
+    _sensorDataSubjects[sensor]!.sink.add(await _sensorDataRepo.getSensorData(
           sensor,
           interval: interval,
         ));
   }
 
   Stream<List<SensorData>> getStream(Sensor sensor) {
-    return _sensorDataStreams[sensor];
+    return _sensorDataStreams[sensor]!;
   }
 
   addSensorData(SensorData sensorData) async {
@@ -98,7 +99,7 @@ class SensorDataBloc {
 
   dispose() {
     for (var i = 0; i < Sensor.values.length; i++) {
-      _sensorDataSubjects[Sensor.values[i]].close();
+      _sensorDataSubjects[Sensor.values[i]]!.close();
     }
   }
 }

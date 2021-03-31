@@ -17,7 +17,7 @@ class SensorDataAccess {
     return result;
   }
 
-  Future<SensorData> getEarliestSensorData(Sensor sensor) async {
+  Future<SensorData?> getOldestSensorData(Sensor sensor) async {
     final db = await dbProvider.database;
     List<Map<String, dynamic>> result;
     String query =
@@ -27,10 +27,11 @@ class SensorDataAccess {
 
     List<SensorData> sensorData =
         result.map((item) => SensorData.fromDatabaseJson(item)).toList();
-    return sensorData[0];
+    if (sensorData.isNotEmpty) return sensorData[0];
+    return null;
   }
 
-  Future<SensorData> getLatestSensorData(Sensor sensor) async {
+  Future<SensorData?> getNewestSensorData(Sensor sensor) async {
     final db = await dbProvider.database;
     List<Map<String, dynamic>> result;
     String query =
@@ -40,11 +41,12 @@ class SensorDataAccess {
 
     List<SensorData> sensorData =
         result.map((item) => SensorData.fromDatabaseJson(item)).toList();
-    return sensorData[0];
+    if (sensorData.isNotEmpty) return sensorData[0];
+    return null;
   }
 
   Future<List<SensorData>> getSensorData(Sensor sensor,
-      {List<DateTime> interval}) async {
+      {List<DateTime>? interval}) async {
     final db = await dbProvider.database;
     List<Map<String, dynamic>> result;
     String query =

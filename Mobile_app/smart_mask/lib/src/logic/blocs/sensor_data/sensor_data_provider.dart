@@ -10,14 +10,14 @@ import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
 class SensorDataProvider extends InheritedWidget {
   final SensorDataBloc bloc;
 
-  SensorDataProvider({Key key, Widget child, this.bloc})
+  SensorDataProvider({Key? key, required Widget child, required this.bloc})
       : super(key: key, child: child);
 
   bool updateShouldNotify(_) => true;
 
   static SensorDataBloc of(BuildContext context) {
     return context
-        .dependOnInheritedWidgetOfExactType<SensorDataProvider>()
+        .dependOnInheritedWidgetOfExactType<SensorDataProvider>()!
         .bloc;
   }
 }
