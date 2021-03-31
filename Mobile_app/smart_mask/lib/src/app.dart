@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:smart_mask/src/logic/blocs/analytics/analytics_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/analytics/analytics_provider.dart';

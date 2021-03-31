@@ -65,9 +65,7 @@ class _SensorGraphState extends State<SensorGraph> {
     for (var data in namedSensorData) {
       var dataPoint = TimeSeriesSensor(
           DateTime.fromMillisecondsSinceEpoch(data.timeStamp), data.value);
-      if (dataPoint != null) {
-        timeSeries.add(dataPoint);
-      }
+      timeSeries.add(dataPoint);
     }
     timeSeries.sort((a, b) => (a.time.compareTo(b.time)));
     return timeSeries;

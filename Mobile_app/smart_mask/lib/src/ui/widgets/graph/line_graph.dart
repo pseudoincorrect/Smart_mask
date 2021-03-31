@@ -5,6 +5,8 @@
 //      in order to display a line graph for temporal data
 
 import 'dart:math';
+
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:charts_flutter/flutter.dart' as charts;
 
 import 'package:flutter/material.dart';

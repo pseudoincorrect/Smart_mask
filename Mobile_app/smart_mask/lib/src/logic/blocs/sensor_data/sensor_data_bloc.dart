@@ -7,6 +7,8 @@
 //      opperation (insert, delete) on these data.
 
 import 'dart:async';
+
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:rxdart/rxdart.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_mock.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';

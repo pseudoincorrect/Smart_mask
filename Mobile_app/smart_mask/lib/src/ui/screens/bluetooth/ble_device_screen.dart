@@ -7,6 +7,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
 import 'package:smart_mask/src/ui/widgets/bluetooth/bluetooth_services.dart';

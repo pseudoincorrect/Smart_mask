@@ -8,6 +8,8 @@
 //      Widgets to display bluetooth devices and their info
 
 import 'package:flutter/material.dart';
+
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_blue/flutter_blue.dart';
 
 class ServiceTile extends StatelessWidget {

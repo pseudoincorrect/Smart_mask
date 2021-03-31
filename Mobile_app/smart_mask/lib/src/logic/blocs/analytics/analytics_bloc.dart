@@ -5,6 +5,8 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:rxdart/rxdart.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
@@ -26,13 +28,8 @@ class AnalyticsBloc {
     _analyticsRefresh = BehaviorSubject<bool>();
     _analyticsRefresh.stream.listen((event) => processAnalytics());
     setSelectedSensor(_selectedSensor);
-
-    print("analytics state preparation");
     var interval = getAvailableInterval();
-    interval.then((interval) {
-      _analyticsState = AnalyticsState(interval);
-      print("analytics state set");
-    });
+    interval.then((interval) => _analyticsState = AnalyticsState(interval));
   }
 
   processAnalytics() {
@@ -40,7 +37,6 @@ class AnalyticsBloc {
   }
 
   Future<TimeInterval> getAvailableInterval() async {
-    print("hey 1");
     var start = await _sensorDataRepo.getOldestSensorData(_selectedSensor);
     var end = await _sensorDataRepo.getNewestSensorData(_selectedSensor);
     if (start == null || end == null)
@@ -48,16 +44,15 @@ class AnalyticsBloc {
 
     var startDate = DateTime.fromMillisecondsSinceEpoch(start.timeStamp);
     var endDate = DateTime.fromMillisecondsSinceEpoch(end.timeStamp);
-    print("hey 2");
     return TimeInterval(startDate, endDate);
   }
 
-  getSensorData(TimeInterval interval) async {
+  Future<List<SensorData>> getSensorData(TimeInterval interval) async {
     List<SensorData> sensorData = await _sensorDataRepo.getSensorData(
       _selectedSensor,
       interval: [interval.start, interval.end],
     );
-    _sensorDataProcessedSubject.sink.add(sensorData);
+    return sensorData;
   }
 
   Stream<List<SensorData>> getSensorDataStream() {
@@ -104,11 +99,18 @@ class AnalyticsBloc {
     triggerAnalyticsRefresh();
   }
 
-  increaseZoomLevel() {
+  increaseZoomLevel() async {
+    var ti = await getAvailableInterval();
+    var sensorData = await getSensorData(ti);
+    _sensorDataProcessedSubject.sink.add(sensorData);
+
+    print("start interval ${ti.start.minute}:${ti.start.second}");
+    print("end interval   ${ti.end.minute}:${ti.end.second}");
+    print(" ");
+
     // _analyticsState.zoomLevel += 1;
-    getAvailableInterval();
     // setTimefromInt(0);
-    triggerAnalyticsRefresh();
+    // triggerAnalyticsRefresh();
   }
 
   decreaseZoomLevel() {

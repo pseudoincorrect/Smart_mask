@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_blue/flutter_blue.dart';
+
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:rxdart/rxdart.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
 import 'file:///C:/Users/maxim/Documents/git/smart_mask/Mobile_app/smart_mask/lib/src/ui/screens/bluetooth/ble_device_screen.dart';
