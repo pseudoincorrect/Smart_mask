@@ -28,12 +28,25 @@ class AnalyticsBloc {
     _analyticsRefresh = BehaviorSubject<bool>();
     _analyticsRefresh.stream.listen((event) => processAnalytics());
     setSelectedSensor(_selectedSensor);
-    var interval = getAvailableInterval();
-    interval.then((interval) => _analyticsState = AnalyticsState(interval));
+    setupInterval();
   }
 
-  processAnalytics() {
-    print(_analyticsState.toString());
+  setupInterval() async {
+    // delay for the database to set-up
+    await Future.delayed(Duration(seconds: 2));
+    var interval = await getAvailableInterval();
+    _analyticsState = AnalyticsState(interval);
+  }
+
+  processAnalytics() async {
+    getAvailableInterval();
+    var ti = _analyticsState.workTimeInterval;
+    var sensorData = await getSensorData(ti);
+    _sensorDataProcessedSubject.sink.add(sensorData);
+
+    print("start interval ${ti.start.minute}:${ti.start.second}");
+    print("end interval   ${ti.end.minute}:${ti.end.second}");
+    print(" ");
   }
 
   Future<TimeInterval> getAvailableInterval() async {
@@ -57,6 +70,12 @@ class AnalyticsBloc {
 
   Stream<List<SensorData>> getSensorDataStream() {
     return _sensorDataProcessedSubject.stream;
+  }
+
+  void refreshSensorData() async {
+    var ti = await getAvailableInterval();
+    _analyticsState.workTimeInterval = ti;
+    triggerAnalyticsRefresh();
   }
 
   Stream<TimeInterval> get timeRangeStream => _timeRangeSubject.stream;
@@ -100,17 +119,8 @@ class AnalyticsBloc {
   }
 
   increaseZoomLevel() async {
-    var ti = await getAvailableInterval();
-    var sensorData = await getSensorData(ti);
-    _sensorDataProcessedSubject.sink.add(sensorData);
-
-    print("start interval ${ti.start.minute}:${ti.start.second}");
-    print("end interval   ${ti.end.minute}:${ti.end.second}");
-    print(" ");
-
-    // _analyticsState.zoomLevel += 1;
-    // setTimefromInt(0);
-    // triggerAnalyticsRefresh();
+    _analyticsState.zoomLevel += 1;
+    triggerAnalyticsRefresh();
   }
 
   decreaseZoomLevel() {
@@ -193,7 +203,7 @@ class AnalyticsState {
     _zoomLevel = value;
   }
 
-  TimeInterval get workTimeInteral => _workTimeInterval;
+  TimeInterval get workTimeInterval => _workTimeInterval;
 
   set workTimeInterval(TimeInterval ti) {
     var start = ti.start;

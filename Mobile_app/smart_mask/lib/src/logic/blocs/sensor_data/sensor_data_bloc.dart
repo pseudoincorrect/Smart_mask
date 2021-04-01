@@ -39,7 +39,8 @@ class SensorDataBloc {
     _selectedSensorSubject = BehaviorSubject<Sensor>();
     setSelectedSensor(_selectedSensor);
 
-    setupTimers(refreshInterval);
+    // delay for the database to set-up
+    Future.delayed(Duration(seconds: 2), () => setupTimers(refreshInterval));
 
     sensorsMock = SensorsMock();
   }

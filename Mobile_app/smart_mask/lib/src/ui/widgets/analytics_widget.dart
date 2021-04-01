@@ -50,14 +50,48 @@ class AnalyticsSensorGraph extends StatelessWidget {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+class SelectAndRefresh extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    AnalyticsBloc bloc = AnalyticsProvider.of(context);
+
+    return Row(
+      children: [
+        Expanded(
+            flex: 1,
+            child: SizedBox(
+              width: 10,
+            )),
+        Expanded(
+          flex: 1,
+          child: SensorSelectAnalyticsDropButton(),
+        ),
+        Expanded(
+          flex: 1,
+          child: Row(
+            children: [
+              Spacer(),
+              ElevatedButton(
+                child: Icon(Icons.refresh),
+                onPressed: bloc.refreshSensorData,
+              ),
+              SizedBox(width: 10)
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 class SensorSelectAnalyticsDropButton extends StatelessWidget {
   const SensorSelectAnalyticsDropButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     AnalyticsBloc bloc = AnalyticsProvider.of(context);
-    final List<String> sensors =
-        Sensor.values.map((Sensor s) => sensorEnumToString(s)).toList();
 
     return StreamBuilder(
       stream: bloc.getSelectedSensorStream(),
@@ -65,32 +99,40 @@ class SensorSelectAnalyticsDropButton extends StatelessWidget {
         if (snapshot.hasError) return Text("error");
         switch (snapshot.connectionState) {
           case ConnectionState.none:
-            return Text("ConnectionNone");
+            return Text("Drop Button ConnectionNone");
           case ConnectionState.waiting:
-            return Text("ConnectionWaiting");
+            return Text("Drop Button ConnectionWaiting");
           case ConnectionState.done:
-            return Text("ConnectionDone");
+            return Text("Drop Button ConnectionDone");
           case ConnectionState.active:
-            return DropdownButton<String>(
-              value: sensorEnumToString(snapshot.data),
-              icon: Icon(Icons.arrow_downward),
-              iconSize: 24,
-              elevation: 16,
-              onChanged: (String? newSensor) {
-                Sensor sensor = sensorStringToEnum(newSensor!)!;
-                bloc.setSelectedSensor(sensor);
-              },
-              items: sensors.map<DropdownMenuItem<String>>(
-                (String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value.toUpperCase()),
-                  );
-                },
-              ).toList(),
-            );
+            return _buildSensorSelectAnalyticsDropButton(snapshot.data, bloc);
         }
       },
+    );
+  }
+
+  Widget _buildSensorSelectAnalyticsDropButton(
+      Sensor sensor, AnalyticsBloc bloc) {
+    final List<String> sensors =
+        Sensor.values.map((Sensor s) => sensorEnumToString(s)).toList();
+
+    return DropdownButton<String>(
+      value: sensorEnumToString(sensor),
+      icon: Icon(Icons.arrow_downward),
+      iconSize: 24,
+      elevation: 16,
+      onChanged: (String? newSensor) {
+        Sensor sensor = sensorStringToEnum(newSensor!)!;
+        bloc.setSelectedSensor(sensor);
+      },
+      items: sensors.map<DropdownMenuItem<String>>(
+        (String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value.toUpperCase()),
+          );
+        },
+      ).toList(),
     );
   }
 }

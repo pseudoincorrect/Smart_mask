@@ -34,15 +34,22 @@ class _SensorGraphState extends State<SensorGraph> {
         if (snapshot.hasError) return Text('Empty');
         switch (snapshot.connectionState) {
           case ConnectionState.none:
-            return Text('ConnectionNone');
           case ConnectionState.waiting:
-            return Text('ConnectionWaiting');
+          case ConnectionState.done:
+            return _buildEmptyGraph();
           case ConnectionState.active:
             return _buildSensorGraph(snapshot.data!);
-          case ConnectionState.done:
-            return Text('ConnectionDone');
         }
       },
+    );
+  }
+
+  Widget _buildEmptyGraph() {
+    return SizedBox(
+      height: widget.height,
+      child: LineChart.withSampleData(
+        _parseSensorData([], widget.sensor),
+      ),
     );
   }
 

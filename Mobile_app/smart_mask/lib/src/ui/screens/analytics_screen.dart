@@ -9,7 +9,7 @@ class AnalyticsScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              SensorSelectAnalyticsDropButton(),
+              SelectAndRefresh(),
               AnalyticsSensorGraph(),
               IntervalSlider(),
               FilterSelect(),
