@@ -53,7 +53,6 @@ class GraphDetailsScreen extends StatelessWidget {
             height: graphsHeight,
             child: SensorGraph(
               sensorDataStream: sensorDataBloc.getStream(sensor),
-              sensor: sensor,
               height: graphsHeight / (Sensor.values.length * 2),
             ),
           ),

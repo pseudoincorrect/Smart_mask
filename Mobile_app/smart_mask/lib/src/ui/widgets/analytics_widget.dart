@@ -16,34 +16,9 @@ class AnalyticsSensorGraph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AnalyticsBloc bloc = AnalyticsProvider.of(context);
-
-    return StreamBuilder(
-      stream: bloc.getSelectedSensorStream(),
-      builder: (BuildContext context, AsyncSnapshot<Sensor> snapshot) {
-        if (snapshot.hasError) Text("ConnectionError");
-        switch (snapshot.connectionState) {
-          case ConnectionState.none:
-          case ConnectionState.waiting:
-          case ConnectionState.done:
-            return Text("Sensor Selection not ready");
-          case ConnectionState.active:
-            return _buildAnalyticsSensorGraph(snapshot.data!, bloc);
-          // return Text("Soon, there will be a graph here"),
-        }
-      },
-    );
-  }
-
-  Widget _buildAnalyticsSensorGraph(Sensor sensor, AnalyticsBloc bloc) {
-    return Container(
-      child: SizedBox(
-        height: graphsHeight,
-        child: SensorGraph(
-          sensorDataStream: bloc.getSensorDataStream(),
-          sensor: sensor,
-          height: graphsHeight / (Sensor.values.length * 2),
-        ),
-      ),
+    return SensorGraph(
+      sensorDataStream: bloc.getSensorDataStream(),
+      height: graphsHeight,
     );
   }
 }
@@ -92,27 +67,7 @@ class SensorSelectAnalyticsDropButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AnalyticsBloc bloc = AnalyticsProvider.of(context);
-
-    return StreamBuilder(
-      stream: bloc.getSelectedSensorStream(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasError) return Text("error");
-        switch (snapshot.connectionState) {
-          case ConnectionState.none:
-            return Text("Drop Button ConnectionNone");
-          case ConnectionState.waiting:
-            return Text("Drop Button ConnectionWaiting");
-          case ConnectionState.done:
-            return Text("Drop Button ConnectionDone");
-          case ConnectionState.active:
-            return _buildSensorSelectAnalyticsDropButton(snapshot.data, bloc);
-        }
-      },
-    );
-  }
-
-  Widget _buildSensorSelectAnalyticsDropButton(
-      Sensor sensor, AnalyticsBloc bloc) {
+    Sensor sensor = bloc.selectedSensor;
     final List<String> sensors =
         Sensor.values.map((Sensor s) => sensorEnumToString(s)).toList();
 
@@ -153,7 +108,7 @@ class _IntervalSliderState extends State<IntervalSlider> {
   @override
   void initState() {
     super.initState();
-    _currentSliderValue = 0;
+    _currentSliderValue = 500;
   }
 
   @override
@@ -203,17 +158,22 @@ class _IntervalSliderState extends State<IntervalSlider> {
   }
 
   Widget timeSlider() {
-    return Slider(
-      value: _currentSliderValue,
-      min: 0,
-      max: 1000,
-      divisions: 99,
-      onChangeEnd: (double value) {
-        bloc.setTimefromInt(value.toInt());
-      },
-      onChanged: (double x) {
-        setState(() => _currentSliderValue = x);
-      },
+    return SliderTheme(
+      data: SliderTheme.of(context).copyWith(
+        inactiveTrackColor: Theme.of(context).accentColor,
+        activeTrackColor: Theme.of(context).accentColor,
+        trackShape: RectangularSliderTrackShape(),
+      ),
+      child: Slider(
+        value: _currentSliderValue,
+        min: 0,
+        max: 1000,
+        divisions: 99,
+        onChanged: (double x) {
+          setState(() => _currentSliderValue = x);
+          bloc.setTimefromInt(x.toInt());
+        },
+      ),
     );
   }
 

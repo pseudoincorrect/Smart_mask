@@ -5,7 +5,6 @@
 
 import 'dart:async';
 import 'dart:math';
-import 'package:flutter/material.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:rxdart/rxdart.dart';
@@ -20,15 +19,11 @@ class AnalyticsBloc {
   Sensor _selectedSensor = Sensor.sensor_1;
   late AnalyticsState _analyticsState;
 
-  late BehaviorSubject<Sensor> _selectedSensorSubject;
-  late BehaviorSubject<TimeInterval> _timeRangeSubject;
-  late BehaviorSubject<List<SensorData>> _sensorDataProcessedSubject;
   late BehaviorSubject<bool> _analyticsRefresh;
+  late BehaviorSubject<List<SensorData>> _sensorDataSubject;
 
   AnalyticsBloc() {
-    _selectedSensorSubject = BehaviorSubject<Sensor>();
-    _timeRangeSubject = BehaviorSubject<TimeInterval>();
-    _sensorDataProcessedSubject = BehaviorSubject<List<SensorData>>();
+    _sensorDataSubject = BehaviorSubject<List<SensorData>>();
     _analyticsRefresh = BehaviorSubject<bool>();
     _analyticsRefresh.stream.listen((event) => processAnalytics());
     setSelectedSensor(_selectedSensor);
@@ -38,17 +33,16 @@ class AnalyticsBloc {
   Future<TimeInterval> getAvailableInterval() async {
     final start = await _sensorDataRepo.getOldestSensorData(_selectedSensor);
     final end = await _sensorDataRepo.getNewestSensorData(_selectedSensor);
-    if (start == null || end == null)
-      return TimeInterval(DateTime.now(), DateTime.now());
-
-    final startDate = DateTime.fromMillisecondsSinceEpoch(start.timeStamp);
-    final endDate = DateTime.fromMillisecondsSinceEpoch(end.timeStamp);
-    return TimeInterval(startDate, endDate);
+    if (start == null || end == null) {
+      var now = DateTime.now().millisecondsSinceEpoch;
+      return TimeInterval(now, now);
+    }
+    return TimeInterval(start.timeStamp, end.timeStamp);
   }
 
   List<SensorData> getDataWindow() {
-    final leftMs = _analyticsState._timeWindow.start.millisecondsSinceEpoch;
-    final rightMs = _analyticsState._timeWindow.end.millisecondsSinceEpoch;
+    final leftMs = _analyticsState._timeWindow.start;
+    final rightMs = _analyticsState._timeWindow.end;
     final winList = _analyticsState.dataRaw
         .where((d) => d.timeStamp >= leftMs && d.timeStamp <= rightMs)
         .toList();
@@ -57,26 +51,26 @@ class AnalyticsBloc {
 
   processAnalytics() async {
     calculateTimeWindow();
-    _sensorDataProcessedSubject.sink.add(getDataWindow());
-    // _sensorDataProcessedSubject.sink.add(_analyticsState.dataRaw);
+    _sensorDataSubject.sink.add(getDataWindow());
   }
 
   Future<List<SensorData>> getSensorData(TimeInterval interval) async {
+    final start = DateTime.fromMillisecondsSinceEpoch(interval.start);
+    final end = DateTime.fromMillisecondsSinceEpoch(interval.end);
     List<SensorData> sensorData = await _sensorDataRepo.getSensorData(
       _selectedSensor,
-      interval: [interval.start, interval.end],
+      interval: [start, end],
     );
     return sensorData;
   }
 
   Stream<List<SensorData>> getSensorDataStream() {
-    return _sensorDataProcessedSubject.stream;
+    return _sensorDataSubject.stream;
   }
 
   void calculateTimeWindow() {
-    final startMs =
-        _analyticsState.workTimeInterval.start.millisecondsSinceEpoch;
-    final endMs = _analyticsState.workTimeInterval.end.millisecondsSinceEpoch;
+    final startMs = _analyticsState.workTimeInterval.start;
+    final endMs = _analyticsState.workTimeInterval.end;
     final posInTicks = _analyticsState.timePosInTicks;
 
     final centerMs =
@@ -88,18 +82,13 @@ class AnalyticsBloc {
     var windowRightMs = centerMs + zoomDelta;
     windowRightMs = windowRightMs < endMs ? windowRightMs : endMs;
 
-    _analyticsState._timeWindow.start =
-        DateTime.fromMillisecondsSinceEpoch(windowLeftMs);
-    _analyticsState._timeWindow.end =
-        DateTime.fromMillisecondsSinceEpoch(windowRightMs);
+    _analyticsState.timeWindow = TimeInterval(windowLeftMs, windowRightMs);
+  }
 
-    _analyticsState.timeWindow = TimeInterval(
-        DateTime.fromMillisecondsSinceEpoch(windowLeftMs),
-        DateTime.fromMillisecondsSinceEpoch(windowRightMs));
-
-    print(
-        "time windows : ${_analyticsState._timeWindow.start.minute}:${_analyticsState._timeWindow.start.second}"
-        " to ${_analyticsState._timeWindow.end.minute}:${_analyticsState._timeWindow.end.second}");
+  void changeSensor() async {
+    final ti = await getAvailableInterval();
+    _analyticsState.dataRaw = await getSensorData(ti);
+    triggerAnalyticsRefresh();
   }
 
   void refreshSensorData() async {
@@ -110,19 +99,11 @@ class AnalyticsBloc {
     triggerAnalyticsRefresh();
   }
 
-  Stream<TimeInterval> get timeRangeStream => _timeRangeSubject.stream;
-
-  set timeRange(TimeInterval interval) {
-    _timeRangeSubject.add(interval);
-    getSensorData(interval);
-  }
+  get selectedSensor => _selectedSensor;
 
   void setSelectedSensor(Sensor sensor) {
-    _selectedSensorSubject.add(sensor);
-  }
-
-  Stream<Sensor> getSelectedSensorStream() {
-    return _selectedSensorSubject.stream;
+    _selectedSensor = sensor;
+    changeSensor();
   }
 
   Stream<bool> getAnalyticsRefreshStream() {
@@ -167,24 +148,23 @@ class AnalyticsBloc {
   }
 
   dispose() {
-    _sensorDataProcessedSubject.close();
-    _selectedSensorSubject.close();
-    _timeRangeSubject.close();
+    _sensorDataSubject.close();
+    _analyticsRefresh.close();
   }
 }
 
 class TimeInterval {
-  late DateTime start;
-  late DateTime end;
+  late int start;
+  late int end;
 
   TimeInterval(this.start, this.end);
 
-  factory TimeInterval.fromMsSinceEpoch(RangeValues range) {
-    DateTime dateStart =
-        DateTime.fromMillisecondsSinceEpoch(range.start.toInt());
-    DateTime dateEnd = DateTime.fromMillisecondsSinceEpoch(range.end.toInt());
-    return TimeInterval(dateStart, dateEnd);
-  }
+// factory TimeInterval.fromMsSinceEpoch(RangeValues range) {
+//   DateTime dateStart =
+//       DateTime.fromMillisecondsSinceEpoch(range.start.toInt());
+//   DateTime dateEnd = DateTime.fromMillisecondsSinceEpoch(range.end.toInt());
+//   return TimeInterval(dateStart, dateEnd);
+// }
 }
 
 class AnalyticsState {
@@ -202,7 +182,10 @@ class AnalyticsState {
     dataProcessed = [];
     _lowPassFilter = 100.0;
     _highPassFilter = 0.2;
-    _workTimeInterval = TimeInterval(DateTime.now(), DateTime.now());
+    _workTimeInterval = TimeInterval(
+      DateTime.now().millisecondsSinceEpoch,
+      DateTime.now().millisecondsSinceEpoch,
+    );
     resetWorkInterval();
   }
 
@@ -238,8 +221,9 @@ class AnalyticsState {
     var start = ti.start;
     var end = ti.end;
     // start is max one hour before end
-    if (ti.start.isBefore(ti.end.subtract(Duration(hours: 1))))
-      start = ti.end.subtract(Duration(hours: 1));
+
+    if (ti.start < (ti.end - Duration(hours: 1).inMilliseconds))
+      start = ti.end - Duration(hours: 1).inMilliseconds;
 
     _workTimeInterval = TimeInterval(start, end);
   }
@@ -247,10 +231,10 @@ class AnalyticsState {
   TimeInterval get timeWindow => _timeWindow;
 
   set timeWindow(TimeInterval interval) {
-    final startMs = interval.start.millisecondsSinceEpoch;
-    final endMs = interval.end.millisecondsSinceEpoch;
-    final wStartMs = _workTimeInterval.start.millisecondsSinceEpoch;
-    final wEndMs = _workTimeInterval.end.millisecondsSinceEpoch;
+    final startMs = interval.start;
+    final endMs = interval.end;
+    final wStartMs = _workTimeInterval.start;
+    final wEndMs = _workTimeInterval.end;
 
     if (startMs >= wStartMs && endMs <= wEndMs) _timeWindow = interval;
   }

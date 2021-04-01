@@ -10,14 +10,9 @@ import 'package:smart_mask/src/ui/widgets/graph/line_graph.dart';
 
 class SensorGraph extends StatefulWidget {
   final Stream<List<SensorData>> sensorDataStream;
-  final Sensor sensor;
   final double height;
 
-  SensorGraph(
-      {Key? key,
-      required this.sensorDataStream,
-      required this.sensor,
-      required this.height})
+  SensorGraph({Key? key, required this.sensorDataStream, required this.height})
       : super(key: key);
 
   @override
@@ -48,7 +43,7 @@ class _SensorGraphState extends State<SensorGraph> {
     return SizedBox(
       height: widget.height,
       child: LineChart.withSampleData(
-        _parseSensorData([], widget.sensor),
+        _parseSensorData([]),
       ),
     );
   }
@@ -57,24 +52,19 @@ class _SensorGraphState extends State<SensorGraph> {
     return SizedBox(
       height: widget.height,
       child: LineChart.withSampleData(
-        _parseSensorData(sensorData, widget.sensor),
+        _parseSensorData(sensorData),
       ),
     );
   }
 
-  List<TimeSeriesSensor> _parseSensorData(
-      List<SensorData> sensorData, Sensor sensor) {
+  List<TimeSeriesSensor> _parseSensorData(List<SensorData> sensorData) {
     List<TimeSeriesSensor> timeSeries = [];
 
-    List<SensorData> namedSensorData =
-        sensorData.where((element) => element.sensor == sensor).toList();
-
-    for (var data in namedSensorData) {
+    for (var data in sensorData) {
       var dataPoint = TimeSeriesSensor(
           DateTime.fromMillisecondsSinceEpoch(data.timeStamp), data.value);
       timeSeries.add(dataPoint);
     }
-    timeSeries.sort((a, b) => (a.time.compareTo(b.time)));
     return timeSeries;
   }
 }

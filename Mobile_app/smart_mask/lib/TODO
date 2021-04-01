@@ -6,13 +6,13 @@ Add low pass filter to data
 Add High pass filter to data
 Download data to file system
 Add a home page with quick view of the sensor
+handle sensor change in Analytics bloc
 change time slider value to stream
 
 
 -------------------------------------------------------------
 IN PROCESS
 -------------------------------------------------------------
-change to millisec instead of DateTime in analyticsBloc
 
 
 -------------------------------------------------------------
