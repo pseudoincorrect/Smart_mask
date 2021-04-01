@@ -1,24 +1,38 @@
 -------------------------------------------------------------
 TO DO
 -------------------------------------------------------------
-AppFloatingButton change depending on bluetooth status
-Fix disconnect/connect setNotifyValue
-Automatise the bluetooth connection
-Detect device Deconnection
-add custom range for details graph
+Add option Graph without data hole
+Add low pass filter to data
+Add High pass filter to data
+Download data to file system
+Add a home page with quick view of the sensor
+change time slider value to stream
 
 
 -------------------------------------------------------------
 IN PROCESS
 -------------------------------------------------------------
-Add documentation atop all Bloc related functions
+change to millisec instead of DateTime in analyticsBloc
 
 
 -------------------------------------------------------------
 DONE
-        
+
 Date        Tag     Description
 -------------------------------------------------------------
+Fix disconnect/connect setNotifyValue
+01/04/2021  BLOC    Navigate analytic graph (bloc)
+31/03/2021  BLE     Improved connection process
+28/03/2021  DB      Fix DB initialisation/access problem
+25/03/2021  BLOC    Added mock sensor generation
+22/03/2021  ARCH    migrated to flutter 2 (null safety)
+19/03/2021  UI      BLE control of the sensor
+14/03/2021  BLE     Added control to the sensor (gain, sample)
+03/03/2021  BLE     Full refactor of the BLE (char per sensor)
+27/02/2021  BLOC    Create analytics bloc
+20/02/2021  UI      Create analytics screen
+14/02/2021  BLE     Fix disconnect/connect setNotifyValue
+--/--/2020  OTHER   Was working on other projects (StayQool, Wootch)
 07/11/2019  BLOC    refactored sensor to use sensorEnumToString
 06/11/2019  DOC     Add documentation atop all files
 06/11/2019  GRAPH   Select graph with drop button on GraphDetails
