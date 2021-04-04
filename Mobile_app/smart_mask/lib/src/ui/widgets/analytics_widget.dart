@@ -209,7 +209,10 @@ class FilterSelect extends StatelessWidget {
           height: textInPutHeight * 2.2,
           child: Column(
             children: <Widget>[
-              Expanded(flex: 1, child: Text("Filters")),
+              Expanded(
+                flex: 3,
+                child: TransformEnableAndTitleState(),
+              ),
               Expanded(
                 flex: 3,
                 child: Row(
@@ -217,10 +220,10 @@ class FilterSelect extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     Expanded(
-                      child: filterCard(bloc, "Low Pass", 1000),
+                      child: FilterCard(textInPutHeight, false),
                     ),
                     Expanded(
-                      child: filterCard(bloc, "High Pass", 0.2),
+                      child: FilterCard(textInPutHeight, true),
                     ),
                   ],
                 ),
@@ -231,19 +234,91 @@ class FilterSelect extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget filterCard(AnalyticsBloc bloc, String text, double value) {
+class TransformEnableAndTitleState extends StatefulWidget {
+  @override
+  _TransformEnableAndTitleState createState() =>
+      _TransformEnableAndTitleState();
+}
+
+class _TransformEnableAndTitleState
+    extends State<TransformEnableAndTitleState> {
+  AnalyticsBloc? bloc;
+  bool _enable = true;
+
+  @override
+  void initState() {
+    super.initState();
+    () async {
+      await Future.delayed(Duration.zero);
+      bloc = AnalyticsProvider.of(context);
+      setState(() {
+        _enable = bloc!.isTransformEnabled();
+      });
+    }();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    bloc = AnalyticsProvider.of(context);
+    return Row(
+      children: <Widget>[
+        Container(
+          alignment: Alignment.centerLeft,
+          child: Checkbox(
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            activeColor: Theme.of(context).accentColor,
+            value: _enable,
+            onChanged: (bool? value) {
+              bloc!.toggleTransform();
+              setState(() {
+                _enable = bloc!.isTransformEnabled();
+              });
+            },
+          ),
+        ),
+        Container(alignment: Alignment.center, child: Text("Filters")),
+        Spacer(),
+      ],
+    );
+  }
+}
+
+class FilterCard extends StatelessWidget {
+  final double textInPutHeight;
+  final bool isHighPass;
+
+  FilterCard(this.textInPutHeight, this.isHighPass);
+
+  @override
+  Widget build(BuildContext context) {
+    double value;
+    String label;
+    AnalyticsBloc bloc = AnalyticsProvider.of(context);
+    Function(String val) editFilter;
+
+    if (isHighPass) {
+      value = bloc.highPassFilter;
+      label = "High pass";
+      editFilter = (String val) => bloc.setHighPassFilter(double.parse(val));
+    } else {
+      value = bloc.lowPassFilter;
+      label = "Low pass";
+      editFilter = (String val) => bloc.setLowPassFilter(double.parse(val));
+    }
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(width: 10),
-          Text("$text:"),
+          Text(label),
           SizedBox(width: 10),
           Container(
             height: textInPutHeight,
             width: 60,
             child: TextField(
+              onSubmitted: editFilter,
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
@@ -289,7 +364,7 @@ class DownloadButtons extends StatelessWidget {
         height: 90,
         child: ElevatedButton(
           onPressed: onPress,
-          child: new Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[

@@ -6,8 +6,6 @@ Add low pass filter to data
 Add High pass filter to data
 Download data to file system
 Add a home page with quick view of the sensor
-handle sensor change in Analytics bloc
-change time slider value to stream
 
 
 -------------------------------------------------------------
@@ -21,6 +19,7 @@ DONE
 Date        Tag     Description
 -------------------------------------------------------------
 Fix disconnect/connect setNotifyValue
+01/04/2021  BLOC    handle sensor change in Analytics bloc
 01/04/2021  BLOC    Navigate analytic graph (bloc)
 31/03/2021  BLE     Improved connection process
 28/03/2021  DB      Fix DB initialisation/access problem

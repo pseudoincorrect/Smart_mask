@@ -20,7 +20,7 @@ class LineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new charts.TimeSeriesChart(
+    return charts.TimeSeriesChart(
       seriesList,
       animate: animate,
       dateTimeFactory: const charts.LocalDateTimeFactory(),
@@ -29,7 +29,7 @@ class LineChart extends StatelessWidget {
 
   /// Creates a [TimeSeriesChart] with sample data and no transition.
   factory LineChart.withSampleData(List<TimeSeriesSensor> timeSeries) {
-    return new LineChart(
+    return LineChart(
       _createSampleData(timeSeries),
       animate: false,
     );
@@ -37,7 +37,7 @@ class LineChart extends StatelessWidget {
 
   /// Creates a [TimeSeriesChart] with random data and animated transitions.
   factory LineChart.withRandomData() {
-    return new LineChart(
+    return LineChart(
       _createRandomData(),
       animate: true,
     );
@@ -45,17 +45,17 @@ class LineChart extends StatelessWidget {
 
   /// Create random data.
   static List<charts.Series<TimeSeriesSensor, DateTime>> _createRandomData() {
-    final random = new Random();
+    final random = Random();
 
     final data = [
-      new TimeSeriesSensor(new DateTime(2017, 9, 19), random.nextInt(100)),
-      new TimeSeriesSensor(new DateTime(2017, 9, 26), random.nextInt(100)),
-      new TimeSeriesSensor(new DateTime(2017, 10, 3), random.nextInt(100)),
-      new TimeSeriesSensor(new DateTime(2017, 10, 10), random.nextInt(100)),
+      TimeSeriesSensor(DateTime(2017, 9, 19), random.nextInt(100)),
+      TimeSeriesSensor(DateTime(2017, 9, 26), random.nextInt(100)),
+      TimeSeriesSensor(DateTime(2017, 10, 3), random.nextInt(100)),
+      TimeSeriesSensor(DateTime(2017, 10, 10), random.nextInt(100)),
     ];
 
     return [
-      new charts.Series<TimeSeriesSensor, DateTime>(
+      charts.Series<TimeSeriesSensor, DateTime>(
         id: 'sensorValues',
         domainFn: (TimeSeriesSensor sensor, _) => sensor.time,
         measureFn: (TimeSeriesSensor sensor, _) => sensor.value,
@@ -68,7 +68,7 @@ class LineChart extends StatelessWidget {
   static List<charts.Series<TimeSeriesSensor, DateTime>> _createSampleData(
       List<TimeSeriesSensor> timeSeries) {
     return [
-      new charts.Series<TimeSeriesSensor, DateTime>(
+      charts.Series<TimeSeriesSensor, DateTime>(
         id: 'sensorValues',
         domainFn: (TimeSeriesSensor sensor, _) => sensor.time,
         measureFn: (TimeSeriesSensor sensor, _) => sensor.value,

@@ -9,6 +9,7 @@ import 'dart:typed_data';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_blue/flutter_blue.dart';
+
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:rxdart/rxdart.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
@@ -109,8 +110,8 @@ class BluetoothBloc {
     for (var i = 0, j = smsConst.SENSOR_VALS_PER_PACKET;
         i < values.length;
         i += 2, j--) {
-      var buffer = new Uint8List(2).buffer;
-      var bdata = new ByteData.view(buffer);
+      var buffer = Uint8List(2).buffer;
+      var bdata = ByteData.view(buffer);
       bdata.setUint8(1, values[i]);
       bdata.setUint8(0, values[i + 1]);
       int value = bdata.getInt16(0);

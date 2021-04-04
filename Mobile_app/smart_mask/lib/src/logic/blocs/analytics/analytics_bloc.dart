@@ -7,6 +7,9 @@ import 'dart:async';
 import 'dart:math';
 
 // ignore: import_of_legacy_library_into_null_safe
+import 'package:iirjdart/butterworth.dart';
+
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:rxdart/rxdart.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
@@ -19,15 +22,16 @@ class AnalyticsBloc {
   Sensor _selectedSensor = Sensor.sensor_1;
   late AnalyticsState _analyticsState;
 
-  late BehaviorSubject<bool> _analyticsRefresh;
   late BehaviorSubject<List<SensorData>> _sensorDataSubject;
+  late bool _transform;
 
   AnalyticsBloc() {
     _sensorDataSubject = BehaviorSubject<List<SensorData>>();
-    _analyticsRefresh = BehaviorSubject<bool>();
-    _analyticsRefresh.stream.listen((event) => processAnalytics());
     setSelectedSensor(_selectedSensor);
+    _transform = false;
     _analyticsState = AnalyticsState();
+    _analyticsState.lowPassFilter = 0.5;
+    _analyticsState.highPassFilter = 0.01;
   }
 
   Future<TimeInterval> getAvailableInterval() async {
@@ -43,15 +47,49 @@ class AnalyticsBloc {
   List<SensorData> getDataWindow() {
     final leftMs = _analyticsState._timeWindow.start;
     final rightMs = _analyticsState._timeWindow.end;
-    final winList = _analyticsState.dataRaw
-        .where((d) => d.timeStamp >= leftMs && d.timeStamp <= rightMs)
-        .toList();
+    List<SensorData> winList = [];
+    if (_transform) {
+      winList = _analyticsState.dataProcessed
+          .where((d) => d.timeStamp >= leftMs && d.timeStamp <= rightMs)
+          .toList();
+    } else {
+      winList = _analyticsState.dataRaw
+          .where((d) => d.timeStamp >= leftMs && d.timeStamp <= rightMs)
+          .toList();
+    }
     return winList;
   }
 
-  processAnalytics() async {
+  refreshAnalytics() async {
     calculateTimeWindow();
     _sensorDataSubject.sink.add(getDataWindow());
+  }
+
+  processTransformAndRefreshAnalytics() async {
+    calculateTransform();
+    refreshAnalytics();
+  }
+
+  calculateTransform() async {
+    Butterworth butterworth = Butterworth();
+    int order = 2;
+    double sampleRate = 1 / (200 / 1000);
+    double leftFreq = _analyticsState.highPassFilter;
+    double rightFreq = _analyticsState.lowPassFilter;
+    double centerFreq = (rightFreq - leftFreq) / 2;
+    double widthFreq = rightFreq - leftFreq;
+
+    butterworth.bandPass(order, sampleRate, centerFreq, widthFreq);
+    double val;
+    SensorData sensorData;
+    _analyticsState.dataProcessed.clear();
+
+    for (var s in _analyticsState.dataRaw) {
+      val = butterworth.filter(s.value.toDouble());
+      sensorData = SensorData.fromSensorAndValue(
+          _selectedSensor, val.toInt(), s.timeStamp);
+      _analyticsState.dataProcessed.add(sensorData);
+    }
   }
 
   Future<List<SensorData>> getSensorData(TimeInterval interval) async {
@@ -88,7 +126,7 @@ class AnalyticsBloc {
   void changeSensor() async {
     final ti = await getAvailableInterval();
     _analyticsState.dataRaw = await getSensorData(ti);
-    triggerAnalyticsRefresh();
+    processTransformAndRefreshAnalytics();
   }
 
   void refreshSensorData() async {
@@ -96,7 +134,10 @@ class AnalyticsBloc {
     _analyticsState.dataRaw = await getSensorData(ti);
     _analyticsState.workTimeInterval = ti;
     _analyticsState.resetWorkInterval();
-    triggerAnalyticsRefresh();
+    if (_transform)
+      processTransformAndRefreshAnalytics();
+    else
+      refreshAnalytics();
   }
 
   get selectedSensor => _selectedSensor;
@@ -106,37 +147,42 @@ class AnalyticsBloc {
     changeSensor();
   }
 
-  Stream<bool> getAnalyticsRefreshStream() {
-    return _analyticsRefresh.stream;
+  toggleTransform() {
+    _transform = !_transform;
+    processTransformAndRefreshAnalytics();
   }
 
-  triggerAnalyticsRefresh() {
-    _analyticsRefresh.add(true);
+  bool isTransformEnabled() {
+    return _transform;
   }
+
+  double get lowPassFilter => _analyticsState.lowPassFilter;
 
   setLowPassFilter(double value) {
     _analyticsState.lowPassFilter = value;
-    triggerAnalyticsRefresh();
+    processTransformAndRefreshAnalytics();
   }
+
+  double get highPassFilter => _analyticsState.highPassFilter;
 
   setHighPassFilter(double value) {
     _analyticsState.highPassFilter = value;
-    triggerAnalyticsRefresh();
+    processTransformAndRefreshAnalytics();
   }
 
   setTimefromInt(int value) async {
     _analyticsState.timePosInTicks = value;
-    triggerAnalyticsRefresh();
+    refreshAnalytics();
   }
 
   increaseZoomLevel() async {
     _analyticsState.zoomLevel += 1;
-    triggerAnalyticsRefresh();
+    refreshAnalytics();
   }
 
   decreaseZoomLevel() {
     _analyticsState.zoomLevel -= 1;
-    triggerAnalyticsRefresh();
+    refreshAnalytics();
   }
 
   saveProcessedData() {
@@ -149,7 +195,6 @@ class AnalyticsBloc {
 
   dispose() {
     _sensorDataSubject.close();
-    _analyticsRefresh.close();
   }
 }
 
