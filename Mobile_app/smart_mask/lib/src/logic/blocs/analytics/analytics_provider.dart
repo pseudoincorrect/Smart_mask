@@ -1,7 +1,7 @@
-//  Sensor Data Business Logic (BLoc) provider
+//  Sensor Data Analytic Business Logic (BLoc) provider
 //
 //  Description:
-//      Enable the Sensor Data bloc to be accessible (provided)
+//      Enable the Sensor Data Analytics bloc to be accessible (provided)
 //      throughout the app with contex.inherit..
 
 import 'package:flutter/material.dart';
@@ -16,6 +16,8 @@ class AnalyticsProvider extends InheritedWidget {
   bool updateShouldNotify(_) => true;
 
   static AnalyticsBloc of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<AnalyticsProvider>()!.bloc;
+    return context
+        .dependOnInheritedWidgetOfExactType<AnalyticsProvider>()!
+        .bloc;
   }
 }

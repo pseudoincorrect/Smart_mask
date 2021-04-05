@@ -1,7 +1,7 @@
-//  Sensor Data Business Logic (BLoc) provider
+//  Sensor Data Analytic Business Logic (BLoc) provider
 //
 //  Description:
-//
+//    BLoc to navigate and filter sensor data
 
 import 'dart:async';
 import 'dart:math';

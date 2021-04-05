@@ -2,11 +2,10 @@
 TO DO
 -------------------------------------------------------------
 Add option Graph without data hole
-Add low pass filter to data
-Add High pass filter to data
 Download data to file system
 Add a home page with quick view of the sensor
-
+Move to flutter_bloc package
+Change the theme and add an Icon
 
 -------------------------------------------------------------
 IN PROCESS
@@ -19,6 +18,8 @@ DONE
 Date        Tag     Description
 -------------------------------------------------------------
 Fix disconnect/connect setNotifyValue
+04/04/2021  BLOC    Add low pass filter to data
+04/04/2021  BLOC    Add High pass filter to data
 01/04/2021  BLOC    handle sensor change in Analytics bloc
 01/04/2021  BLOC    Navigate analytic graph (bloc)
 31/03/2021  BLE     Improved connection process
