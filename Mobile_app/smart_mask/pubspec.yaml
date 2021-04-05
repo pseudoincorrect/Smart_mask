@@ -16,7 +16,9 @@ dependencies:
   cupertino_icons: ^1.0.0
   iirjdart: ^0.0.1
   csv: ^5.0.0
-  
+  flutter_bloc: ^7.0.0
+  equatable: ^2.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

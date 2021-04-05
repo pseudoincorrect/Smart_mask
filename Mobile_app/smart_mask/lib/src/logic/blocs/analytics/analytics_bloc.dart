@@ -203,13 +203,6 @@ class TimeInterval {
   late int end;
 
   TimeInterval(this.start, this.end);
-
-// factory TimeInterval.fromMsSinceEpoch(RangeValues range) {
-//   DateTime dateStart =
-//       DateTime.fromMillisecondsSinceEpoch(range.start.toInt());
-//   DateTime dateEnd = DateTime.fromMillisecondsSinceEpoch(range.end.toInt());
-//   return TimeInterval(dateStart, dateEnd);
-// }
 }
 
 class AnalyticsState {
