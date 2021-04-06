@@ -68,3 +68,49 @@ class _SensorGraphState extends State<SensorGraph> {
     return timeSeries;
   }
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+class AnalyticsEmptySensorGraph extends StatelessWidget {
+  final double height;
+
+  AnalyticsEmptySensorGraph(this.height);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: height,
+      child: LineChart.withSampleData(
+        parseSensorData([]),
+      ),
+    );
+  }
+}
+
+class AnalyticsSensorGraph extends StatelessWidget {
+  final List<SensorData> sensorData;
+  final double height;
+
+  AnalyticsSensorGraph(this.sensorData, this.height);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: height,
+      child: LineChart.withSampleData(
+        parseSensorData(sensorData),
+      ),
+    );
+  }
+}
+
+List<TimeSeriesSensor> parseSensorData(List<SensorData> sensorData) {
+  List<TimeSeriesSensor> timeSeries = [];
+
+  for (var data in sensorData) {
+    var dataPoint = TimeSeriesSensor(
+        DateTime.fromMillisecondsSinceEpoch(data.timeStamp), data.value);
+    timeSeries.add(dataPoint);
+  }
+  return timeSeries;
+}

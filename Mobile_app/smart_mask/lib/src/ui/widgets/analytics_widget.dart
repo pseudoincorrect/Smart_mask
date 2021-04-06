@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_mask/src/logic/blocs/bloc.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
-
-import 'package:smart_mask/src/logic/blocs/analytics/analytics_bloc.dart';
-import 'package:smart_mask/src/logic/blocs/analytics/analytics_provider.dart';
 import 'package:smart_mask/src/ui/widgets/graph/sensor_graph.dart';
 
 ///////////////////////////////////////////////////////////////////////////////
 
 const double graphsHeight = 300.0;
 
-class AnalyticsSensorGraph extends StatelessWidget {
+class AnalyticsGraph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    AnalyticsBloc bloc = AnalyticsProvider.of(context);
-    return SensorGraph(
-      sensorDataStream: bloc.getSensorDataStream(),
-      height: graphsHeight,
+    return BlocBuilder<AnalyticsBloc, AnalyticsState>(
+      buildWhen: (_, state) => state is AnalyticsStateSensorData,
+      builder: (context, state) {
+        if (state is AnalyticsStateSensorData) {
+          return AnalyticsSensorGraph(state.data, graphsHeight);
+        }
+        return AnalyticsEmptySensorGraph(graphsHeight);
+      },
     );
   }
 }
@@ -28,7 +31,7 @@ class AnalyticsSensorGraph extends StatelessWidget {
 class SelectAndRefresh extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    AnalyticsBloc bloc = AnalyticsProvider.of(context);
+    final AnalyticsBloc bloc = BlocProvider.of<AnalyticsBloc>(context);
 
     return Row(
       children: [
@@ -48,7 +51,7 @@ class SelectAndRefresh extends StatelessWidget {
               Spacer(),
               ElevatedButton(
                 child: Icon(Icons.refresh),
-                onPressed: bloc.refreshSensorData,
+                onPressed: () => bloc.add(AnalyticsEventDataRefresh()),
               ),
               SizedBox(width: 10)
             ],
@@ -66,28 +69,34 @@ class SensorSelectAnalyticsDropButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AnalyticsBloc bloc = AnalyticsProvider.of(context);
-    Sensor sensor = bloc.selectedSensor;
     final List<String> sensors =
         Sensor.values.map((Sensor s) => sensorEnumToString(s)).toList();
 
-    return DropdownButton<String>(
-      value: sensorEnumToString(sensor),
-      icon: Icon(Icons.arrow_downward),
-      iconSize: 24,
-      elevation: 16,
-      onChanged: (String? newSensor) {
-        Sensor sensor = sensorStringToEnum(newSensor!)!;
-        bloc.setSelectedSensor(sensor);
-      },
-      items: sensors.map<DropdownMenuItem<String>>(
-        (String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value.toUpperCase()),
+    return BlocBuilder<AnalyticsBloc, AnalyticsState>(
+      buildWhen: (_, state) => state is AnalyticsStateSelectedsensor,
+      builder: (context, state) {
+        if (state is AnalyticsStateSelectedsensor)
+          return DropdownButton<String>(
+            value: sensorEnumToString(state.sensor),
+            icon: Icon(Icons.arrow_downward),
+            iconSize: 24,
+            elevation: 16,
+            onChanged: (String? newSensor) {
+              Sensor sensor = sensorStringToEnum(newSensor!)!;
+              BlocProvider.of<AnalyticsBloc>(context)
+                  .add(AnalyticsEventSelectedSensor(sensor: sensor));
+            },
+            items: sensors.map<DropdownMenuItem<String>>(
+              (String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value.toUpperCase()),
+                );
+              },
+            ).toList(),
           );
-        },
-      ).toList(),
+        return Text("Error");
+      },
     );
   }
 }
@@ -113,7 +122,7 @@ class _IntervalSliderState extends State<IntervalSlider> {
 
   @override
   Widget build(BuildContext context) {
-    bloc = AnalyticsProvider.of(context);
+    bloc = BlocProvider.of<AnalyticsBloc>(context);
     return Container(
       margin: EdgeInsets.only(top: 10, left: 10, right: 10),
       child: Card(
@@ -171,7 +180,8 @@ class _IntervalSliderState extends State<IntervalSlider> {
         divisions: 99,
         onChanged: (double x) {
           setState(() => _currentSliderValue = x);
-          bloc.setTimefromInt(x.toInt());
+          bloc.add(AnalyticsEventTimeInTicks(ticksIn1000: x.toInt()));
+          // bloc.setTimefromInt(x.toInt());
         },
       ),
     );
@@ -179,14 +189,14 @@ class _IntervalSliderState extends State<IntervalSlider> {
 
   Widget zoomInButton() {
     return ElevatedButton(
-      onPressed: () => bloc.increaseZoomLevel(),
+      onPressed: () => bloc.add(AnalyticsEventZoomInc()),
       child: Icon(Icons.zoom_in),
     );
   }
 
   Widget zoomOutButton() {
     return ElevatedButton(
-      onPressed: () => bloc.decreaseZoomLevel(),
+      onPressed: () => bloc.add(AnalyticsEventZoomDec()),
       child: Icon(Icons.zoom_out),
     );
   }
@@ -199,8 +209,6 @@ class FilterSelect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AnalyticsBloc bloc = AnalyticsProvider.of(context);
-
     return Container(
       margin: EdgeInsets.only(left: 10, right: 10),
       child: Card(
@@ -220,10 +228,10 @@ class FilterSelect extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     Expanded(
-                      child: FilterCard(textInPutHeight, false),
+                      child: HighPassValue(textInPutHeight: textInPutHeight),
                     ),
                     Expanded(
-                      child: FilterCard(textInPutHeight, true),
+                      child: LowPassValue(textInPutHeight: textInPutHeight),
                     ),
                   ],
                 ),
@@ -236,104 +244,137 @@ class FilterSelect extends StatelessWidget {
   }
 }
 
-class TransformEnableAndTitleState extends StatefulWidget {
-  @override
-  _TransformEnableAndTitleState createState() =>
-      _TransformEnableAndTitleState();
-}
-
-class _TransformEnableAndTitleState
-    extends State<TransformEnableAndTitleState> {
-  AnalyticsBloc? bloc;
-  bool _enable = true;
-
-  @override
-  void initState() {
-    super.initState();
-    () async {
-      await Future.delayed(Duration.zero);
-      bloc = AnalyticsProvider.of(context);
-      setState(() {
-        _enable = bloc!.isTransformEnabled();
-      });
-    }();
-  }
-
+class TransformEnableAndTitleState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    bloc = AnalyticsProvider.of(context);
-    return Row(
-      children: <Widget>[
-        Container(
-          alignment: Alignment.centerLeft,
-          child: Checkbox(
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            activeColor: Theme.of(context).accentColor,
-            value: _enable,
-            onChanged: (bool? value) {
-              bloc!.toggleTransform();
-              setState(() {
-                _enable = bloc!.isTransformEnabled();
-              });
-            },
-          ),
-        ),
-        Container(alignment: Alignment.center, child: Text("Filters")),
-        Spacer(),
-      ],
+    return BlocBuilder<AnalyticsBloc, AnalyticsState>(
+      buildWhen: (_, s) => s is AnalyticsStateFilterEnabled,
+      builder: (context, state) {
+        if (state is AnalyticsStateFilterEnabled) {
+          return Row(
+            children: <Widget>[
+              Container(
+                alignment: Alignment.centerLeft,
+                child: Checkbox(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  activeColor: Theme.of(context).accentColor,
+                  value: state.isEnable,
+                  onChanged: (bool? value) {
+                    BlocProvider.of<AnalyticsBloc>(context).add(
+                      AnalyticsEventFilterEnabled(filterEnabled: value!),
+                    );
+                  },
+                ),
+              ),
+              Container(alignment: Alignment.center, child: Text("Filters")),
+              Spacer(),
+            ],
+          );
+        }
+        return Text("Error");
+      },
     );
   }
 }
 
-class FilterCard extends StatelessWidget {
+class LowPassValue extends StatelessWidget {
   final double textInPutHeight;
-  final bool isHighPass;
 
-  FilterCard(this.textInPutHeight, this.isHighPass);
+  LowPassValue({required this.textInPutHeight});
 
   @override
   Widget build(BuildContext context) {
-    double value;
-    String label;
-    AnalyticsBloc bloc = AnalyticsProvider.of(context);
-    Function(String val) editFilter;
-
-    if (isHighPass) {
-      value = bloc.highPassFilter;
-      label = "High pass";
-      editFilter = (String val) => bloc.setHighPassFilter(double.parse(val));
-    } else {
-      value = bloc.lowPassFilter;
-      label = "Low pass";
-      editFilter = (String val) => bloc.setLowPassFilter(double.parse(val));
-    }
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(width: 10),
-          Text(label),
-          SizedBox(width: 10),
-          Container(
-            height: textInPutHeight,
-            width: 60,
-            child: TextField(
-              onSubmitted: editFilter,
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.only(
-                  bottom: textInPutHeight / 2,
+    return BlocBuilder<AnalyticsBloc, AnalyticsState>(
+      buildWhen: (_, s) => s is AnalyticsStateLowPass,
+      builder: (context, state) {
+        return Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(width: 10),
+              Text("Low"),
+              SizedBox(width: 10),
+              Container(
+                height: textInPutHeight,
+                width: 60,
+                child: TextField(
+                  onSubmitted: (String val) {
+                    BlocProvider.of<AnalyticsBloc>(context).add(
+                      AnalyticsEventLowPass(
+                        lowPassValue: double.parse(val),
+                      ),
+                    );
+                  },
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.only(
+                      bottom: textInPutHeight / 4,
+                    ),
+                    hintText: state is AnalyticsStateLowPass
+                        ? state.lowPassValue.toString()
+                        : "Error",
+                  ),
                 ),
-                hintText: value.toString(),
               ),
-            ),
+              SizedBox(width: 5),
+              Text("Hz"),
+              SizedBox(width: 10),
+            ],
           ),
-          SizedBox(width: 5),
-          Text("Hz"),
-          SizedBox(width: 10),
-        ],
-      ),
+        );
+      },
+    );
+  }
+}
+
+class HighPassValue extends StatelessWidget {
+  final double textInPutHeight;
+
+  HighPassValue({required this.textInPutHeight});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AnalyticsBloc, AnalyticsState>(
+      buildWhen: (_, s) => s is AnalyticsStateHighPass,
+      builder: (context, state) {
+        return Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(width: 10),
+              Text("High"),
+              SizedBox(width: 10),
+              Container(
+                height: textInPutHeight,
+                width: 60,
+                child: TextField(
+                  onSubmitted: (String val) {
+                    BlocProvider.of<AnalyticsBloc>(context).add(
+                      AnalyticsEventHighPass(
+                        highPassValue: double.parse(val),
+                      ),
+                    );
+                  },
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.only(
+                      bottom: textInPutHeight / 4,
+                    ),
+                    hintText: state is AnalyticsStateHighPass
+                        ? state.highPassValue.toString()
+                        : "Error",
+                  ),
+                ),
+              ),
+              SizedBox(width: 5),
+              Text("Hz"),
+              SizedBox(width: 10),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -343,16 +384,14 @@ class FilterCard extends StatelessWidget {
 class DownloadButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    AnalyticsBloc bloc = AnalyticsProvider.of(context);
-
     return Container(
       margin: EdgeInsets.only(top: 10, left: 10, right: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          dowloadButton(bloc.saveRawData, "Raw Data", Icons.save),
+          dowloadButton(() {}, "Raw Data", Icons.save),
           SizedBox(width: 40),
-          dowloadButton(bloc.saveProcessedData, "Filtered Data", Icons.save),
+          dowloadButton(() {}, "Filtered Data", Icons.save),
         ],
       ),
     );
@@ -377,7 +416,7 @@ class DownloadButtons extends StatelessWidget {
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 class EnableMockDataCheckbox extends StatefulWidget {
   const EnableMockDataCheckbox({Key? key}) : super(key: key);
@@ -403,19 +442,27 @@ class _EnableMockDataCheckboxState extends State<EnableMockDataCheckbox> {
   @override
   Widget build(BuildContext context) {
     SensorDataBloc sensorDataBloc = SensorDataProvider.of(context);
-    return Container(
-      margin: EdgeInsets.only(left: 0, right: 80, top: 10),
-      child: CheckboxListTile(
-        activeColor: Theme.of(context).accentColor,
-        title: const Text('Randomly Generated Sensor Data'),
-        value: _enable,
-        onChanged: (bool? value) {
-          sensorDataBloc.toggleMockData();
-          setState(() {
-            _enable = sensorDataBloc.isMockDataEnabled();
-          });
-        },
-      ),
+
+    return Row(
+      children: <Widget>[
+        Padding(padding: EdgeInsets.only(left: 10)),
+        Container(
+          alignment: Alignment.centerLeft,
+          child: Checkbox(
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            activeColor: Theme.of(context).accentColor,
+            value: _enable,
+            onChanged: (bool? value) {
+              sensorDataBloc.toggleMockData();
+              setState(() {
+                _enable = sensorDataBloc.isMockDataEnabled();
+              });
+            },
+          ),
+        ),
+        Container(alignment: Alignment.center, child: Text("Generate Data")),
+        Spacer(),
+      ],
     );
   }
 }

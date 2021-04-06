@@ -1,3 +1,6 @@
+import 'dart:math';
+
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:iirjdart/butterworth.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
@@ -113,6 +116,8 @@ class AnalyticsLogic {
     _state.dataRaw = await getSensorData(ti);
   }
 
+  Sensor get selectedSensor => _selectedSensor;
+
   Future<void> setSelectedSensor(Sensor sensor) async {
     _selectedSensor = sensor;
     await _changeSensor();
@@ -122,6 +127,8 @@ class AnalyticsLogic {
   //   _transform = !_transform;
   // }
 
+  bool get filterEnabled => _transform;
+
   setTransform(bool value) {
     _transform = value;
   }
@@ -130,13 +137,13 @@ class AnalyticsLogic {
   //   return _transform;
   // }
 
-  // double get lowPassFilter => _state.lowPassFilter;
+  double get lowPassFilter => _state.lowPassFilter;
 
   setLowPassFilter(double value) {
     _state.lowPassFilter = value;
   }
 
-  // double get highPassFilter => _state.highPassFilter;
+  double get highPassFilter => _state.highPassFilter;
 
   setHighPassFilter(double value) {
     _state.highPassFilter = value;

@@ -12,14 +12,14 @@ abstract class AnalyticsState extends Equatable {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class InitialAnalyticsState extends AnalyticsState {}
+class AnalyticsStateInitial extends AnalyticsState {}
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class SensorDataAnalyticsState extends AnalyticsState {
+class AnalyticsStateSensorData extends AnalyticsState {
   final List<SensorData> data;
 
-  SensorDataAnalyticsState({required this.data});
+  AnalyticsStateSensorData({required this.data});
 
   @override
   List<Object> get props => [data];
@@ -27,10 +27,21 @@ class SensorDataAnalyticsState extends AnalyticsState {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class LowPassAnalyticsState extends AnalyticsState {
+class AnalyticsStateSelectedsensor extends AnalyticsState {
+  final Sensor sensor;
+
+  AnalyticsStateSelectedsensor({required this.sensor});
+
+  @override
+  List<Object> get props => [sensor];
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+class AnalyticsStateLowPass extends AnalyticsState {
   final double lowPassValue;
 
-  LowPassAnalyticsState({required this.lowPassValue});
+  AnalyticsStateLowPass({required this.lowPassValue});
 
   @override
   List<Object> get props => [lowPassValue];
@@ -38,10 +49,10 @@ class LowPassAnalyticsState extends AnalyticsState {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class HighPassAnalyticsState extends AnalyticsState {
+class AnalyticsStateHighPass extends AnalyticsState {
   final double highPassValue;
 
-  HighPassAnalyticsState({required this.highPassValue});
+  AnalyticsStateHighPass({required this.highPassValue});
 
   @override
   List<Object> get props => [highPassValue];
@@ -49,10 +60,10 @@ class HighPassAnalyticsState extends AnalyticsState {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class FilterEnabledAnalyticsState extends AnalyticsState {
+class AnalyticsStateFilterEnabled extends AnalyticsState {
   final bool isEnable;
 
-  FilterEnabledAnalyticsState({required this.isEnable});
+  AnalyticsStateFilterEnabled({required this.isEnable});
 
   @override
   List<Object> get props => [isEnable];
@@ -60,10 +71,10 @@ class FilterEnabledAnalyticsState extends AnalyticsState {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class TimeInTicksAnalyticsState extends AnalyticsState {
+class AnalyticsStateTimeInTicks extends AnalyticsState {
   final int ticksIn1000;
 
-  TimeInTicksAnalyticsState({required this.ticksIn1000});
+  AnalyticsStateTimeInTicks({required this.ticksIn1000});
 
   @override
   List<Object> get props => [ticksIn1000];
@@ -71,6 +82,6 @@ class TimeInTicksAnalyticsState extends AnalyticsState {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class ErrorAnalyticsState extends AnalyticsState {
-  ErrorAnalyticsState();
+class AnalyticsStateError extends AnalyticsState {
+  AnalyticsStateError();
 }

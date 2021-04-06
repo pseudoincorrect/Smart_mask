@@ -12,22 +12,26 @@ abstract class AnalyticsEvent extends Equatable {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class DataRefreshAnalyticsEvent extends AnalyticsEvent {}
+class AnalyticsEventRefresh extends AnalyticsEvent {}
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class ZoomIncAnalyticsEvent extends AnalyticsEvent {}
+class AnalyticsEventDataRefresh extends AnalyticsEvent {}
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class ZoomDecAnalyticsEvent extends AnalyticsEvent {}
+class AnalyticsEventZoomInc extends AnalyticsEvent {}
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class TimeInTicksAnalyticsEvent extends AnalyticsEvent {
+class AnalyticsEventZoomDec extends AnalyticsEvent {}
+
+///////////////////////////////////////////////////////////////////////////////
+
+class AnalyticsEventTimeInTicks extends AnalyticsEvent {
   final int ticksIn1000;
 
-  const TimeInTicksAnalyticsEvent({required this.ticksIn1000});
+  const AnalyticsEventTimeInTicks({required this.ticksIn1000});
 
   @override
   List<Object> get props => [ticksIn1000];
@@ -35,10 +39,10 @@ class TimeInTicksAnalyticsEvent extends AnalyticsEvent {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class FilterEnabledAnalyticsEvent extends AnalyticsEvent {
+class AnalyticsEventFilterEnabled extends AnalyticsEvent {
   final bool filterEnabled;
 
-  const FilterEnabledAnalyticsEvent({required this.filterEnabled});
+  const AnalyticsEventFilterEnabled({required this.filterEnabled});
 
   @override
   List<Object> get props => [filterEnabled];
@@ -46,10 +50,10 @@ class FilterEnabledAnalyticsEvent extends AnalyticsEvent {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class LowPassAnalyticsEvent extends AnalyticsEvent {
+class AnalyticsEventLowPass extends AnalyticsEvent {
   final double lowPassValue;
 
-  const LowPassAnalyticsEvent({required this.lowPassValue});
+  const AnalyticsEventLowPass({required this.lowPassValue});
 
   @override
   List<Object> get props => [lowPassValue];
@@ -57,10 +61,10 @@ class LowPassAnalyticsEvent extends AnalyticsEvent {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class HighPassAnalyticsEvent extends AnalyticsEvent {
+class AnalyticsEventHighPass extends AnalyticsEvent {
   final double highPassValue;
 
-  const HighPassAnalyticsEvent({required this.highPassValue});
+  const AnalyticsEventHighPass({required this.highPassValue});
 
   @override
   List<Object> get props => [highPassValue];
@@ -68,11 +72,11 @@ class HighPassAnalyticsEvent extends AnalyticsEvent {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class SelectedSensorAnalyticsEvent extends AnalyticsEvent {
-  final Sensor selectedSensor;
+class AnalyticsEventSelectedSensor extends AnalyticsEvent {
+  final Sensor sensor;
 
-  const SelectedSensorAnalyticsEvent({required this.selectedSensor});
+  const AnalyticsEventSelectedSensor({required this.sensor});
 
   @override
-  List<Object> get props => [selectedSensor];
+  List<Object> get props => [sensor];
 }

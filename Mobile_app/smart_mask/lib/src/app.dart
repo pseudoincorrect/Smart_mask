@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:smart_mask/src/logic/blocs/analytics/analytics_bloc.dart';
-import 'package:smart_mask/src/logic/blocs/analytics/analytics_provider.dart';
+import 'package:smart_mask/src/logic/blocs/bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
@@ -26,14 +26,14 @@ class MyApp extends StatelessWidget {
 
     final bluetoothBloc = BluetoothBloc();
     final sensorDataBloc = SensorDataBloc();
-    final analyticsBloc = AnalyticsBloc();
+    // final analyticsBloc = AnalyticsBloc();
 
     return SensorDataProvider(
       bloc: sensorDataBloc,
       child: BluetoothProvider(
         bloc: bluetoothBloc,
-        child: AnalyticsProvider(
-          bloc: analyticsBloc,
+        child: BlocProvider(
+          create: (context) => AnalyticsBloc(),
           child: MaterialApp(
             title: "Smart Mask",
             theme: getTheme(),

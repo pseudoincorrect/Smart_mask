@@ -5,5 +5,5 @@
 //    download to file system
 
 class TransmissionBloc {
-  TransmissionBloc() {}
+  TransmissionBloc();
 }

@@ -1,285 +1,102 @@
-//  Sensor Data Analytic Business Logic (BLoc) provider
-//
-//  Description:
-//    BLoc to navigate and filter sensor data
-
-import 'dart:async';
-import 'dart:math';
-
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:iirjdart/butterworth.dart';
-
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:rxdart/rxdart.dart';
+import 'package:bloc/bloc.dart';
+import 'package:smart_mask/src/logic/blocs/analytics/analytics_logic.dart';
+import 'package:smart_mask/src/logic/blocs/bloc.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
-import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
 
-const MAX_TIME_TICKS = 1000;
-const MAX_ZOOM = 10;
+class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
+  late AnalyticsLogic _logic;
 
-class AnalyticsBloc {
-  final _sensorDataRepo = SensorDataRepository();
-  Sensor _selectedSensor = Sensor.sensor_1;
-  late AnalyticsState _analyticsState;
-
-  late BehaviorSubject<List<SensorData>> _sensorDataSubject;
-  late bool _transform;
-
-  AnalyticsBloc() {
-    _sensorDataSubject = BehaviorSubject<List<SensorData>>();
-    setSelectedSensor(_selectedSensor);
-    _transform = false;
-    _analyticsState = AnalyticsState();
-    _analyticsState.lowPassFilter = 0.5;
-    _analyticsState.highPassFilter = 0.01;
+  AnalyticsBloc() : super(AnalyticsStateInitial()) {
+    _logic = AnalyticsLogic();
+    this.add(AnalyticsEventRefresh());
   }
 
-  Future<TimeInterval> getAvailableInterval() async {
-    final start = await _sensorDataRepo.getOldestSensorData(_selectedSensor);
-    final end = await _sensorDataRepo.getNewestSensorData(_selectedSensor);
-    if (start == null || end == null) {
-      var now = DateTime.now().millisecondsSinceEpoch;
-      return TimeInterval(now, now);
+  @override
+  Stream<AnalyticsState> mapEventToState(event) async* {
+    if (event is AnalyticsEventRefresh) {
+      yield* _mapAnalyticsEventRefresh();
     }
-    return TimeInterval(start.timeStamp, end.timeStamp);
-  }
-
-  List<SensorData> getDataWindow() {
-    final leftMs = _analyticsState._timeWindow.start;
-    final rightMs = _analyticsState._timeWindow.end;
-    List<SensorData> winList = [];
-    if (_transform) {
-      winList = _analyticsState.dataProcessed
-          .where((d) => d.timeStamp >= leftMs && d.timeStamp <= rightMs)
-          .toList();
-    } else {
-      winList = _analyticsState.dataRaw
-          .where((d) => d.timeStamp >= leftMs && d.timeStamp <= rightMs)
-          .toList();
-    }
-    return winList;
-  }
-
-  refreshAnalytics() async {
-    calculateTimeWindow();
-    _sensorDataSubject.sink.add(getDataWindow());
-  }
-
-  processTransformAndRefreshAnalytics() async {
-    calculateTransform();
-    refreshAnalytics();
-  }
-
-  calculateTransform() async {
-    Butterworth butterworth = Butterworth();
-    int order = 2;
-    double sampleRate = 1 / (200 / 1000);
-    double leftFreq = _analyticsState.highPassFilter;
-    double rightFreq = _analyticsState.lowPassFilter;
-    double centerFreq = (rightFreq - leftFreq) / 2;
-    double widthFreq = rightFreq - leftFreq;
-
-    butterworth.bandPass(order, sampleRate, centerFreq, widthFreq);
-    double val;
-    SensorData sensorData;
-    _analyticsState.dataProcessed.clear();
-
-    for (var s in _analyticsState.dataRaw) {
-      val = butterworth.filter(s.value.toDouble());
-      sensorData = SensorData.fromSensorAndValue(
-          _selectedSensor, val.toInt(), s.timeStamp);
-      _analyticsState.dataProcessed.add(sensorData);
+    if (event is AnalyticsEventDataRefresh) {
+      yield* _mapAnalyticsEventDataRefresh();
+    } else if (event is AnalyticsEventZoomInc) {
+      yield* _mapAnalyticsEventZoomInc();
+    } else if (event is AnalyticsEventZoomDec) {
+      yield* _mapAnalyticsEventZoomDec();
+    } else if (event is AnalyticsEventTimeInTicks) {
+      yield* _mapAnalyticsEventTimeInTicks(event);
+    } else if (event is AnalyticsEventFilterEnabled) {
+      yield* _mapAnalyticsEventFilterEnabled(event);
+    } else if (event is AnalyticsEventLowPass) {
+      yield* _mapAnalyticsEventLowPass(event);
+    } else if (event is AnalyticsEventHighPass) {
+      yield* _mapAnalyticsEventHighPass(event);
+    } else if (event is AnalyticsEventSelectedSensor) {
+      yield* _mapAnalyticsEventSelectedSensor(event);
     }
   }
 
-  Future<List<SensorData>> getSensorData(TimeInterval interval) async {
-    final start = DateTime.fromMillisecondsSinceEpoch(interval.start);
-    final end = DateTime.fromMillisecondsSinceEpoch(interval.end);
-    List<SensorData> sensorData = await _sensorDataRepo.getSensorData(
-      _selectedSensor,
-      interval: [start, end],
-    );
-    return sensorData;
+  Stream<AnalyticsState> _mapAnalyticsEventRefresh() async* {
+    this.add(AnalyticsEventSelectedSensor(sensor: _logic.selectedSensor));
+    this.add(AnalyticsEventFilterEnabled(filterEnabled: _logic.filterEnabled));
+    this.add(AnalyticsEventLowPass(lowPassValue: _logic.lowPassFilter));
+    this.add(AnalyticsEventHighPass(highPassValue: _logic.highPassFilter));
   }
 
-  Stream<List<SensorData>> getSensorDataStream() {
-    return _sensorDataSubject.stream;
+  Stream<AnalyticsState> _mapAnalyticsEventDataRefresh() async* {
+    await _logic.getLatestSensorData();
+    yield* _refreshData();
   }
 
-  void calculateTimeWindow() {
-    final startMs = _analyticsState.workTimeInterval.start;
-    final endMs = _analyticsState.workTimeInterval.end;
-    final posInTicks = _analyticsState.timePosInTicks;
-
-    final centerMs =
-        startMs + (posInTicks * (endMs - startMs) ~/ MAX_TIME_TICKS);
-
-    final zoomDelta = (endMs - startMs) ~/ pow(2, _analyticsState.zoomLevel);
-    var windowLeftMs = centerMs - zoomDelta;
-    windowLeftMs = windowLeftMs > startMs ? windowLeftMs : startMs;
-    var windowRightMs = centerMs + zoomDelta;
-    windowRightMs = windowRightMs < endMs ? windowRightMs : endMs;
-
-    _analyticsState.timeWindow = TimeInterval(windowLeftMs, windowRightMs);
+  Stream<AnalyticsState> _mapAnalyticsEventZoomInc() async* {
+    _logic.increaseZoomLevel();
+    yield* _refreshData();
   }
 
-  void changeSensor() async {
-    final ti = await getAvailableInterval();
-    _analyticsState.dataRaw = await getSensorData(ti);
-    processTransformAndRefreshAnalytics();
+  Stream<AnalyticsState> _mapAnalyticsEventZoomDec() async* {
+    _logic.decreaseZoomLevel();
+    yield* _refreshData();
   }
 
-  void refreshSensorData() async {
-    final ti = await getAvailableInterval();
-    _analyticsState.dataRaw = await getSensorData(ti);
-    _analyticsState.workTimeInterval = ti;
-    _analyticsState.resetWorkInterval();
-    if (_transform)
-      processTransformAndRefreshAnalytics();
-    else
-      refreshAnalytics();
+  Stream<AnalyticsState> _mapAnalyticsEventTimeInTicks(
+      AnalyticsEventTimeInTicks event) async* {
+    _logic.setTimefromInt(event.ticksIn1000);
+    yield* _refreshData();
+    yield AnalyticsStateTimeInTicks(ticksIn1000: event.ticksIn1000);
   }
 
-  get selectedSensor => _selectedSensor;
-
-  void setSelectedSensor(Sensor sensor) {
-    _selectedSensor = sensor;
-    changeSensor();
+  Stream<AnalyticsState> _mapAnalyticsEventFilterEnabled(
+      AnalyticsEventFilterEnabled event) async* {
+    _logic.setTransform(event.filterEnabled);
+    yield* _refreshData();
+    yield AnalyticsStateFilterEnabled(isEnable: event.filterEnabled);
   }
 
-  toggleTransform() {
-    _transform = !_transform;
-    processTransformAndRefreshAnalytics();
+  Stream<AnalyticsState> _mapAnalyticsEventLowPass(
+      AnalyticsEventLowPass event) async* {
+    _logic.setLowPassFilter(event.lowPassValue);
+    yield* _refreshData();
+    yield AnalyticsStateLowPass(lowPassValue: event.lowPassValue);
   }
 
-  bool isTransformEnabled() {
-    return _transform;
+  Stream<AnalyticsState> _mapAnalyticsEventHighPass(
+      AnalyticsEventHighPass event) async* {
+    _logic.setHighPassFilter(event.highPassValue);
+    yield* _refreshData();
+    yield AnalyticsStateHighPass(highPassValue: event.highPassValue);
   }
 
-  double get lowPassFilter => _analyticsState.lowPassFilter;
-
-  setLowPassFilter(double value) {
-    _analyticsState.lowPassFilter = value;
-    processTransformAndRefreshAnalytics();
+  Stream<AnalyticsState> _mapAnalyticsEventSelectedSensor(
+      AnalyticsEventSelectedSensor event) async* {
+    await _logic.setSelectedSensor(event.sensor);
+    yield* _refreshData();
+    yield AnalyticsStateSelectedsensor(sensor: event.sensor);
   }
 
-  double get highPassFilter => _analyticsState.highPassFilter;
+  ///////////////////////////////////////////////////////
 
-  setHighPassFilter(double value) {
-    _analyticsState.highPassFilter = value;
-    processTransformAndRefreshAnalytics();
-  }
-
-  setTimefromInt(int value) async {
-    _analyticsState.timePosInTicks = value;
-    refreshAnalytics();
-  }
-
-  increaseZoomLevel() async {
-    _analyticsState.zoomLevel += 1;
-    refreshAnalytics();
-  }
-
-  decreaseZoomLevel() {
-    _analyticsState.zoomLevel -= 1;
-    refreshAnalytics();
-  }
-
-  saveProcessedData() {
-    print("saveProcessedData");
-  }
-
-  saveRawData() {
-    print("saveRawData");
-  }
-
-  dispose() {
-    _sensorDataSubject.close();
-  }
-}
-
-class TimeInterval {
-  late int start;
-  late int end;
-
-  TimeInterval(this.start, this.end);
-}
-
-class AnalyticsState {
-  late List<SensorData> dataRaw;
-  late List<SensorData> dataProcessed;
-  late TimeInterval _workTimeInterval;
-  late TimeInterval _timeWindow;
-  late int _timePosInTicks;
-  late int _zoomLevel;
-  late double _lowPassFilter;
-  late double _highPassFilter;
-
-  AnalyticsState() {
-    dataRaw = [];
-    dataProcessed = [];
-    _lowPassFilter = 100.0;
-    _highPassFilter = 0.2;
-    _workTimeInterval = TimeInterval(
-      DateTime.now().millisecondsSinceEpoch,
-      DateTime.now().millisecondsSinceEpoch,
-    );
-    resetWorkInterval();
-  }
-
-  double get lowPassFilter => _lowPassFilter;
-
-  set lowPassFilter(double value) {
-    if (value > 0 || value > _highPassFilter || value < 10000)
-      _lowPassFilter = value;
-  }
-
-  double get highPassFilter => _highPassFilter;
-
-  set highPassFilter(double value) {
-    if (value > 0 || value < _lowPassFilter || value < 10000)
-      _highPassFilter = value;
-  }
-
-  int get zoomLevel => _zoomLevel;
-
-  set zoomLevel(int value) {
-    if (value > 0 && value < MAX_ZOOM) _zoomLevel = value;
-  }
-
-  int get timePosInTicks => _timePosInTicks;
-
-  set timePosInTicks(int value) {
-    if (value > 0 && value <= MAX_TIME_TICKS) _timePosInTicks = value;
-  }
-
-  TimeInterval get workTimeInterval => _workTimeInterval;
-
-  set workTimeInterval(TimeInterval ti) {
-    var start = ti.start;
-    var end = ti.end;
-    // start is max one hour before end
-
-    if (ti.start < (ti.end - Duration(hours: 1).inMilliseconds))
-      start = ti.end - Duration(hours: 1).inMilliseconds;
-
-    _workTimeInterval = TimeInterval(start, end);
-  }
-
-  TimeInterval get timeWindow => _timeWindow;
-
-  set timeWindow(TimeInterval interval) {
-    final startMs = interval.start;
-    final endMs = interval.end;
-    final wStartMs = _workTimeInterval.start;
-    final wEndMs = _workTimeInterval.end;
-
-    if (startMs >= wStartMs && endMs <= wEndMs) _timeWindow = interval;
-  }
-
-  resetWorkInterval() {
-    _timeWindow = _workTimeInterval;
-    _zoomLevel = 0;
-    _timePosInTicks = MAX_TIME_TICKS;
+  Stream<AnalyticsState> _refreshData() async* {
+    List<SensorData> sensorData = _logic.refreshAnalytics();
+    var state = AnalyticsStateSensorData(data: sensorData);
+    yield state;
   }
 }

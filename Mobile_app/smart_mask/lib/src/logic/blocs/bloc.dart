@@ -1,3 +1,3 @@
 export "./analytics/analytics_event.dart";
 export "./analytics/analytics_state.dart";
-export "./analytics/analytics_bloc_new.dart";
+export "./analytics/analytics_bloc.dart";

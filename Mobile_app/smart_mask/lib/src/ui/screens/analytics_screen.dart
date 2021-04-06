@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_mask/src/logic/blocs/bloc.dart';
 import 'package:smart_mask/src/ui/widgets/analytics_widget.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<AnalyticsBloc>(context).add(AnalyticsEventRefresh());
+
     return SingleChildScrollView(
       child: Container(
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
               SelectAndRefresh(),
-              AnalyticsSensorGraph(),
+              AnalyticsGraph(),
               IntervalSlider(),
               FilterSelect(),
-              DownloadButtons(),
               EnableMockDataCheckbox(),
+              DownloadButtons(),
             ],
           ),
         ),
