@@ -4,39 +4,73 @@
 //      Widget to control the sensor: Selection, Sample rate, Gain and Enable
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_mask/src/logic/blocs/bloc.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_control_model.dart';
+import 'package:smart_mask/src/ui/widgets/graph/sensor_graph.dart';
 
 class SensorSelectDropButton extends StatelessWidget {
-  final Sensor sensor;
-  final void Function(Sensor) changeSensorFunction;
-
-  const SensorSelectDropButton(
-      {Key? key, required this.sensor, required this.changeSensorFunction})
-      : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     final List<String> sensors =
         Sensor.values.map((Sensor s) => sensorEnumToString(s)).toList();
-    return DropdownButton<String>(
-      value: sensorEnumToString(sensor),
-      icon: Icon(Icons.arrow_downward),
-      iconSize: 24,
-      elevation: 16,
-      onChanged: onChanged,
-      items: sensors.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value.toUpperCase()),
-        );
-      }).toList(),
-    );
-  }
 
-  onChanged(String? newSensor) {
-    Sensor? sensor = sensorStringToEnum(newSensor);
-    if (sensor != null) changeSensorFunction(sensor);
+    return BlocBuilder<SensorDataBloc, SensorDataState>(
+        buildWhen: (_, state) => state is SensorDataStateSelectedsensor,
+        builder: (context, state) {
+          if (state is SensorDataStateSelectedsensor) {
+            return DropdownButton<String>(
+              value: sensorEnumToString(state.sensor),
+              icon: Icon(Icons.arrow_downward),
+              iconSize: 24,
+              elevation: 16,
+              onChanged: (String? newSensor) {
+                Sensor? sensor = sensorStringToEnum(newSensor);
+                if (sensor == null) return;
+                BlocProvider.of<SensorDataBloc>(context)
+                    .add(SensorDataEventSelectedSensor(sensor: sensor));
+              },
+              items: sensors.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value.toUpperCase()),
+                );
+              }).toList(),
+            );
+          }
+          return Text("No Data");
+        });
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+class BuildDetailGraph extends StatelessWidget {
+  final double graphHeight;
+
+  BuildDetailGraph({required this.graphHeight});
+
+  @override
+  Widget build(BuildContext context) {
+    Sensor sensor = Sensor.sensor_1;
+    return BlocBuilder<SensorDataBloc, SensorDataState>(
+      buildWhen: (_, state) {
+        if (state is SensorDataStateSelectedsensor) return true;
+        if (state is SensorDataStateSensorData && sensor == state.sensor)
+          return true;
+        return false;
+      },
+      builder: (context, state) {
+        if (state is SensorDataStateSelectedsensor) {
+          sensor = state.sensor;
+        }
+        if (state is SensorDataStateSensorData && state.sensor == sensor) {
+          return SensorGraph(state.data, graphHeight);
+        }
+        return EmptySensorGraph(graphHeight);
+      },
+    );
   }
 }
 

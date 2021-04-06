@@ -6,8 +6,6 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:smart_mask/src/logic/blocs/bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
-import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
-import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
 import 'package:smart_mask/src/ui/screens/bluetooth/ble_find_device_screen.dart';
 import 'package:smart_mask/src/ui/screens/graphs_screen.dart';
 import 'package:smart_mask/src/ui/screens/analytics_screen.dart';
@@ -25,22 +23,20 @@ class MyApp extends StatelessWidget {
     FlutterBlue.instance.setLogLevel(LogLevel.error);
 
     final bluetoothBloc = BluetoothBloc();
-    final sensorDataBloc = SensorDataBloc();
-    // final analyticsBloc = AnalyticsBloc();
 
-    return SensorDataProvider(
-      bloc: sensorDataBloc,
-      child: BluetoothProvider(
+    return BluetoothProvider(
         bloc: bluetoothBloc,
-        child: BlocProvider(
-          create: (context) => AnalyticsBloc(),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<AnalyticsBloc>(create: (context) => AnalyticsBloc()),
+            BlocProvider<SensorDataBloc>(create: (context) => SensorDataBloc()),
+          ],
           child: MaterialApp(
             title: "Smart Mask",
             theme: getTheme(),
             home: SplashScreen(),
           ),
         ),
-      ),
     );
   }
 

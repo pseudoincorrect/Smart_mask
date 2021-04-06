@@ -15,8 +15,7 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
   Stream<AnalyticsState> mapEventToState(event) async* {
     if (event is AnalyticsEventRefresh) {
       yield* _mapAnalyticsEventRefresh();
-    }
-    if (event is AnalyticsEventDataRefresh) {
+    } else if (event is AnalyticsEventDataRefresh) {
       yield* _mapAnalyticsEventDataRefresh();
     } else if (event is AnalyticsEventZoomInc) {
       yield* _mapAnalyticsEventZoomInc();

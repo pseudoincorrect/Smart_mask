@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bloc.dart';
-import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
-import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 import 'package:smart_mask/src/ui/widgets/graph/sensor_graph.dart';
 
@@ -18,9 +16,9 @@ class AnalyticsGraph extends StatelessWidget {
       buildWhen: (_, state) => state is AnalyticsStateSensorData,
       builder: (context, state) {
         if (state is AnalyticsStateSensorData) {
-          return AnalyticsSensorGraph(state.data, graphsHeight);
+          return SensorGraph(state.data, graphsHeight);
         }
-        return AnalyticsEmptySensorGraph(graphsHeight);
+        return EmptySensorGraph(graphsHeight);
       },
     );
   }
@@ -95,7 +93,7 @@ class SensorSelectAnalyticsDropButton extends StatelessWidget {
               },
             ).toList(),
           );
-        return Text("Error");
+        return Text("Loading..");
       },
     );
   }
@@ -271,7 +269,7 @@ class TransformEnableAndTitleState extends StatelessWidget {
             ],
           );
         }
-        return Text("Error");
+        return Text("Loading..");
       },
     );
   }
@@ -418,51 +416,36 @@ class DownloadButtons extends StatelessWidget {
 
 /////////////////////////////////////////////////////////////////////////////
 
-class EnableMockDataCheckbox extends StatefulWidget {
-  const EnableMockDataCheckbox({Key? key}) : super(key: key);
-
-  @override
-  _EnableMockDataCheckboxState createState() => _EnableMockDataCheckboxState();
-}
-
-class _EnableMockDataCheckboxState extends State<EnableMockDataCheckbox> {
-  bool _enable = false;
-
-  void initState() {
-    super.initState();
-    () async {
-      await Future.delayed(Duration.zero);
-      SensorDataBloc sensorDataBloc = SensorDataProvider.of(context);
-      setState(() {
-        _enable = sensorDataBloc.isMockDataEnabled();
-      });
-    }();
-  }
-
+class EnableMockDataCheckbox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SensorDataBloc sensorDataBloc = SensorDataProvider.of(context);
-
-    return Row(
-      children: <Widget>[
-        Padding(padding: EdgeInsets.only(left: 10)),
-        Container(
-          alignment: Alignment.centerLeft,
-          child: Checkbox(
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            activeColor: Theme.of(context).accentColor,
-            value: _enable,
-            onChanged: (bool? value) {
-              sensorDataBloc.toggleMockData();
-              setState(() {
-                _enable = sensorDataBloc.isMockDataEnabled();
-              });
-            },
-          ),
-        ),
-        Container(alignment: Alignment.center, child: Text("Generate Data")),
-        Spacer(),
-      ],
+    return BlocBuilder<SensorDataBloc, SensorDataState>(
+      buildWhen: (_, state) => state is SensorDataStateEnableMock,
+      builder: (context, state) {
+        if (state is SensorDataStateEnableMock) {
+          return Row(
+            children: <Widget>[
+              Padding(padding: EdgeInsets.only(left: 10)),
+              Container(
+                alignment: Alignment.centerLeft,
+                child: Checkbox(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  activeColor: Theme.of(context).accentColor,
+                  value: state.enable,
+                  onChanged: (bool? value) {
+                    BlocProvider.of<SensorDataBloc>(context)
+                        .add(SensorDataEventEnableMock(enable: value!));
+                  },
+                ),
+              ),
+              Container(
+                  alignment: Alignment.center, child: Text("Generate Data")),
+              Spacer(),
+            ],
+          );
+        }
+        return Text("Loading..");
+      },
     );
   }
 }

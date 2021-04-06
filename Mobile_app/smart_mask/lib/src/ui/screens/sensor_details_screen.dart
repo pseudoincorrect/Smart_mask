@@ -5,72 +5,48 @@
 //      related to only one sensor (selectable)
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_mask/src/logic/blocs/bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
-import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_bloc.dart';
-import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_data_provider.dart';
-import 'package:smart_mask/src/ui/widgets/graph/sensor_graph.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
-import 'package:smart_mask/src/ui/widgets/sensor_control_widgets.dart';
+import 'package:smart_mask/src/ui/widgets/sensor_details_widgets.dart';
 
 class GraphDetailsScreen extends StatelessWidget {
   final double graphsHeight = 300.0;
 
   @override
   Widget build(BuildContext context) {
-    SensorDataBloc sensorDataBloc = SensorDataProvider.of(context);
-    BluetoothBloc bluetoothBloc = BluetoothProvider.of(context);
+    // BluetoothBloc bluetoothBloc = BluetoothProvider.of(context);
+    BlocProvider.of<AnalyticsBloc>(context).add(AnalyticsEventRefresh());
+    BlocProvider.of<SensorDataBloc>(context).add(SensorDataEventRefresh());
 
-    return StreamBuilder(
-      stream: sensorDataBloc.getSelectedSensorStream(),
-      builder: (BuildContext context, AsyncSnapshot<Sensor> snapshot) {
-        if (snapshot.hasError) return Text('Empty');
-        switch (snapshot.connectionState) {
-          case ConnectionState.none:
-            return Text('ConnectionNone');
-          case ConnectionState.waiting:
-            return Text('ConnectionWaiting');
-          case ConnectionState.done:
-            return Text('ConnectionState.done');
-          case ConnectionState.active:
-            return _buildGraphDetailsScreen(
-                snapshot.data!, sensorDataBloc, bluetoothBloc);
-        }
-      },
-    );
-  }
-
-  Widget _buildGraphDetailsScreen(Sensor sensor, SensorDataBloc sensorDataBloc,
-      BluetoothBloc bluetoothBloc) {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          SensorSelectDropButton(
-            sensor: sensor,
-            changeSensorFunction: sensorDataBloc.setSelectedSensor,
-          ),
+          SensorSelectDropButton(),
           SizedBox(
             height: graphsHeight,
-            child: SensorGraph(
-              sensorDataStream: sensorDataBloc.getStream(sensor),
-              height: graphsHeight / (Sensor.values.length * 2),
+            child: BuildDetailGraph(
+              // sensor: sensorDataBloc.getStream(sensor),
+              graphHeight: graphsHeight / (Sensor.values.length * 2),
             ),
           ),
-          SampleRateSlider(
-            sensor: sensor,
-            initialValue: bluetoothBloc.getSamplePeriod(sensor).toDouble(),
-            setValuefunction: bluetoothBloc.setSamplePeriod,
-          ),
-          GainSlider(
-            sensor: sensor,
-            initialGain: bluetoothBloc.getGain(sensor),
-            setValuefunction: bluetoothBloc.setGain,
-          ),
-          EnableCheckbox(
-            sensor: sensor,
-            initialEnable: bluetoothBloc.getEnable(sensor),
-            setValuefunction: bluetoothBloc.setEnable,
-          )
+          // SampleRateSlider(
+          //   sensor: sensor,
+          //   initialValue: bluetoothBloc.getSamplePeriod(sensor).toDouble(),
+          //   setValuefunction: bluetoothBloc.setSamplePeriod,
+          // ),
+          // GainSlider(
+          //   sensor: sensor,
+          //   initialGain: bluetoothBloc.getGain(sensor),
+          //   setValuefunction: bluetoothBloc.setGain,
+          // ),
+          // EnableCheckbox(
+          //   sensor: sensor,
+          //   initialEnable: bluetoothBloc.getEnable(sensor),
+          //   setValuefunction: bluetoothBloc.setEnable,
+          // )
         ],
       ),
     );
