@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/models/sensor_model.dart';
 import 'dart:math';
 
 import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';

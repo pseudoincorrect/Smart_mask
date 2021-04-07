@@ -4,10 +4,8 @@ import 'dart:typed_data';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_blue/flutter_blue.dart';
 
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:rxdart/rxdart.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_control_model.dart';
+import 'package:smart_mask/src/logic/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/models/sensor_control_model.dart';
 import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/smart_mask_services_const.dart'
     as smsConst;

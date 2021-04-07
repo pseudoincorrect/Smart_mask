@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<BleBloc>(create: (context) => BleBloc()),
         BlocProvider<AnalyticsBloc>(create: (context) => AnalyticsBloc()),
         BlocProvider<SensorDataBloc>(create: (context) => SensorDataBloc()),
+        BlocProvider<TransmissionBloc>(create: (context) => TransmissionBloc()),
       ],
       child: MaterialApp(
         title: "Smart Mask",

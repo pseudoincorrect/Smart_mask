@@ -4,7 +4,8 @@ import 'package:smart_mask/src/logic/blocs/bloc.dart';
 import 'dart:async';
 
 import 'package:smart_mask/src/logic/blocs/sensor_data/sensor_mock.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/models/time_interval.dart';
 import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
 
 class SensorDataBloc extends Bloc<SensorDataEvent, SensorDataState> {
@@ -48,7 +49,9 @@ class SensorDataBloc extends Bloc<SensorDataEvent, SensorDataState> {
 
   Stream<SensorDataState> _mapSensorDataEventDataRefresh() async* {
     for (var sensor in Sensor.values) {
-      var interval = [DateTime.now().subtract(windowInterval), DateTime.now()];
+      var interval = TimeIntervalMsEpoch(
+          start: DateTime.now().subtract(windowInterval).millisecondsSinceEpoch,
+          end: DateTime.now().millisecondsSinceEpoch);
       var data = await _logic.getSensorData(sensor, interval: interval);
       yield SensorDataStateSensorData(sensor: sensor, data: data);
     }
@@ -95,7 +98,7 @@ class SensorDataLogic {
   }
 
   Future<List<SensorData>> getSensorData(Sensor sensor,
-      {required List<DateTime> interval}) async {
+      {required TimeIntervalMsEpoch interval}) async {
     return await _sensorDataRepo.getSensorData(sensor, interval: interval);
   }
 

@@ -10,8 +10,8 @@ import 'package:smart_mask/src/logic/blocs/bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_event.dart';
 
 import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_logic.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_control_model.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/models/sensor_control_model.dart';
+import 'package:smart_mask/src/logic/models/sensor_model.dart';
 
 class BleBloc extends Bloc<BleEvent, BleState> {
   late BleLogic _logic;

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/models/sensor_model.dart';
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -29,7 +29,6 @@ class SensorDataEventSelectedSensor extends SensorDataEvent {
   List<Object> get props => [sensor];
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 
 class SensorDataEventEnableMock extends SensorDataEvent {
@@ -40,4 +39,3 @@ class SensorDataEventEnableMock extends SensorDataEvent {
   @override
   List<Object> get props => [enable];
 }
-

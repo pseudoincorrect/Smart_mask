@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:smart_mask/src/logic/blocs/analytics/analytics_logic.dart';
 import 'package:smart_mask/src/logic/blocs/bloc.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/models/sensor_model.dart';
 
 class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
   late AnalyticsLogic _logic;

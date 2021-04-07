@@ -2,7 +2,8 @@ import 'dart:math';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:iirjdart/butterworth.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/models/time_interval.dart';
 import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
 
 const MAX_TIME_TICKS = 1000;
@@ -17,30 +18,28 @@ class AnalyticsLogic {
   AnalyticsLogic() {
     _sensorDataRepo = SensorDataRepository();
     _state = AnalyticsLogicState();
-    _state.lowPassFilter = 0.5;
-    _state.highPassFilter = 0.01;
+    _state.lowPassFilter = 0.01;
+    _state.highPassFilter = 0;
     _transform = false;
     _selectedSensor = Sensor.sensor_1;
   }
 
-  Future<List<SensorData>> getSensorData(TimeInterval interval) async {
-    final start = DateTime.fromMillisecondsSinceEpoch(interval.start);
-    final end = DateTime.fromMillisecondsSinceEpoch(interval.end);
+  Future<List<SensorData>> getSensorData(TimeIntervalMsEpoch interval) async {
     List<SensorData> sensorData = await _sensorDataRepo.getSensorData(
       _selectedSensor,
-      interval: [start, end],
+      interval: interval,
     );
     return sensorData;
   }
 
-  Future<TimeInterval> getAvailableInterval() async {
+  Future<TimeIntervalMsEpoch> getAvailableInterval() async {
     final start = await _sensorDataRepo.getOldestSensorData(_selectedSensor);
     final end = await _sensorDataRepo.getNewestSensorData(_selectedSensor);
     if (start == null || end == null) {
       var now = DateTime.now().millisecondsSinceEpoch;
-      return TimeInterval(now, now);
+      return TimeIntervalMsEpoch(start: now, end: now);
     }
-    return TimeInterval(start.timeStamp, end.timeStamp);
+    return TimeIntervalMsEpoch(start: start.timeStamp, end: end.timeStamp);
   }
 
   Future<void> getLatestSensorData() async {
@@ -92,7 +91,8 @@ class AnalyticsLogic {
     var windowRightMs = centerMs + zoomDelta;
     windowRightMs = windowRightMs < endMs ? windowRightMs : endMs;
 
-    _state.timeWindow = TimeInterval(windowLeftMs, windowRightMs);
+    _state.timeWindow =
+        TimeIntervalMsEpoch(start: windowLeftMs, end: windowRightMs);
   }
 
   List<SensorData> _getDataWindow() {
@@ -162,18 +162,11 @@ class AnalyticsLogic {
   }
 }
 
-class TimeInterval {
-  late int start;
-  late int end;
-
-  TimeInterval(this.start, this.end);
-}
-
 class AnalyticsLogicState {
   late List<SensorData> dataRaw;
   late List<SensorData> dataProcessed;
-  late TimeInterval _workTimeInterval;
-  late TimeInterval _timeWindow;
+  late TimeIntervalMsEpoch _workTimeInterval;
+  late TimeIntervalMsEpoch _timeWindow;
   late int _timePosInTicks;
   late int _zoomLevel;
   late double _lowPassFilter;
@@ -184,9 +177,9 @@ class AnalyticsLogicState {
     dataProcessed = [];
     _lowPassFilter = 100.0;
     _highPassFilter = 0.2;
-    _workTimeInterval = TimeInterval(
-      DateTime.now().millisecondsSinceEpoch,
-      DateTime.now().millisecondsSinceEpoch,
+    _workTimeInterval = TimeIntervalMsEpoch(
+      start: DateTime.now().millisecondsSinceEpoch,
+      end: DateTime.now().millisecondsSinceEpoch,
     );
     resetWorkInterval();
   }
@@ -217,9 +210,9 @@ class AnalyticsLogicState {
     if (value > 0 && value <= MAX_TIME_TICKS) _timePosInTicks = value;
   }
 
-  TimeInterval get workTimeInterval => _workTimeInterval;
+  TimeIntervalMsEpoch get workTimeInterval => _workTimeInterval;
 
-  set workTimeInterval(TimeInterval ti) {
+  set workTimeInterval(TimeIntervalMsEpoch ti) {
     var start = ti.start;
     var end = ti.end;
     // start is max one hour before end
@@ -227,12 +220,12 @@ class AnalyticsLogicState {
     if (ti.start < (ti.end - Duration(hours: 1).inMilliseconds))
       start = ti.end - Duration(hours: 1).inMilliseconds;
 
-    _workTimeInterval = TimeInterval(start, end);
+    _workTimeInterval = TimeIntervalMsEpoch(start: start, end: end);
   }
 
-  TimeInterval get timeWindow => _timeWindow;
+  TimeIntervalMsEpoch get timeWindow => _timeWindow;
 
-  set timeWindow(TimeInterval interval) {
+  set timeWindow(TimeIntervalMsEpoch interval) {
     final startMs = interval.start;
     final endMs = interval.end;
     final wStartMs = _workTimeInterval.start;

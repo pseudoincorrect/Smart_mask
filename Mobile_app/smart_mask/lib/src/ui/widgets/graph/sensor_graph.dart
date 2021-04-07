@@ -4,7 +4,7 @@
 //      widget used to create a line graph with provided sensor data
 
 import 'package:flutter/material.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/models/sensor_model.dart';
 import 'package:smart_mask/src/ui/widgets/graph/time_series.dart';
 import 'package:smart_mask/src/ui/widgets/graph/line_graph.dart';
 

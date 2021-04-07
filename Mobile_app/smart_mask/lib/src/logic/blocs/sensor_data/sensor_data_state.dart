@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/models/sensor_model.dart';
 
 ///////////////////////////////////////////////////////////////////////////////
 

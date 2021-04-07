@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bloc.dart';
 import 'package:smart_mask/src/ui/widgets/graph/sensor_graph.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/models/sensor_model.dart';
 
 const double graphsHeight = 800.0;
 

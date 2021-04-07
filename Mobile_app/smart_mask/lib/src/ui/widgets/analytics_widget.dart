@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_mask/src/logic/blocs/bloc.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/models/sensor_model.dart';
 import 'package:smart_mask/src/ui/widgets/graph/sensor_graph.dart';
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -377,43 +377,6 @@ class HighPassValue extends StatelessWidget {
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-class DownloadButtons extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 10, left: 10, right: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          dowloadButton(() {}, "Raw Data", Icons.save),
-          SizedBox(width: 40),
-          dowloadButton(() {}, "Filtered Data", Icons.save),
-        ],
-      ),
-    );
-  }
-
-  Widget dowloadButton(void Function() onPress, String text, IconData icon) {
-    return Container(
-        width: 120,
-        height: 90,
-        child: ElevatedButton(
-          onPressed: onPress,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(text),
-              SizedBox(height: 10),
-              Icon(icon, size: 40),
-            ],
-          ),
-        ));
-  }
-}
-
 /////////////////////////////////////////////////////////////////////////////
 
 class EnableMockDataCheckbox extends StatelessWidget {
@@ -446,6 +409,37 @@ class EnableMockDataCheckbox extends StatelessWidget {
         }
         return Text("Loading..");
       },
+    );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+class DownloadButtons extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 10, left: 10, right: 10),
+      child: Container(
+        width: 120,
+        height: 90,
+        child: ElevatedButton(
+          onPressed: () {
+            var bloc = BlocProvider.of<TransmissionBloc>(context);
+            var event = TransmissionEventSaveRawData();
+            bloc.add(event);
+          },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text("Save Data"),
+              SizedBox(height: 10),
+              Icon(Icons.save, size: 40),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
