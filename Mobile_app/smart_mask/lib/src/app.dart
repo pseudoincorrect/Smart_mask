@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:smart_mask/src/logic/blocs/bloc.dart';
-import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_bloc.dart';
-import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
 import 'package:smart_mask/src/ui/screens/bluetooth/ble_find_device_screen.dart';
 import 'package:smart_mask/src/ui/screens/graphs_screen.dart';
 import 'package:smart_mask/src/ui/screens/analytics_screen.dart';
@@ -22,21 +21,17 @@ class MyApp extends StatelessWidget {
 
     FlutterBlue.instance.setLogLevel(LogLevel.error);
 
-    final bluetoothBloc = BluetoothBloc();
-
-    return BluetoothProvider(
-        bloc: bluetoothBloc,
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider<AnalyticsBloc>(create: (context) => AnalyticsBloc()),
-            BlocProvider<SensorDataBloc>(create: (context) => SensorDataBloc()),
-          ],
-          child: MaterialApp(
-            title: "Smart Mask",
-            theme: getTheme(),
-            home: SplashScreen(),
-          ),
-        ),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<BleBloc>(create: (context) => BleBloc()),
+        BlocProvider<AnalyticsBloc>(create: (context) => AnalyticsBloc()),
+        BlocProvider<SensorDataBloc>(create: (context) => SensorDataBloc()),
+      ],
+      child: MaterialApp(
+        title: "Smart Mask",
+        theme: getTheme(),
+        home: SplashScreen(),
+      ),
     );
   }
 
@@ -70,10 +65,7 @@ class TabControl extends StatefulWidget {
 }
 
 class _TabControlState extends State<TabControl> {
-  BluetoothBloc? bluetoothBloc;
-
   Widget build(BuildContext context) {
-    bluetoothBloc = BluetoothProvider.of(context);
     return DefaultTabController(
       length: choices.length,
       initialIndex: 3,
@@ -86,14 +78,16 @@ class _TabControlState extends State<TabControl> {
                 style: TextStyle(fontSize: 30),
               ),
               Expanded(child: Container()),
-              StreamBuilder<bool>(
-                stream: bluetoothBloc!.isConnectedStream,
-                initialData: false,
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.data == true) {
-                    return Text("Connected");
+              BlocBuilder<BleBloc, BleState>(
+                buildWhen: (_, state) => state is BleStateSetConnected,
+                builder: (context, state) {
+                  if (state is BleStateSetConnected) {
+                    if (state.connected)
+                      return Text("Connected");
+                    else
+                      return Text("Disconnected");
                   }
-                  return Text("Disconnected");
+                  return Text("Loading..");
                 },
               ),
             ],

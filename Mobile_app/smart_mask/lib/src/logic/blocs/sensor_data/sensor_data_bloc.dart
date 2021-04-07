@@ -77,6 +77,8 @@ class SensorDataBloc extends Bloc<SensorDataEvent, SensorDataState> {
       this.add(SensorDataEventDataRefresh());
     });
   }
+
+  Sensor get selectedSensor => _logic.selectedSensor;
 }
 
 /////////////////////////////////////////////////////////////////////////////

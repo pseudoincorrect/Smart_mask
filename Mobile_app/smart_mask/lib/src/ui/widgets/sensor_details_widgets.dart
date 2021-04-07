@@ -76,69 +76,100 @@ class BuildDetailGraph extends StatelessWidget {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class SampleRateSlider extends StatefulWidget {
-  final Sensor sensor;
-  final double initialValue;
-  final void Function(Sensor, int) setValuefunction;
+class SamplePeriodSlider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SensorDataBloc, SensorDataState>(
+      buildWhen: (_, state) => state is SensorDataStateSelectedsensor,
+      builder: (context, state) {
+        if (state is SensorDataStateSelectedsensor) {
+          return SamplePeriodSliderLvl1(sensor: state.sensor);
+        }
+        return Text("Loading..");
+      },
+    );
+  }
+}
 
-  const SampleRateSlider(
-      {Key? key,
-      required this.sensor,
-      required this.initialValue,
-      required this.setValuefunction})
+class SamplePeriodSliderLvl1 extends StatelessWidget {
+  final Sensor sensor;
+
+  SamplePeriodSliderLvl1({required this.sensor});
+
+  @override
+  Widget build(BuildContext context) {
+    BlocProvider.of<BleBloc>(context)
+        .add(BleEventRefreshWithSensor(sensor: sensor));
+    return BlocBuilder<BleBloc, BleState>(
+      buildWhen: (_, state) =>
+          state is BleStateSetSamplePeriod && state.sensor == sensor,
+      builder: (context, state) {
+        if (state is BleStateSetSamplePeriod) {
+          return Card(
+            margin: EdgeInsets.only(left: 20, right: 20, top: 10),
+            child: Container(
+              padding: EdgeInsets.all(10),
+              child: Column(children: [
+                Container(
+                    margin: EdgeInsets.only(bottom: 10),
+                    child: Text("Sample Period (ms) - Applied to ALL sensors")),
+                Row(mainAxisSize: MainAxisSize.max, children: [
+                  Text("${state.samplePeriod.toInt()} ms"),
+                  Expanded(
+                    child: SamplePeriodSliderLvl2(
+                      sensor: sensor,
+                      samplePeriodInit: state.samplePeriod.toDouble(),
+                    ),
+                  )
+                ]),
+              ]),
+            ),
+          );
+        }
+        return Text("Loading");
+      },
+    );
+  }
+}
+
+class SamplePeriodSliderLvl2 extends StatefulWidget {
+  final Sensor sensor;
+  final double samplePeriodInit;
+
+  const SamplePeriodSliderLvl2(
+      {Key? key, required this.sensor, required this.samplePeriodInit})
       : super(key: key);
 
   @override
-  _SampleRateSliderState createState() => _SampleRateSliderState();
+  _SamplePeriodSliderLvl2State createState() => _SamplePeriodSliderLvl2State();
 }
 
-class _SampleRateSliderState extends State<SampleRateSlider> {
-  late double _currentSliderValue;
+class _SamplePeriodSliderLvl2State extends State<SamplePeriodSliderLvl2> {
+  late double samplePeriod = widget.samplePeriodInit;
 
   @override
   void didUpdateWidget(dynamic oldWidget) {
-    if (_currentSliderValue != widget.initialValue) {
+    if (samplePeriod != widget.samplePeriodInit) {
       setState(() {
-        _currentSliderValue = widget.initialValue;
+        samplePeriod = widget.samplePeriodInit;
       });
     }
     super.didUpdateWidget(oldWidget);
   }
 
   @override
-  void initState() {
-    super.initState();
-    _currentSliderValue = widget.initialValue;
-    print("initState ${sensorEnumToString(widget.sensor)}");
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Card(
-        margin: EdgeInsets.only(left: 20, right: 20, top: 10),
-        child: Container(
-            padding: EdgeInsets.all(10),
-            child: Column(children: [
-              Container(
-                  margin: EdgeInsets.only(bottom: 10),
-                  child: Text("Sample Period (ms) - Applied to ALL sensors")),
-              Row(mainAxisSize: MainAxisSize.max, children: [
-                Text("${_currentSliderValue.toInt()}"),
-                Expanded(child: sampleRateSlider())
-              ]),
-            ])));
-  }
-
-  Widget sampleRateSlider() {
     return Slider(
-      value: _currentSliderValue,
+      value: samplePeriod,
       min: 200,
       max: 1000,
       divisions: 99,
-      onChangeEnd: (double value) =>
-          widget.setValuefunction(widget.sensor, value.toInt()),
+      onChangeEnd: (double value) {
+        BlocProvider.of<BleBloc>(context).add(BleEventSetSamplePeriod(
+            sensor: widget.sensor, samplePeriod: samplePeriod.toInt()));
+      },
       onChanged: (double x) {
-        setState(() => _currentSliderValue = x);
+        setState(() => samplePeriod = x);
       },
     );
   }
@@ -146,36 +177,82 @@ class _SampleRateSliderState extends State<SampleRateSlider> {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class GainSlider extends StatefulWidget {
-  final Sensor sensor;
-  final SensorGain initialGain;
-  final void Function(Sensor, SensorGain) setValuefunction;
+class GainSlider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SensorDataBloc, SensorDataState>(
+      buildWhen: (_, state) => state is SensorDataStateSelectedsensor,
+      builder: (context, state) {
+        if (state is SensorDataStateSelectedsensor) {
+          return GainSliderLvl1(sensor: state.sensor);
+        }
+        return Text("Loading..");
+      },
+    );
+  }
+}
 
-  const GainSlider(
-      {Key? key,
-      required this.sensor,
-      required this.initialGain,
-      required this.setValuefunction})
+class GainSliderLvl1 extends StatelessWidget {
+  final Sensor sensor;
+
+  GainSliderLvl1({required this.sensor});
+
+  @override
+  Widget build(BuildContext context) {
+    BlocProvider.of<BleBloc>(context)
+        .add(BleEventRefreshWithSensor(sensor: sensor));
+    return BlocBuilder<BleBloc, BleState>(
+      buildWhen: (_, state) =>
+          state is BleStateSetGain && state.sensor == sensor,
+      builder: (context, state) {
+        if (state is BleStateSetGain) {
+          return Card(
+            margin: EdgeInsets.only(left: 20, right: 20, top: 10),
+            child: Container(
+              padding: EdgeInsets.all(10),
+              child: Column(children: [
+                Container(
+                    margin: EdgeInsets.only(bottom: 10),
+                    child: Text("Gain Applied to the selected sensor")),
+                Row(mainAxisSize: MainAxisSize.max, children: [
+                  Text("${sensorGainEnumToString(state.gain)}"),
+                  Expanded(
+                    child: GainSliderBleLvl2(
+                      sensor: sensor,
+                      initGainValue: state.gain,
+                    ),
+                  )
+                ]),
+              ]),
+            ),
+          );
+        }
+        return Text("Loading");
+      },
+    );
+  }
+}
+
+class GainSliderBleLvl2 extends StatefulWidget {
+  final Sensor sensor;
+  final SensorGain initGainValue;
+
+  const GainSliderBleLvl2(
+      {Key? key, required this.sensor, required this.initGainValue})
       : super(key: key);
 
   @override
-  _GainSliderState createState() => _GainSliderState();
+  _GainSliderBleLvl2State createState() => _GainSliderBleLvl2State();
 }
 
-class _GainSliderState extends State<GainSlider> {
-  late SensorGain _sensorGain;
-
-  @override
-  void initState() {
-    super.initState();
-    _sensorGain = widget.initialGain;
-  }
+class _GainSliderBleLvl2State extends State<GainSliderBleLvl2> {
+  late SensorGain gainValue = widget.initGainValue;
 
   @override
   void didUpdateWidget(dynamic oldWidget) {
-    if (_sensorGain != widget.initialGain) {
+    if (gainValue != widget.initGainValue) {
       setState(() {
-        _sensorGain = widget.initialGain;
+        gainValue = widget.initGainValue;
       });
     }
     super.didUpdateWidget(oldWidget);
@@ -183,33 +260,21 @@ class _GainSliderState extends State<GainSlider> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        margin: EdgeInsets.only(left: 20, right: 20, top: 10),
-        child: Container(
-            padding: EdgeInsets.all(10),
-            child: Column(children: [
-              Container(
-                  margin: EdgeInsets.only(bottom: 10),
-                  child: Text("Gain - For this sensor only")),
-              Row(mainAxisSize: MainAxisSize.max, children: [
-                Text("${sensorGainEnumToString(_sensorGain)}"),
-                Expanded(child: gainSlider())
-              ]),
-            ])));
-  }
-
-  Widget gainSlider() {
     return Slider(
-      value: _sensorGain.index.toDouble(),
+      value: gainValue.index.toDouble(),
       min: 0,
       max: SensorGain.values.length.toDouble() - 1,
       divisions: 99,
-      onChangeEnd: (double value) => widget.setValuefunction(
-        widget.sensor,
-        SensorGain.values[value.toInt()],
-      ),
+      onChangeEnd: (double value) {
+        var bloc = BlocProvider.of<BleBloc>(context);
+        var event = BleEventSetGain(
+          sensor: widget.sensor,
+          gain: SensorGain.values[value.toInt()],
+        );
+        bloc.add(event);
+      },
       onChanged: (double x) {
-        setState(() => _sensorGain = SensorGain.values[x.toInt()]);
+        setState(() => gainValue = SensorGain.values[x.toInt()]);
       },
     );
   }
@@ -217,57 +282,54 @@ class _GainSliderState extends State<GainSlider> {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class EnableCheckbox extends StatefulWidget {
-  final Sensor sensor;
-  final bool initialEnable;
-  final void Function(Sensor, bool) setValuefunction;
-
-  const EnableCheckbox(
-      {Key? key,
-      required this.sensor,
-      required this.initialEnable,
-      required this.setValuefunction})
-      : super(key: key);
-
+class EnableCheckbox extends StatelessWidget {
   @override
-  _EnableCheckboxState createState() => _EnableCheckboxState();
+  Widget build(BuildContext context) {
+    return BlocBuilder<SensorDataBloc, SensorDataState>(
+      buildWhen: (_, state) => state is SensorDataStateSelectedsensor,
+      builder: (context, state) {
+        if (state is SensorDataStateSelectedsensor) {
+          return EnableCheckboxLvl1(sensor: state.sensor);
+        }
+        return Text("Loading..");
+      },
+    );
+  }
 }
 
-class _EnableCheckboxState extends State<EnableCheckbox> {
-  late bool _enable;
+class EnableCheckboxLvl1 extends StatelessWidget {
+  final Sensor sensor;
 
-  @override
-  void initState() {
-    super.initState();
-    _enable = widget.initialEnable;
-  }
-
-  @override
-  void didUpdateWidget(dynamic oldWidget) {
-    if (_enable != widget.initialEnable) {
-      setState(() {
-        _enable = widget.initialEnable;
-      });
-    }
-    super.didUpdateWidget(oldWidget);
-  }
+  const EnableCheckboxLvl1({Key? key, required this.sensor}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: 10, right: 200, top: 10),
-      // margin: EdgeInsets.all(10),
-      child: CheckboxListTile(
-        activeColor: Theme.of(context).accentColor,
-        title: const Text('Enable Sensor'),
-        value: _enable,
-        onChanged: (bool? value) {
-          setState(() {
-            _enable = !_enable;
-            widget.setValuefunction(widget.sensor, _enable);
-          });
-        },
-      ),
+    BlocProvider.of<BleBloc>(context)
+        .add(BleEventRefreshWithSensor(sensor: sensor));
+    return BlocBuilder<BleBloc, BleState>(
+      buildWhen: (_, state) =>
+          state is BleStateSetEnable && state.sensor == sensor,
+      builder: (context, state) {
+        if (state is BleStateSetEnable) {
+          return Container(
+            margin: EdgeInsets.only(left: 10, right: 200, top: 10),
+            child: CheckboxListTile(
+              activeColor: Theme.of(context).accentColor,
+              title: const Text('Enable Sensor'),
+              value: state.enable,
+              onChanged: (bool? value) {
+                var bloc = BlocProvider.of<BleBloc>(context);
+                var event = BleEventSetEnable(
+                  sensor: sensor,
+                  enable: value!,
+                );
+                bloc.add(event);
+              },
+            ),
+          );
+        }
+        return Text("Loading..");
+      },
     );
   }
 }

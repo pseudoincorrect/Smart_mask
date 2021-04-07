@@ -7,10 +7,11 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
+import 'package:smart_mask/src/logic/blocs/bloc.dart';
 import 'package:smart_mask/src/ui/widgets/bluetooth/bluetooth_services.dart';
 
 class DeviceScreen extends StatelessWidget {
@@ -102,7 +103,7 @@ class DeviceScreen extends StatelessWidget {
   }
 
   Widget connectDisconnectButton(BuildContext context) {
-    var blebloc = BluetoothProvider.of(context);
+    var bleLogic = BlocProvider.of<BleBloc>(context).bleLogic;
 
     return StreamBuilder<BluetoothDeviceState>(
       stream: device.state,
@@ -120,7 +121,7 @@ class DeviceScreen extends StatelessWidget {
           case BluetoothDeviceState.disconnected:
             onPressed = () async {
               await device.connect();
-              blebloc.checkServiceUpdate(device);
+              bleLogic.checkServiceUpdate(device);
             };
             text = 'CONNECT';
             break;

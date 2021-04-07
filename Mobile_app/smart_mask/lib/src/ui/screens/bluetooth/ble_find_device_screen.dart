@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_blue/flutter_blue.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:rxdart/rxdart.dart';
-import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_provider.dart';
+import 'package:smart_mask/src/logic/blocs/bloc.dart';
 import 'file:///C:/Users/maxim/Documents/git/smart_mask/Mobile_app/smart_mask/lib/src/ui/screens/bluetooth/ble_device_screen.dart';
 import 'package:smart_mask/src/ui/screens/bluetooth/ble_off_screen.dart';
 import 'package:smart_mask/src/ui/widgets/bluetooth/scan_result_widgets.dart';
@@ -27,7 +28,7 @@ Widget bluetoothDevicesListScreen() {
 class FindDevicesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final bleblock = BluetoothProvider.of(context);
+    final bleLogic = BlocProvider.of<BleBloc>(context).bleLogic;
 
     return Scaffold(
       appBar: AppBar(
@@ -36,17 +37,14 @@ class FindDevicesScreen extends StatelessWidget {
       body: RefreshIndicator(
         onRefresh: () =>
             FlutterBlue.instance.startScan(timeout: Duration(seconds: 4)),
-        // List of connected devices
-        child: StreamBuilder<bool>(
-          stream: bleblock.isConnectedStream,
+        child: FutureBuilder<bool>(
           initialData: false,
-          builder: (context, snapshot) {
-            bool isConnected = snapshot.data!;
-            if (isConnected) {
+          future: bleLogic.isConnected(),
+          builder: (BuildContext context, AsyncSnapshot<bool> snap) {
+            if (snap.data!)
               return connectedDevicesList(context);
-            } else {
+            else
               return scannedDevicesList(context);
-            }
           },
         ),
       ),
@@ -93,7 +91,7 @@ class FindDevicesScreen extends StatelessWidget {
   }
 
   Widget scannedDevicesList(BuildContext context) {
-    final bleblock = BluetoothProvider.of(context);
+    final bleLogic = BlocProvider.of<BleBloc>(context).bleLogic;
     return StreamBuilder<List<ScanResult>>(
       stream: FlutterBlue.instance.scanResults,
       initialData: [],
@@ -111,7 +109,7 @@ class FindDevicesScreen extends StatelessWidget {
                     // if (!isConnected)
 
                     await scanResults.device.connect();
-                    bleblock.checkServiceUpdate(scanResults.device);
+                    bleLogic.checkServiceUpdate(scanResults.device);
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) {

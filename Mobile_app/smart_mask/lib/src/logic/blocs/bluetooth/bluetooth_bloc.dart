@@ -1,215 +1,105 @@
-//  Bluetooth Business logic (BLoc)
+//  Ble Business logic (BLoc)
 //
 //  Description:
 //      contain the bluetooth state management for the app
 //      manage data stream (sensors, and notification)
 
 import 'dart:async';
-import 'dart:typed_data';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_mask/src/logic/blocs/bloc.dart';
+import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_event.dart';
 
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:flutter_blue/flutter_blue.dart';
-
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:rxdart/rxdart.dart';
-import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
+import 'package:smart_mask/src/logic/blocs/bluetooth/bluetooth_logic.dart';
 import 'package:smart_mask/src/logic/database/models/sensor_control_model.dart';
-import 'package:smart_mask/src/logic/repositories/sensor_data_repo.dart';
-import 'package:smart_mask/src/logic/blocs/bluetooth/smart_mask_services_const.dart'
-    as smsConst;
+import 'package:smart_mask/src/logic/database/models/sensor_model.dart';
 
-final String sensorServiceUUID = smsConst.S["sensorMeasurementService"]["UUID"];
+class BleBloc extends Bloc<BleEvent, BleState> {
+  late BleLogic _logic;
+  late Timer connSub;
 
-final Map<String, Map<String, String>> valuesChars =
-    smsConst.S["sensorMeasurementService"]["characteristics"]["values"];
+  BleBloc() : super(BleStateInitial()) {
+    _logic = BleLogic();
 
-final Map<String, Map<String, String>> controlChars =
-    smsConst.S["sensorMeasurementService"]["characteristics"]["control"];
+    connSub = Timer.periodic(
+      Duration(seconds: 2),
+      (Timer t) async =>
+          add(BleEventSetConnected(connected: await _logic.isConnected())),
+    );
+  }
 
-class BluetoothBloc {
-  Map<Sensor, SensorControl> _sensorControls = Map();
-  late SensorDataRepository _sensorDataRepository;
-  late BehaviorSubject<bool> _isConnectedSubject;
-
-  BluetoothBloc() {
-    _sensorDataRepository = SensorDataRepository();
-
-    Timer.periodic(Duration(seconds: 2), (Timer t) => _checkConnected());
-
-    _isConnectedSubject = BehaviorSubject<bool>();
-
-    var j = 0;
-    for (var i in Sensor.values) {
-      _sensorControls[i] = SensorControl(
-        initGain: SensorGain.fifth,
-        initSamplePeriodMs: 200 + j * 10,
-        initEnable: true,
-      );
-      j++;
+  @override
+  Stream<BleState> mapEventToState(event) async* {
+    if (event is BleEventRefresh) {
+      yield* _mapBleEventRefresh();
+    } else if (event is BleEventRefreshWithSensor) {
+      yield* _mapBleEventRefreshWithSensor(event);
+    } else if (event is BleEventSetSamplePeriod) {
+      yield* _mapBleEventSetSamplePeriod(event);
+    } else if (event is BleEventSetGain) {
+      yield* _mapBleEventSetGain(event);
+    } else if (event is BleEventSetEnable) {
+      yield* _mapBleEventSetEnable(event);
+    } else if (event is BleEventSetConnected) {
+      yield* _mapBleEventSetConnected(event);
     }
   }
 
-  _checkConnected() async {
-    var devices = await FlutterBlue.instance.connectedDevices;
-    if (devices.length > 0)
-      _isConnectedSubject.add(true);
-    else
-      _isConnectedSubject.add(false);
-  }
-
-  Stream<bool> get isConnectedStream => _isConnectedSubject.stream;
-
-  checkServiceUpdate(BluetoothDevice device) async {
-    print("checkServiceUpdate ${device.name}");
-    var services = await device.discoverServices();
-    print(services);
-    for (var s in services) {
-      print(s.uuid);
-      await updateCharacteristics(s.characteristics);
+  Stream<BleState> _mapBleEventRefresh() async* {
+    for (var sensor in Sensor.values) {
+      int samplePeriod = _logic.getSamplePeriod(sensor);
+      add(BleEventSetSamplePeriod(sensor: sensor, samplePeriod: samplePeriod));
+      SensorGain gain = _logic.getGain(sensor);
+      add(BleEventSetGain(sensor: sensor, gain: gain));
+      bool enable = _logic.getEnable(sensor);
+      add(BleEventSetEnable(sensor: sensor, enable: enable));
     }
   }
 
-  updateCharacteristics(List<BluetoothCharacteristic> characteristics) async {
-    for (var characteristic in characteristics) {
-      var uuid = characteristic.uuid.toString().toUpperCase();
-
-      dynamic uuids = [];
-      valuesChars.forEach((key, value) {
-        uuids.add(value["UUID"]);
-      });
-
-      if (uuids.contains(uuid)) {
-        await setSensorReceive(characteristic);
-        print("enabled characteristic ${characteristic.uuid}");
-      }
-    }
+  Stream<BleState> _mapBleEventRefreshWithSensor(
+      BleEventRefreshWithSensor event) async* {
+    Sensor sensor = event.sensor;
+    int samplePeriod = _logic.getSamplePeriod(sensor);
+    add(BleEventSetSamplePeriod(sensor: sensor, samplePeriod: samplePeriod));
+    SensorGain gain = _logic.getGain(sensor);
+    add(BleEventSetGain(sensor: sensor, gain: gain));
+    bool enable = _logic.getEnable(sensor);
+    add(BleEventSetEnable(sensor: sensor, enable: enable));
   }
 
-  setSensorReceive(BluetoothCharacteristic characteristic) async {
-    characteristic.value.listen((x) => onReceiveValue(x, characteristic));
-    if (!characteristic.isNotifying) {
-      await characteristic.setNotifyValue(true);
-    }
+  Stream<BleState> _mapBleEventSetSamplePeriod(
+      BleEventSetSamplePeriod event) async* {
+    await _logic.setSamplePeriod(event.sensor, event.samplePeriod);
+    yield BleStateSetSamplePeriod(
+      sensor: event.sensor,
+      samplePeriod: event.samplePeriod,
+    );
   }
 
-  onReceiveValue(List<int> values, BluetoothCharacteristic char) async {
-    List<SensorData> sensorDatas;
-    final String uuid = char.uuid.toString();
-    final sensor = sensorFromBLEchararcteristicUUID(uuid)!;
-    sensorDatas = await parseSensorValues(values, sensor);
-    for (var sensorData in sensorDatas) {
-      await _sensorDataRepository.insertSensorData(sensorData);
-    }
+  Stream<BleState> _mapBleEventSetGain(BleEventSetGain event) async* {
+    await _logic.setGain(event.sensor, event.gain);
+    yield BleStateSetGain(
+      sensor: event.sensor,
+      gain: event.gain,
+    );
   }
 
-  Future<List<SensorData>> parseSensorValues(
-      List<int> values, Sensor sensor) async {
-    List<SensorData> sensorDatas = [];
-    int timeNow = DateTime.now().millisecondsSinceEpoch;
-
-    for (var i = 0, j = smsConst.SENSOR_VALS_PER_PACKET;
-        i < values.length;
-        i += 2, j--) {
-      var buffer = Uint8List(2).buffer;
-      var bdata = ByteData.view(buffer);
-      bdata.setUint8(1, values[i]);
-      bdata.setUint8(0, values[i + 1]);
-      int value = bdata.getInt16(0);
-      // Since we receive a list of value from one sensor, we need to assign
-      // a different time stamp for each value
-      int calcTime = timeNow - j * getSamplePeriod(sensor);
-      // int calcTime = timeNow - j * smsConst.SAMPLE_PERIOD_MS;
-      sensorDatas.add(SensorData.fromSensorAndValue(sensor, value, calcTime));
-    }
-    return sensorDatas;
+  Stream<BleState> _mapBleEventSetEnable(BleEventSetEnable event) async* {
+    await _logic.setEnable(event.sensor, event.enable);
+    yield BleStateSetEnable(
+      sensor: event.sensor,
+      enable: event.enable,
+    );
   }
 
-  SensorControl getSensorControl(Sensor sensor) => _sensorControls[sensor]!;
-
-  int getSamplePeriod(Sensor sensor) {
-    var ctrl = getSensorControl(sensor);
-    // print("sample period ${sensorEnumToString(sensor)} ${ctrl.samplePeriodMs}");
-    return ctrl.samplePeriodMs;
-  }
-
-  setSamplePeriod(Sensor sensor, int newPeriodMs) {
-    var ctrl = getSensorControl(sensor);
-    ctrl.samplePeriodMs = newPeriodMs;
-    setSensorCtrlBle(sensor);
-  }
-
-  SensorGain getGain(Sensor sensor) {
-    var ctrl = getSensorControl(sensor);
-    return ctrl.gain;
-  }
-
-  setGain(Sensor sensor, SensorGain newGain) async {
-    SensorControl ctrl = getSensorControl(sensor);
-    ctrl.gain = newGain;
-    setSensorCtrlBle(sensor);
-  }
-
-  bool getEnable(Sensor sensor) {
-    var ctrl = getSensorControl(sensor);
-    return ctrl.enable;
-  }
-
-  setEnable(Sensor sensor, bool newEnable) {
-    SensorControl ctrl = getSensorControl(sensor);
-    ctrl.enable = newEnable;
-    setSensorCtrlBle(sensor);
-  }
-
-  Future<BluetoothCharacteristic?> getSensorCtrlChar(Sensor sensor) async {
-    List<BluetoothDevice> devices = await FlutterBlue.instance.connectedDevices;
-    BluetoothDevice device;
-    if (devices[0].name.contains("Smart"))
-      device = devices[0];
-    else
-      return null;
-    List<BluetoothService> services = await device.services.first;
-    BluetoothService smsService = services
-        .where((s) => s.uuid.toString().toUpperCase() == sensorServiceUUID)
-        .first;
-    List<BluetoothCharacteristic> characteristics = smsService.characteristics;
-    BluetoothCharacteristic ctrlChar = characteristics
-        .where((c) =>
-            c.uuid.toString().toUpperCase() ==
-            controlChars[sensorEnumToString(sensor)]!["UUID"])
-        .first;
-    return ctrlChar;
-  }
-
-  setSensorCtrlBle(Sensor sensor) async {
-    var ctrl = getSensorControl(sensor);
-    var ctrlPacket = SensorControlPacket(ctrl);
-    var char = await getSensorCtrlChar(sensor);
-    if (char != null)
-      await char.write(ctrlPacket.buffer, withoutResponse: false);
+  Stream<BleState> _mapBleEventSetConnected(BleEventSetConnected event) async* {
+    yield BleStateSetConnected(connected: event.connected);
   }
 
   dispose() {
-    _isConnectedSubject.close();
+    connSub.cancel();
   }
-}
 
-class SensorControlPacket {
-  List<int> buffer = [];
+  /////////////////////////////////////////////////////////////////////////////
 
-  SensorControlPacket(SensorControl sensorControl) {
-    // uint32_t samplePeriodMs
-    int byte;
-    byte = sensorControl.samplePeriodMs & 0x000000FF;
-    buffer.add(byte);
-    byte = (sensorControl.samplePeriodMs & 0x0000FF00) >> 8;
-    buffer.add(byte);
-    byte = (sensorControl.samplePeriodMs & 0x00FF0000) >> 16;
-    buffer.add(byte);
-    byte = (sensorControl.samplePeriodMs & 0xFF000000) >> 24;
-    buffer.add(byte);
-    // uint8_t gain
-    buffer.add(sensorControl.gain.index);
-    // uint8_t enable
-    buffer.add(sensorControl.enable ? 1 : 0);
-  }
+  BleLogic get bleLogic => _logic;
 }
