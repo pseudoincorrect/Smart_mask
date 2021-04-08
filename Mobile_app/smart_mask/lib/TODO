@@ -2,14 +2,14 @@
 TO DO
 -------------------------------------------------------------
 Add option Graph without data hole
-Add a home page with quick view of the sensor
 Change the theme and add an Icon
 Profile the app
+
 
 -------------------------------------------------------------
 IN PROCESS
 -------------------------------------------------------------
-Download data to file system
+Add a home page with quick view of the sensor
 
 
 -------------------------------------------------------------
@@ -17,8 +17,9 @@ DONE
 
 Date        Tag     Description
 -------------------------------------------------------------
-Fix disconnect/connect setNotifyValue
-07/04/2021  BLOC    Move to flutter_bloc package
+07/04/2021  BLOC    Download data to file system
+07/04/2021  BLOC    Fix disconnect/connect setNotifyValue
+06/04/2021  BLOC    Move to flutter_bloc package
 04/04/2021  BLOC    Add low pass filter to data
 04/04/2021  BLOC    Add High pass filter to data
 01/04/2021  BLOC    handle sensor change in Analytics bloc

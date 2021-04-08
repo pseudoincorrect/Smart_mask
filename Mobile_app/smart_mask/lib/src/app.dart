@@ -10,6 +10,7 @@ import 'package:smart_mask/src/ui/screens/graphs_screen.dart';
 import 'package:smart_mask/src/ui/screens/analytics_screen.dart';
 import 'package:smart_mask/src/ui/screens/sensor_details_screen.dart';
 import 'package:smart_mask/src/ui/screens/home_screen.dart';
+import 'package:smart_mask/src/ui/theme/theme.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -32,20 +33,6 @@ class MyApp extends StatelessWidget {
         title: "Smart Mask",
         theme: getTheme(),
         home: SplashScreen(),
-      ),
-    );
-  }
-
-  ThemeData getTheme() {
-    return ThemeData(
-      brightness: Brightness.dark,
-      primaryColor: Colors.blue,
-      accentColor: Colors.blueAccent,
-      buttonTheme: ButtonThemeData(
-        buttonColor: Colors.blue,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(5))),
-        textTheme: ButtonTextTheme.primary,
       ),
     );
   }
@@ -74,9 +61,13 @@ class _TabControlState extends State<TabControl> {
         appBar: AppBar(
           title: Row(
             children: <Widget>[
-              const Text(
-                'Smart Mask',
-                style: TextStyle(fontSize: 30),
+              Image(
+                image: new AssetImage("assets/icon/smart_mask_logo_3_75px.png"),
+                width: 50,
+                height: 50,
+                color: null,
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
               ),
               Expanded(child: Container()),
               BlocBuilder<BleBloc, BleState>(
@@ -84,9 +75,9 @@ class _TabControlState extends State<TabControl> {
                 builder: (context, state) {
                   if (state is BleStateSetConnected) {
                     if (state.connected)
-                      return Text("Connected");
+                      return Text("Smart Mask Connected");
                     else
-                      return Text("Disconnected");
+                      return Text("Smart Mask Disconnected");
                   }
                   return Text("Loading..");
                 },
