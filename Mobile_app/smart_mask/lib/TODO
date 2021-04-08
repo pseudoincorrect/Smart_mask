@@ -2,7 +2,6 @@
 TO DO
 -------------------------------------------------------------
 Add option Graph without data hole
-Change the theme and add an Icon
 Profile the app
 
 
@@ -11,12 +10,13 @@ IN PROCESS
 -------------------------------------------------------------
 Add a home page with quick view of the sensor
 
-
 -------------------------------------------------------------
 DONE
 
 Date        Tag     Description
 -------------------------------------------------------------
+08/04/2021  BLOC    Refactor bluetooth_bloc to add detail (one bloc per screen)
+08/04/2021  UI      Change the theme and add an Icon
 07/04/2021  BLOC    Download data to file system
 07/04/2021  BLOC    Fix disconnect/connect setNotifyValue
 06/04/2021  BLOC    Move to flutter_bloc package

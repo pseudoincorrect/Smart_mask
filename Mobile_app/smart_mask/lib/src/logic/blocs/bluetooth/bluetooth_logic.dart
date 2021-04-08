@@ -21,8 +21,10 @@ final Map<String, Map<String, String>> controlChars =
 class BleLogic {
   late Map<Sensor, SensorControl> _sensorControls;
   late SensorDataRepository _sensorDataRepository;
+  late Sensor selectedSensor;
 
   BleLogic() {
+    selectedSensor = Sensor.sensor_1;
     _sensorControls = Map();
     _sensorDataRepository = SensorDataRepository();
 

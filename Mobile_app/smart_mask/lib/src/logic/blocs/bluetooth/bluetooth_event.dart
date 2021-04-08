@@ -17,10 +17,10 @@ class BleEventRefresh extends BleEvent {}
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class BleEventRefreshWithSensor extends BleEvent {
+class BleEventSetSelectedSensor extends BleEvent {
   final Sensor sensor;
 
-  BleEventRefreshWithSensor({required this.sensor});
+  BleEventSetSelectedSensor({required this.sensor});
 
   @override
   List<Object> get props => [sensor];
@@ -30,36 +30,33 @@ class BleEventRefreshWithSensor extends BleEvent {
 
 class BleEventSetSamplePeriod extends BleEvent {
   final int samplePeriod;
-  final Sensor sensor;
 
-  BleEventSetSamplePeriod({required this.sensor, required this.samplePeriod});
+  BleEventSetSamplePeriod({required this.samplePeriod});
 
   @override
-  List<Object> get props => [sensor, samplePeriod];
+  List<Object> get props => [samplePeriod];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 class BleEventSetGain extends BleEvent {
   final SensorGain gain;
-  final Sensor sensor;
 
-  BleEventSetGain({required this.sensor, required this.gain});
+  BleEventSetGain({required this.gain});
 
   @override
-  List<Object> get props => [sensor, gain];
+  List<Object> get props => [gain];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 class BleEventSetEnable extends BleEvent {
   final bool enable;
-  final Sensor sensor;
 
-  BleEventSetEnable({required this.sensor, required this.enable});
+  BleEventSetEnable({required this.enable});
 
   @override
-  List<Object> get props => [sensor, enable];
+  List<Object> get props => [enable];
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -17,7 +17,7 @@ class GraphDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     BlocProvider.of<AnalyticsBloc>(context).add(AnalyticsEventRefresh());
     BlocProvider.of<SensorDataBloc>(context).add(SensorDataEventRefresh());
-    // BlocProvider.of<BleBloc>(context).add(BleEventRefreshWithSensor(sensor: sensor));
+    BlocProvider.of<BleBloc>(context).add(BleEventRefresh());
 
     return SingleChildScrollView(
       child: Column(
@@ -32,6 +32,11 @@ class GraphDetailsScreen extends StatelessWidget {
           SamplePeriodSlider(),
           GainSlider(),
           EnableCheckbox(),
+          ElevatedButton(
+              onPressed: () {
+                BlocProvider.of<BleBloc>(context).add(BleEventRefresh());
+              },
+              child: Text("refresh BLE"))
         ],
       ),
     );

@@ -34,6 +34,8 @@ class GraphsScreen extends StatelessWidget {
                       onPressed: () {
                         BlocProvider.of<SensorDataBloc>(context)
                             .add(SensorDataEventSelectedSensor(sensor: sensor));
+                        BlocProvider.of<BleBloc>(context)
+                            .add(BleEventSetSelectedSensor(sensor: sensor));
                         DefaultTabController.of(context)!.animateTo(2);
                       },
                       child: Text("Details"),

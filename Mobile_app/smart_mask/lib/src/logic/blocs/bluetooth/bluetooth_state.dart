@@ -17,38 +17,45 @@ class BleStateInitial extends BleState {}
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class BleStateSetSamplePeriod extends BleState {
-  final int samplePeriod;
+class BleStateSetSelectedSensor extends BleState {
   final Sensor sensor;
 
-  BleStateSetSamplePeriod({required this.sensor, required this.samplePeriod});
+  BleStateSetSelectedSensor({required this.sensor});
 
   @override
-  List<Object> get props => [sensor, samplePeriod];
+  List<Object> get props => [sensor];
+}
+///////////////////////////////////////////////////////////////////////////////
+
+class BleStateSetSamplePeriod extends BleState {
+  final int samplePeriod;
+
+  BleStateSetSamplePeriod({required this.samplePeriod});
+
+  @override
+  List<Object> get props => [samplePeriod];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 class BleStateSetGain extends BleState {
   final SensorGain gain;
-  final Sensor sensor;
 
-  BleStateSetGain({required this.sensor, required this.gain});
+  BleStateSetGain({required this.gain});
 
   @override
-  List<Object> get props => [sensor, gain];
+  List<Object> get props => [gain];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 class BleStateSetEnable extends BleState {
   final bool enable;
-  final Sensor sensor;
 
-  BleStateSetEnable({required this.sensor, required this.enable});
+  BleStateSetEnable({required this.enable});
 
   @override
-  List<Object> get props => [sensor, enable];
+  List<Object> get props => [enable];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
