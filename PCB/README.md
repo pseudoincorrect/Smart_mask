@@ -1,6 +1,6 @@
 <p align="center"><img width=12.5% src="../Support/Readme_Assets/Images/smart_mask_logo.png"></p>
 
-<p align="center" style="font-size:10em"><b>SMART MASK</b></p>
+<p align="center" style="font-size:50px"><b>SMART MASK</b></p>
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
