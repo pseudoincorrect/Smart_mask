@@ -1,0 +1,12 @@
+
+Printed Circuit Board (PCB)
+Altium >= 18.0
+Pseudoincorrect's Altium libraries : Latest (https://github.com/pseudoincorrect/Altium_Libraries)
+
+Embedded System Software
+Segger Embedded Studio (SES) >= 4.0
+(Stopped to use GNU ARM in favor to SES)
+
+Mobile App
+Flutter SDK >= 2.0
+VScode or Android Studio : Latest

@@ -5,7 +5,7 @@ const ACCENT_COLOR = Color.fromARGB(255, 200, 142, 0);
 const BUTTON_COLOR = Color.fromARGB(255, 0, 120, 120);
 
 ThemeData getTheme() {
-  // https://paletton.com/#uid=54+0y0kOlp2rfRiO9GhQXg6YA2E
+  // https://paletton.com/#uid=34+170kOlp2rfRiO9GhQXg6YA2E
   return ThemeData(
     brightness: Brightness.dark,
     primaryColor: PRIMARY_COLOR,
@@ -13,18 +13,8 @@ ThemeData getTheme() {
     textButtonTheme: getTextButtonThemeData(),
     elevatedButtonTheme: getElevatedButtonThemeData(),
     outlinedButtonTheme: getOutlinedButtonThemeData(),
-    // buttonTheme: getButtonThemeData(),
   );
 }
-//
-// ButtonThemeData getButtonThemeData() {
-//   return ButtonThemeData(
-//     buttonColor: BUTTON_COLOR,
-//     shape: RoundedRectangleBorder(
-//         borderRadius: BorderRadius.all(Radius.circular(5))),
-//     textTheme: ButtonTextTheme.primary,
-//   );
-// }
 
 TextButtonThemeData getTextButtonThemeData() {
   return TextButtonThemeData(
