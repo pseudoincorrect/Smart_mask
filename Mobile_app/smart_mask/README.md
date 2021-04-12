@@ -1,6 +1,6 @@
-<p align="center"><img width=12.5% src="../../Support/Readme_Assets/Images/smart_mask_logo.png"></p>
+<p align="center"><img width=15% src="../../Support/Readme_Assets/Images/smart_mask_logo.png"></p>
 
-<p align="center"><img width=100% src="../../Support/Readme_Assets/Images/flexySense_mask.png"></p>
+<p align="center"><img width=75% src="../../Support/Readme_Assets/Images/flexySense_mask.png"></p>
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
