@@ -1,12 +1,12 @@
 <p align="center"><img width=12.5% src="Support/Readme_Assets/Images/smart_mask_logo.png"></p>
 
-<p align="center" style="font-size:50px"><b>SMART MASK</b></p>
+<p align="center"><img width=100% src="Support/Readme_Assets/Images/flexySense_mask.png"></p>
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 
 <br>
-Smart Mask  is an embedded system connected to a mobile app to monitor the outputs of our custom printed sensors.
+FlexySense Mask is an embedded system connected to a mobile app to monitor the outputs of our custom printed sensors.
 
 This System is divided into 3 parts:
 - A Printed Circuit Board (PCB) for the embedded system, made with Altium Designer
@@ -51,7 +51,7 @@ Sources and supportind documents are in <a href="https://github.com/pseudoincorr
 
 # Embedded System Software
 
-Firware for the central chip, a nrf52810 from Nordic Semiconductors.<br> The program is being developped with Nordic SDK on Segger Embedded Studio. <br>
+Firmware for the central chip, a nrf52810 from Nordic Semiconductors.<br> The program is being developped with Nordic SDK on Segger Embedded Studio. <br>
 Sources and supportind documents are in <a href="https://github.com/pseudoincorrect/smart_mask/tree/master/Embedded_system/smart_mask">Embedded_system/</a>.
 
 <br>

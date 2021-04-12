@@ -1,10 +1,10 @@
 <p align="center"><img width=12.5% src="../../Support/Readme_Assets/Images/smart_mask_logo.png"></p>
 
-<p align="center" style="font-size:50px"><b>SMART MASK</b></p>
+<p align="center"><img width=100% src="../../Support/Readme_Assets/Images/flexySense_mask.png"></p>
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-# SMART MASK (Mobile Application)
+# FlexySense Mask (Mobile Application)
 <br>
 <p align="center">
 <img align="center" width=30% src="../../Support/Readme_Assets/Images/app_analytics.png">
