@@ -1,8 +1,6 @@
-<!-- <p align="center"><img width=12.5% src="https://github.com/pseudoincorrect/smart_mask/Support/Readme_Assets/Images/smart_mask_logo_3.png"></p> -->
-
 <p align="center"><img width=12.5% src="Support/Readme_Assets/Images/smart_mask_logo.png"></p>
 
-<p align="center" style="font-size:4em"><b>SMART MASK</b></p>
+<p align="center" style="font-size:10em"><b>SMART MASK</b></p>
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
@@ -28,7 +26,7 @@ This System is divided into 3 parts:
 # Printed Circuit Board
 
 The PCB is developped with Altium (started initially with Cadsoft Eagle).<br>
-Sources and supportind documents are in the /PCB folder.
+Sources and supportind documents are in  <a href="https://github.com/pseudoincorrect/smart_mask/tree/master/PCB">PCB/</a>.
 
 <br>
 <p align="center">
@@ -43,7 +41,7 @@ Sources and supportind documents are in the /PCB folder.
 The Mobile app is developped with the Flutter SDK.<br>
 Gather data and control the embedded system through bluetooth. <br>
 Store on local Db and display. Filter and navigate data through analytic page  <br>
-Sources and supportind documents are in the /Mobile_app folder.
+Sources and supportind documents are in <a href="https://github.com/pseudoincorrect/smart_mask/tree/master/Mobile_app/smart_mask">Mobile_app/</a>.
 
 <br>
 <p align="center">
@@ -53,8 +51,8 @@ Sources and supportind documents are in the /Mobile_app folder.
 
 # Embedded System Software
 
-The central chip is a nrf52810 from Nordic Semiconductors. The program is being developped with Nordic SDK on Segger Embedded Studio. <br>
-Sources and supportind documents are in the /Embedded_system folder.
+Firware for the central chip, a nrf52810 from Nordic Semiconductors.<br> The program is being developped with Nordic SDK on Segger Embedded Studio. <br>
+Sources and supportind documents are in <a href="https://github.com/pseudoincorrect/smart_mask/tree/master/Embedded_system/smart_mask">Embedded_system/</a>.
 
 <br>
 <p align="center">

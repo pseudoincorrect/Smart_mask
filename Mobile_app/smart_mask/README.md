@@ -1,16 +1,38 @@
-# smart_mask
+<p align="center"><img width=12.5% src="../../Support/Readme_Assets/Images/smart_mask_logo.png"></p>
 
-Smart mask
+<p align="center" style="font-size:10em"><b>SMART MASK</b></p>
 
-## Getting Started
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-This project is a starting point for a Flutter application.
+# SMART MASK (Mobile Application)
+<br>
+<p align="center">
+<img align="center" width=30% src="../../Support/Readme_Assets/Images/app_analytics.png">
+</p>
+<br>
 
-A few resources to get you started if this is your first Flutter project:
+# Description
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+<p  align="justify">
+Cross platform mobile application built with Flutter. Realtime control of the sensor and sampling. Data are stored in a local Database for navigation and digital signal processing operations.
+</p>
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# Features
+- Bluetooth pairing 
+- Sensor control
+- Analytic view for applying basic DSP operation on data
+- Data Stored on Database
+- Sensor data display on semi realtime (bluetooth latency)
+
+# Requirements
+Flutter 2.0 is needed here
+
+# Architecture
+- Bloc state management 
+- Repositories for data access / management
+- Flutter_blue for bluetooth management
+
+# Roadmap
+- Improve bluetooth stability
+- Fill/hide holes in data (for better display)
+- Improve the theme
