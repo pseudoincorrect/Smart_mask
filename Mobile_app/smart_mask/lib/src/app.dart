@@ -56,7 +56,7 @@ class _TabControlState extends State<TabControl> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: choices.length,
-      initialIndex: 3,
+      initialIndex: 0,
       child: Scaffold(
         appBar: AppBar(
           title: Row(

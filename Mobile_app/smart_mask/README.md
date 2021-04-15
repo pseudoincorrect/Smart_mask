@@ -36,3 +36,5 @@ Flutter 2.0 is needed here
 - Improve bluetooth stability
 - Fill/hide holes in data (for better display)
 - Improve the theme
+
+#

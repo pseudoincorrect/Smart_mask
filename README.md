@@ -69,3 +69,5 @@ This project is quite general in the use of the sensor and can be adapted to any
 CAD files, embedded software and app are usually separated in different repositories. <br>
 Here as the project is still simple enough and self-contained, all parts are kepts together.
 <br>
+
+#

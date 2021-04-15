@@ -65,11 +65,11 @@ Instructions:
 
 - You can also delete the configurations you don't need
 
-<br>
-
 # Roadmap
 - Sleep mode
 - different sample frequency per sensor
 - Over the air firmware update
 - Data link encryption (bluetooth bonding)
 - Bluetooth reset
+
+#

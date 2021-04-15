@@ -8,6 +8,9 @@
 <br>
 <p align="center">
 <img align="center" width=50% src="../Support/Readme_Assets/Images/smart_mask_altium.png">
+<br>
+<br>
+mask_v_2_0 PCB on Altium Designer
 </p>
 <br>
 
@@ -44,3 +47,5 @@ Dimensions (mm): 22 * 29
 <br>
 
 Clearance: 6 mils
+
+#
