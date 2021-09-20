@@ -20,12 +20,10 @@
 
 typedef enum
 {
-    SENSOR_FIRST = 0,
     SENSOR_1 = 0,
     SENSOR_2 = 1,
     SENSOR_3 = 2,
     SENSOR_4 = 3,
-    SENSOR_LAST = 3,
 } sensor_t;
 
 typedef int16_t sensor_val_t;

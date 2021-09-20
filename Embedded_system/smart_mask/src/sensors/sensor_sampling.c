@@ -122,7 +122,7 @@ static ret_code_t sample_one_sensor(sensor_t sensor)
     nrf_delay_ms(1);
     err = nrfx_saadc_sample_convert(hardware->adc_chanel, &adc_val);
     APP_ERROR_CHECK(err);
-    err = sensor_handle_add_value(sensor, adc_val);
+    err = sensor_handle_add_single_value(sensor, adc_val);
     APP_ERROR_CHECK(err);
     nrf_gpio_pin_clear(hardware->pwr_pin);
     //NRF_LOG_INFO("sensor %d adc_val %d", sensor + 1, adc_val);
@@ -143,34 +143,36 @@ static ret_code_t sample_all_sensors(void)
     ctrl = sensor_handle_get_control(SENSOR_1);
     if (ctrl->enable)
     {
-        //err = sensor_handle_add_value(SENSOR_1, 0);
-         err = sample_one_sensor(SENSOR_1);
+        err = sample_one_sensor(SENSOR_1);
+        //err = sensor_handle_add_single_value(SENSOR_1, 0);
         APP_ERROR_CHECK(err);
     }
 
     ctrl = sensor_handle_get_control(SENSOR_2);
     if (ctrl->enable)
     {
-        //err = sample_one_sensor(SENSOR_2);
-        err = sensor_handle_add_value(SENSOR_2, 0);
+        err = sample_one_sensor(SENSOR_2);
+        // err = sensor_handle_add_single_value(SENSOR_2, mock_adc++);
         APP_ERROR_CHECK(err);
     }
 
     ctrl = sensor_handle_get_control(SENSOR_3);
     if (ctrl->enable)
     {
-        // err = nrfx_saadc_sample_convert(SENSOR_3_ADC_CHANNEL, &adc_val);
-        err = sensor_handle_add_value(SENSOR_3, mock_adc++);
+        err = sample_one_sensor(SENSOR_3);
+        // err = sensor_handle_add_single_value(SENSOR_3, 0);
         APP_ERROR_CHECK(err);
     }
 
+#if (SENSOR_CNT >= 4)
     ctrl = sensor_handle_get_control(SENSOR_4);
     if (ctrl->enable)
     {
-        // err = nrfx_saadc_sample_convert(SENSOR_4_ADC_CHANNEL, &adc_val);
-        err = sensor_handle_add_value(SENSOR_4, 0);
+        err = sensor_handle_add_single_value(SENSOR_4, 0);
+        // err = sensor_handle_add_single_value(SENSOR_4, 0);
         APP_ERROR_CHECK(err);
     }
+#endif
 
     return err;
 }
@@ -205,14 +207,14 @@ static ret_code_t saadc_timer_init(void)
     nrfx_timer_config_t timer_conf = NRFX_TIMER_DEFAULT_CONFIG;
     timer_conf.bit_width = NRF_TIMER_BIT_WIDTH_32;
     err_code = nrfx_timer_init(
-        &saadc_timer_instance, &timer_conf, saadc_timer_handler);
+                   &saadc_timer_instance, &timer_conf, saadc_timer_handler);
     APP_ERROR_CHECK(err_code);
 
     uint32_t time_ticks =
         nrfx_timer_ms_to_ticks(&saadc_timer_instance, INITIAL_SAMPLE_RATE_MS);
 
     nrfx_timer_extended_compare(&saadc_timer_instance, NRF_TIMER_CC_CHANNEL0,
-        time_ticks, NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK, true);
+                                time_ticks, NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK, true);
 
     nrfx_timer_enable(&saadc_timer_instance);
 }
@@ -233,7 +235,7 @@ static ret_code_t update_saadc_timer(sensor_t sensor)
     nrfx_timer_config_t timer_conf = NRFX_TIMER_DEFAULT_CONFIG;
     timer_conf.bit_width = NRF_TIMER_BIT_WIDTH_32;
     err = nrfx_timer_init(
-        &saadc_timer_instance, &timer_conf, saadc_timer_handler);
+              &saadc_timer_instance, &timer_conf, saadc_timer_handler);
     APP_ERROR_CHECK(err);
 
     sensor_ctrl_t * ctrl = sensor_handle_get_control(sensor);
@@ -241,7 +243,7 @@ static ret_code_t update_saadc_timer(sensor_t sensor)
         nrfx_timer_ms_to_ticks(&saadc_timer_instance, ctrl->sample_period_ms);
 
     nrfx_timer_extended_compare(&saadc_timer_instance, NRF_TIMER_CC_CHANNEL0,
-        time_ticks, NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK, true);
+                                time_ticks, NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK, true);
 
     nrfx_timer_enable(&saadc_timer_instance);
 
@@ -329,7 +331,9 @@ ret_code_t sensor_sampling_update_sensor_control(
 {
     ret_code_t err;
     if (!is_sensor_ctrl_valid(new_sensor_ctrl))
+    {
         return NRF_ERROR_INVALID_DATA;
+    }
 
     sensor_hardware_t * hardware = sensor_handle_get_hardware(sensor);
     err = nrfx_saadc_channel_uninit(hardware->adc_chanel);

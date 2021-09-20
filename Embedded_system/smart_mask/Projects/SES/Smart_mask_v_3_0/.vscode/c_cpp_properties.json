@@ -1,0 +1,56 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\components\\ble\\**",
+                "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\components\\libraries\\**",
+                "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\components\\boards\\**",
+                "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\components\\softdevice\\**",
+                "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\modules\\nrfx\\**",
+                "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\external\\fprintf\\**",
+                "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\integration\\**",
+                "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\external\\segger_rtt\\**",
+                "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\external\\utf_converter\\**"
+            ],
+            "browse": {
+                "path": [
+                    "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\components\\ble\\**",
+                    "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\components\\libraries\\**",
+                    "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\components\\boards\\**",
+                    "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\components\\softdevice\\**",
+                    "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\modules\\nrfx\\**",
+                    "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\external\\fprintf\\**",
+                    "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\integration\\**",
+                    "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\external\\segger_rtt\\**",
+                    "C:\\Users\\maxim\\Programming\\SDKs\\nordic\\nrf5_sdk_17_0_2\\external\\utf_converter\\**"
+                ]
+            },
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "APP_TIMER_V2",
+                "APP_TIMER_V2_RTC1_ENABLED",
+                "CUSTOM_BOARD_INC=smart_mask_v_3_0",
+                "CONFIG_GPIO_AS_PINRESET",
+                "FLOAT_ABI_SOFT",
+                "INITIALIZE_USER_SECTIONS",
+                "NO_VTOR_CONFIG",
+                "NRF52811_XXAA",
+                "NRF52_PAN_74",
+                "NRFX_COREDEP_DELAY_US_LOOP_CYCLES=3",
+                "NRF_SD_BLE_API_VERSION=7",
+                "S112",
+                "SOFTDEVICE_PRESENT",
+                "SWI_DISABLE0"
+            ],
+            "compilerPath": "C:\\ProgramNoSpace\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin\\gcc.exe",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}

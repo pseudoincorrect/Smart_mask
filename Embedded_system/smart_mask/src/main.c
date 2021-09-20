@@ -20,6 +20,7 @@
 #include "nrf_log_default_backends.h"
 #include "nrf_pwr_mgmt.h"
 #include "nrf_sdm.h"
+#include "nrf_delay.h"
 // Project
 #include "app_ble.h"
 #include "sensor_handle.h"
@@ -59,6 +60,25 @@ APP_TIMER_DEF(m_timer_sensors_id);
 /*************************
  * Static Functions
  ************************/
+
+static void blink(void)
+{
+ for (int i = 0; i < 2; i++)
+    {
+        nrf_gpio_pin_write(LED_BLUE_PIN, 0);
+        nrf_delay_ms(40);
+        nrf_gpio_pin_write(LED_BLUE_PIN, 1);
+        nrf_delay_ms(40);
+        nrf_gpio_pin_write(LED_RED_PIN, 0);
+        nrf_delay_ms(40);
+        nrf_gpio_pin_write(LED_RED_PIN, 1);
+        nrf_delay_ms(40);
+        nrf_gpio_pin_write(LED_GREEN_PIN, 0);
+        nrf_delay_ms(40);
+        nrf_gpio_pin_write(LED_GREEN_PIN, 1);
+        nrf_delay_ms(40);
+    }
+}
 
 /**
  * @brief    Handler for timer events.
@@ -113,7 +133,7 @@ static void sensor_ctrl_update(sensor_t sensor, sensor_ctrl_t * ctrl)
 {
     ret_code_t err;
     NRF_LOG_INFO("sensor %d sample period ms %d, gain %d, enable %d",
-        sensor + 1, ctrl->sample_period_ms, ctrl->gain, ctrl->enable);
+                 sensor + 1, ctrl->sample_period_ms, ctrl->gain, ctrl->enable);
     err = sensor_sampling_update_sensor_control(sensor, ctrl);
     if (err == NRF_ERROR_INVALID_DATA)
         NRF_LOG_INFO("invalid sensor_ctrl_t data");
@@ -123,7 +143,10 @@ static void sensor_ctrl_update(sensor_t sensor, sensor_ctrl_t * ctrl)
 /**@brief   Function for the LEDs initialization.
  *          Initializes all LEDs used by the application.
  */
-static void leds_init(void) { bsp_board_init(BSP_INIT_LEDS); }
+static void leds_init(void)
+{
+    bsp_board_init(BSP_INIT_LEDS);
+}
 
 
 /**@brief   Function for the Timer initialization.
@@ -165,8 +188,10 @@ static void buttons_init(void)
 
     // The array must be static because a pointer to it will be saved in the
     // button handler module.
-    static app_button_cfg_t buttons[] = {
-        {CONNECT_BUTTON, false, BUTTON_PULL, button_event_handler}};
+    static app_button_cfg_t buttons[] =
+    {
+        {CONNECT_BUTTON, false, BUTTON_PULL, button_event_handler}
+    };
 
     err_code =
         app_button_init(buttons, ARRAY_SIZE(buttons), BUTTON_DETECTION_DELAY);
@@ -212,8 +237,7 @@ static void idle_state_handle(void)
  */
 static void check_sensors_update(void)
 {
-    if (!app_ble_is_connected())
-        return;
+    if (!app_ble_is_connected()) return;
 
     ret_code_t err_code;
     for (sensor_t s_i = SENSOR_FIRST; s_i <= SENSOR_LAST; s_i++)
@@ -221,12 +245,12 @@ static void check_sensors_update(void)
         if (sensor_handle_available_data(s_i) >= SENSOR_VAL_AMOUNT_NOTIF)
         {
             err_code = ble_sms_on_sensors_update(
-                *m_app_ble_conf.ble_conn_handle, m_app_ble_conf.ble_sms, s_i);
+                           *m_app_ble_conf.ble_conn_handle, m_app_ble_conf.ble_sms, s_i);
 
             if (err_code != NRF_SUCCESS &&
-                err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
-                err_code != NRF_ERROR_INVALID_STATE &&
-                err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
+                    err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
+                    err_code != NRF_ERROR_INVALID_STATE &&
+                    err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
             {
                 //APP_ERROR_CHECK(err_code);
             }
@@ -259,15 +283,15 @@ void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
         {
             assert_info_t * p_info = (assert_info_t *)info;
             NRF_LOG_ERROR("ASSERTION FAILED at %s:%u", p_info->p_file_name,
-                p_info->line_num);
+                          p_info->line_num);
             break;
         }
         case NRF_FAULT_ID_SDK_ERROR:
         {
             error_info_t * p_info = (error_info_t *)info;
             NRF_LOG_ERROR("ERROR %u [%s] at %s:%u\r\nPC at: 0x%08x",
-                p_info->err_code, nrf_strerror_get(p_info->err_code),
-                p_info->p_file_name, p_info->line_num, pc);
+                          p_info->err_code, nrf_strerror_get(p_info->err_code),
+                          p_info->p_file_name, p_info->line_num, pc);
             NRF_LOG_ERROR("End of error report");
             break;
         }
@@ -320,6 +344,9 @@ int main(void)
     timers_init();
     buttons_init();
     power_management_init();
+
+    blink();
+
     sensor_sampling_init();
     app_ble_init(&m_app_ble_conf);
 

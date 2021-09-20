@@ -6,6 +6,7 @@
  ************************/
 
 #include "nrfx_saadc.h"
+#include "boards_common.h"
 
 /*************************
  * Defines
@@ -19,6 +20,8 @@
 #define LED_BLUE_PIN    15
 
 #define USR_BUTTON_PIN  16
+
+#define SENSOR_CNT      4
 
 #define SENSOR_1_PWR_PIN        25
 #define SENSOR_1_ADC_PIN        30
@@ -64,5 +67,6 @@
 #define BUTTONS_ACTIVE_STATE 0
 #define BUTTONS_LIST { BUTTON_1}
 #define BSP_BUTTON_0   BUTTON_1
+
 
 #endif

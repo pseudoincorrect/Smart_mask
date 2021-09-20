@@ -16,7 +16,7 @@
  * Defines
  ************************/
 
-#define SENSOR_BUFF_SIZE 256 // needs to be a power of 2
+#define SENSOR_BUFF_SIZE 32 // needs to be a power of 2
 
 /*************************
  * Static Variables
@@ -27,7 +27,9 @@ static sensor_handle_t s_h_1, s_h_2, s_h_3, s_h_4;
 NRF_RINGBUF_DEF(s_1_data, SENSOR_BUFF_SIZE * sizeof(sensor_val_t));
 NRF_RINGBUF_DEF(s_2_data, SENSOR_BUFF_SIZE * sizeof(sensor_val_t));
 NRF_RINGBUF_DEF(s_3_data, SENSOR_BUFF_SIZE * sizeof(sensor_val_t));
+#if (SENSOR_CNT >= 4)
 NRF_RINGBUF_DEF(s_4_data, SENSOR_BUFF_SIZE * sizeof(sensor_val_t));
+#endif
 
 /*************************
  * Static Functions
@@ -50,8 +52,10 @@ static sensor_handle_t * sensor_handle_get(sensor_t sensor)
             return &s_h_2;
         case (SENSOR_3):
             return &s_h_3;
+#if (SENSOR_CNT >= 4)
         case (SENSOR_4):
             return &s_h_4;
+#endif
     }
 }
 
@@ -91,14 +95,15 @@ static const nrf_ringbuf_t * get_sensor_buffer(sensor_t sensor)
 void sensor_handles_init(void)
 {
     s_h_1.buffer = &s_1_data;
-    s_h_2.buffer = &s_2_data;
-    s_h_3.buffer = &s_3_data;
-    s_h_4.buffer = &s_4_data;
-
     nrf_ringbuf_init(s_h_1.buffer);
+    s_h_2.buffer = &s_2_data;
     nrf_ringbuf_init(s_h_2.buffer);
+    s_h_3.buffer = &s_3_data;
     nrf_ringbuf_init(s_h_3.buffer);
+#if (SENSOR_CNT >= 4)
+    s_h_4.buffer = &s_4_data;
     nrf_ringbuf_init(s_h_4.buffer);
+#endif
 
     sensor_ctrl_t * ctrl;
     for (sensor_t s_i = SENSOR_FIRST; s_i <= SENSOR_LAST; s_i++)
@@ -125,10 +130,12 @@ void sensor_handles_init(void)
     s_h_3.hardware.adc_chanel = SENSOR_3_ADC_CHANNEL;
     s_h_3.hardware.analog_input = SENSOR_3_ANALOG_INPUT;
 
+#if (SENSOR_CNT >= 4)
     s_h_4.hardware.pwr_pin = SENSOR_4_PWR_PIN;
     s_h_4.hardware.adc_pin = SENSOR_4_ADC_PIN;
     s_h_4.hardware.adc_chanel = SENSOR_4_ADC_CHANNEL;
     s_h_4.hardware.analog_input = SENSOR_4_ANALOG_INPUT;
+#endif
 }
 
 /**
@@ -170,7 +177,9 @@ ret_code_t sensor_handle_set_control(
     sensor_t sensor, sensor_ctrl_t * sensor_ctrl)
 {
     if (!is_sensor_ctrl_valid(sensor_ctrl))
+    {
         return NRF_ERROR_INVALID_DATA;
+    }
 
     sensor_ctrl_t * sensor_ctrl_dest = sensor_handle_get_control(sensor);
     memcpy(sensor_ctrl_dest, sensor_ctrl, sizeof(sensor_ctrl_t));
@@ -199,7 +208,7 @@ int sensor_handle_available_data(sensor_t sensor)
  *
  * @retval NRF_SUCCESS on success, otherwise an error code is returned
  */
-ret_code_t sensor_handle_add_value(sensor_t sensor, sensor_val_t val)
+ret_code_t sensor_handle_add_single_value(sensor_t sensor, sensor_val_t val)
 {
     ret_code_t err;
     const nrf_ringbuf_t * buf = get_sensor_buffer(sensor);
@@ -208,14 +217,27 @@ ret_code_t sensor_handle_add_value(sensor_t sensor, sensor_val_t val)
     uint8_t * data_p;
     uint8_t ** data_pp = &data_p;
 
+    // Allocate (check) space for data
     err = nrf_ringbuf_alloc(buf, data_pp, &len, false);
-    if (err != NRF_SUCCESS || len != sizeof(sensor_val_t))
-        return NRF_ERROR_DATA_SIZE;
+    if (err) return err;
+    // if the buffer is full, we free place and retry
+    if (len != sizeof(sensor_val_t))
+    {
+        sensor_val_t dummy = 0;
+        err = sensor_handle_get_values(sensor, &dummy, 1);
+        if (err) return err;
+        len = sizeof(sensor_val_t);
+        err = nrf_ringbuf_alloc(buf, data_pp, &len, false);
+        if (err) return err;
+        if (len != sizeof(sensor_val_t)) return NRF_ERROR_DATA_SIZE;
+    }
 
+    // Commit (put) the data in the buffer (after allocating it)
     err = nrf_ringbuf_cpy_put(buf, (uint8_t *)&val, &len);
     if (err != NRF_SUCCESS || len != sizeof(sensor_val_t))
+    {
         return NRF_ERROR_DATA_SIZE;
-
+    }
     return NRF_SUCCESS;
 }
 
@@ -236,11 +258,15 @@ ret_code_t sensor_handle_get_values(
     size_t len = amount * sizeof(sensor_val_t);
 
     if (sensor_handle_available_data_buf(buf) < len)
+    {
         return NRF_ERROR_DATA_SIZE;
+    }
 
     err = nrf_ringbuf_cpy_get(buf, (uint8_t *)vals, &len);
-    if (len != amount * sizeof(sensor_val_t))
+    if (len != amount * sizeof(sensor_val_t)) 
+    {
         return NRF_ERROR_DATA_SIZE;
+    }
 
     return err;
 }
@@ -255,9 +281,13 @@ ret_code_t sensor_handle_get_values(
 bool is_sensor_ctrl_valid(sensor_ctrl_t * ctrl)
 {
     if (ctrl->sample_period_ms < 200 || ctrl->sample_period_ms > 2000)
+    {
         return false;
+    }
     if (ctrl->gain < SAADC_CH_CONFIG_GAIN_Gain1_6 ||
-        ctrl->gain > SAADC_CH_CONFIG_GAIN_Gain4)
+            ctrl->gain > SAADC_CH_CONFIG_GAIN_Gain4)
+    {
         return false;
+    }
     return true;
 }
